@@ -141,6 +141,13 @@ export function SystemDemo({ onPage = false }: { onPage?: boolean }) {
     return () => io.disconnect();
   }, [load]);
 
+  useEffect(() => {
+    const unlock = () => send({ type: "unlock-audio" });
+    const evs = ["pointerdown", "keydown", "touchend"] as const;
+    evs.forEach((ev) => window.addEventListener(ev, unlock, { passive: true }));
+    return () => evs.forEach((ev) => window.removeEventListener(ev, unlock));
+  }, []);
+
   /* 3) Prezentacija javlja da li se trenutno vrti, za dugme na traci. */
   useEffect(() => {
     const onMsg = (e: MessageEvent) => {
