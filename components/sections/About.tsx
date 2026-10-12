@@ -1,17 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { Code2, Megaphone, ArrowUpRight, Linkedin, type LucideIcon } from "lucide-react";
+import { Code2, Megaphone, ArrowUpRight, Linkedin, FileText, type LucideIcon } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import { Head, Fade } from "@/components/ui/kit";
 
-const PEOPLE: { src: string; banner: string; icon: LucideIcon; linkedin: string }[] = [
-  { src: "/team/bakir.jpg", banner: "/team/bakir-banner.webp", icon: Code2, linkedin: "https://www.linkedin.com/in/bakir-mehic-qa-engineer/" },
+const PEOPLE: { src: string; banner: string; icon: LucideIcon; linkedin: string; cv?: string }[] = [
+  { src: "/team/bakir.jpg", banner: "/team/bakir-banner.webp", icon: Code2, linkedin: "https://www.linkedin.com/in/bakir-mehic-qa-engineer/", cv: "/cv/Bakir_Mehic_CV.pdf" },
   { src: "/team/nedim.jpg", banner: "/team/nedim-banner.webp", icon: Megaphone, linkedin: "https://www.linkedin.com/in/nedim-kupusija-4632a533b/" },
 ];
 
 type Content = {
-  label: string; heading1: string; headingAccent: string; subtitle: string; linkedinBtn: string;
+  label: string; heading1: string; headingAccent: string; subtitle: string; linkedinBtn: string; cvBtn: string;
   members: { name: string; role: string; bio: string; tags: string[] }[];
 };
 
@@ -22,6 +22,7 @@ const T: Record<"bs" | "en", Content> = {
     headingAccent: "naš tim",
     subtitle: "Nas dvojica radimo sve sami. Jedan gradi, drugi dovodi klijente. Razgovarate direktno s ljudima koji rade posao, bez posrednika.",
     linkedinBtn: "LinkedIn profil",
+    cvBtn: "Pogledaj CV",
     members: [
       {
         name: "Bakir Mehić",
@@ -43,6 +44,7 @@ const T: Record<"bs" | "en", Content> = {
     headingAccent: "mehiccdev",
     subtitle: "The two of us do all the work ourselves. One builds, the other brings in clients. You talk directly to the people doing the work, with no middlemen.",
     linkedinBtn: "LinkedIn profile",
+    cvBtn: "View CV",
     members: [
       {
         name: "Bakir Mehić",
@@ -96,11 +98,17 @@ export function About() {
                         <li key={tg} className="whitespace-nowrap rounded-lg border border-[#E5E7EB] bg-[#F8FAFC] px-2 py-1.5 text-[11.5px] sm:text-[12.5px] lg:text-[11.5px] xl:px-2.5 xl:text-[12.5px] font-medium text-[#334155]">{tg}</li>
                       ))}
                     </ul>
-                    <div className="mt-auto pt-8">
+                    <div className="mt-auto flex flex-wrap gap-2.5 pt-8">
                       <a href={p.linkedin} target="_blank" rel="noopener noreferrer"
                          className="inline-flex items-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-4 py-2.5 text-[13.5px] font-semibold text-[#0F172A] transition-colors hover:border-[#0A66C2] hover:bg-[#F8FAFC]">
                         <Linkedin size={16} className="text-[#0A66C2]" fill="currentColor" strokeWidth={0} /> {d.linkedinBtn} <ArrowUpRight size={13} className="text-[#64748B]" />
                       </a>
+                      {p.cv && (
+                        <a href={p.cv} target="_blank" rel="noopener noreferrer"
+                           className="inline-flex items-center gap-2 rounded-xl bg-[#0F172A] px-4 py-2.5 text-[13.5px] font-semibold text-white transition-colors hover:bg-[#1E293B]">
+                          <FileText size={16} /> {d.cvBtn} <ArrowUpRight size={13} className="text-[#94A3B8]" />
+                        </a>
+                      )}
                     </div>
                   </div>
                 </article>
