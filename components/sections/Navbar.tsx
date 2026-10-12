@@ -1,14 +1,3 @@
-/**
- * components/sections/Navbar.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Navbar (v2): plutajuća glass pilula.
- *
- * Ista logika kao prije (tema, jezik, mobilni drawer, scroll stanje), novi
- * vizuelni sloj: navigacija je uvijek odvojena "pilula" s blur staklom koja
- * na skrol dobije jaču pozadinu, sjenu i brand rub. Linkovi imaju hover chip,
- * CTA je gradijentan. Labele su self-contained (BS/EN).
- */
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -23,10 +12,6 @@ const LABELS = {
   en: { services: "Services", portfolio: "Portfolio", about: "About", saas: "Flagship", pricing: "Pricing", contact: "Contact", solutions: "Solutions", portfolioAll: "All references" },
 };
 
-/**
- * Rješenja (dropdown). Dodavanje novog rješenja = jedan red ovdje, ništa
- * drugo se ne mijenja. Sljedeća planirana: vikendice i rezervacija termina.
- */
 const SOLUTIONS = [
   {
     href: "/rjesenja/rent-a-car",
@@ -39,8 +24,8 @@ const SOLUTIONS = [
 export function Navbar() {
   const [scrolled,   setScrolled]   = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [solOpen,    setSolOpen]    = useState(false);   // desktop dropdown
-  const [solAccOpen, setSolAccOpen] = useState(false);   // mobilni accordion
+  const [solOpen,    setSolOpen]    = useState(false);
+  const [solAccOpen, setSolAccOpen] = useState(false);
   const { lang, setLang }           = useLanguage();
   const L = LABELS[(lang as "bs" | "en")] ?? LABELS.bs;
 
@@ -63,14 +48,11 @@ export function Navbar() {
         scrolled ? "bg-white border-[#E5E7EB]" : "bg-transparent border-transparent"
       )}>
         <nav className="max-w-7xl mx-auto h-16 px-6 lg:px-8 flex items-center justify-between">
-          {/* Logo */}
           <a href="/" className="flex items-center" aria-label="mehiccdev, naslovna">
             <Logo className="h-[17px] w-auto" />
           </a>
 
-          {/* Desktop links */}
           <ul className="hidden lg:flex items-center gap-1">
-            {/* Rješenja: dropdown, otvara se na hover i na klik (tipkovnica) */}
             <li className="relative"
                 onMouseEnter={() => setSolOpen(true)}
                 onMouseLeave={() => setSolOpen(false)}>
@@ -84,8 +66,6 @@ export function Navbar() {
                            transition-colors duration-200"
               >
                 {L.solutions}
-                {/* plava tačkica: signal da tu ima nešto novo (crvena je
-                   rezervisana za akciju na cjenovniku, da se ne takmiče) */}
                 <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-[#16A34A] animate-pulse" />
                 <ChevronDown size={13} className={`transition-transform duration-200 ${solOpen ? "rotate-180" : ""}`} />
               </button>
@@ -151,9 +131,7 @@ export function Navbar() {
             ))}
           </ul>
 
-          {/* Right controls */}
           <div className="flex items-center gap-1.5">
-            {/* Jezik: slider s zastavicama (klik na zastavicu bira jezik) */}
             <div className="relative flex items-center rounded-full border border-[var(--border)]
                             bg-[var(--surface)] p-0.5"
                  role="group" aria-label="Language">
@@ -198,7 +176,6 @@ export function Navbar() {
         </nav>
       </header>
 
-      {/* Mobile drawer: kartica ispod pilule */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -211,7 +188,6 @@ export function Navbar() {
                        bg-[var(--bg)] shadow-2xl shadow-black/20 overflow-hidden"
           >
             <nav className="px-5 py-4 flex flex-col">
-              {/* Rješenja: accordion unutar mobilnog menija */}
               <button
                 type="button"
                 onClick={() => setSolAccOpen((v) => !v)}
@@ -220,8 +196,6 @@ export function Navbar() {
                            border-b border-[var(--border)]"
               >
                 {L.solutions}
-                {/* plava tačkica: signal da tu ima nešto novo (crvena je
-                   rezervisana za akciju na cjenovniku, da se ne takmiče) */}
                 <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-[#16A34A] animate-pulse" />
                 <ChevronDown size={15} className={`text-[var(--text-muted)] transition-transform duration-200 ${solAccOpen ? "rotate-180" : ""}`} />
               </button>
@@ -283,13 +257,7 @@ export function Navbar() {
   );
 }
 
-
-/* ── Mini SVG zastavice (emoji zastave na Windowsu ne rade, prikažu se slova) ── */
-
 function FlagBA() {
-  // Crtano u 2x rezoluciji (viewBox 40x28) radi oštrine na malim dimenzijama.
-  // 4 veće zvijezde (umjesto sitnih 9 s prave zastave) uz hipotenuzu:
-  // na 20px širine manje-a-krupnije čita se kao zastava, više se ne mulja.
   return (
     <svg width="20" height="14" viewBox="0 0 40 28" aria-hidden className="rounded-[3px]">
       <rect width="40" height="28" fill="#002395" />

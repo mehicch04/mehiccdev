@@ -1,14 +1,3 @@
-/**
- * lib/schemas/rentACarInquiry.ts
- * ─────────────────────────────────────────────────────────────────────────────
- * Zod šema za upit s rent-a-car landing stranice.
- *
- * Jedna šema, dvije upotrebe: klijent njome validira formu prije slanja, a
- * API ruta istom šemom provjerava tijelo zahtjeva (klijentska validacija se
- * uvijek može zaobići, pa server nikad ne vjeruje ulazu).
- * TS tip je IZVEDEN iz šeme, pa ne može odlutati od nje.
- */
-
 import { z } from "zod";
 
 export const FLEET_SIZES   = ["1-9", "10-20", "21-40", "40+"] as const;
@@ -29,7 +18,6 @@ export const rentACarInquirySchema = z.object({
   phone:      z.string().trim().min(6,  { message: "required" }).max(30),
   email:      z.string().trim().email({ message: "email" }).max(120),
   note:       z.string().trim().max(500, { message: "max500" }).optional().or(z.literal("")),
-  // Honeypot: pravi korisnik ovo polje nikad ne vidi ni ne popuni.
   website:    z.string().max(0).optional().or(z.literal("")),
 });
 

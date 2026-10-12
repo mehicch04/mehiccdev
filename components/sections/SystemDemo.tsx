@@ -1,31 +1,3 @@
-/**
- * components/sections/SystemDemo.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * "Naš sistem za rent a car": prikaz cijelog sistema u pokretu.
- *
- * Zamjenjuje staru promo sekciju (RentACarPromo). Umjesto da opisuje sistem,
- * pokazuje ga: animirana prezentacija prolazi put od pitanja gosta, preko
- * izbora vozila i datuma, do admin panela, ugovora i aktivnih rezervacija.
- *
- * KAKO JE UGRAĐENA
- *   Prezentacija je samostalan HTML fajl u public/demo/rent-a-car.html, sa
- *   svojim stilovima i skriptom. Stoji u <iframe>, pa se ništa od njenog
- *   koda ne miješa sa sajtom, i obrnuto.
- *
- *   Sajt i prezentacija razgovaraju porukama (postMessage):
- *     sajt → prezentacija  "lang"     promjena jezika na sajtu
- *     sajt → prezentacija  "visible"  sekcija je u vidnom polju, kreni
- *     sajt → prezentacija  "hidden"   sekcija je izašla iz vida, pauziraj
- *     prezentacija → sajt  "demo-height"  koliko je visoka, da okvir stane tačno
- *
- * ZAŠTO BAŠ OVAKO
- *   • okvir se učitava tek kad se posjetilac približi sekciji, pa ne
- *     usporava prvo otvaranje naslovnice
- *   • sekvenca kreće tek kad je sekcija vidljiva, pa je posjetilac gleda od
- *     početka, a ne od sredine
- *   • kad posjetilac odskrola dalje, pauzira se, i nastavlja kad se vrati
- */
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -68,19 +40,17 @@ export function SystemDemo({ onPage = false }: { onPage?: boolean }) {
 
   const wrapRef  = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLIFrameElement>(null);
-  const sceneRef = useRef<HTMLDivElement>(null);   // samo scena, bez trake ispod
+  const sceneRef = useRef<HTMLDivElement>(null);
 
-  const [load,   setLoad]   = useState(false);   // je li okvir uopšte učitan
-  const visibleRef = useRef(false);              // je li sekcija trenutno u vidu
-  const [playing, setPlaying] = useState(false); // za ikonicu Pauza / Pokreni
-  const frameReady = useRef(false);              // je li prezentacija učitana
-  const pendingReplay = useRef(false);           // čeka li "pusti od početka"
+  const [load,   setLoad]   = useState(false);
+  const visibleRef = useRef(false);
+  const [playing, setPlaying] = useState(false);
+  const frameReady = useRef(false);
+  const pendingReplay = useRef(false);
 
-  /* Pošalji poruku prezentaciji (samo istom domenu). */
   const send = (msg: object) =>
     frameRef.current?.contentWindow?.postMessage(msg, window.location.origin);
 
-  /* 1) Učitaj okvir kad se posjetilac približi (600 px prije sekcije). */
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
@@ -108,14 +78,6 @@ export function SystemDemo({ onPage = false }: { onPage?: boolean }) {
     };
   }, []);
 
-  /* 2) Kreni tek kad je CIJELA scena u kadru, stani kad većim dijelom izađe.
-
-     Dva praga, namjerno različita (histereza): kreće na 95 posto, a staje
-     tek ispod 30 posto. Da je isti prag, prezentacija bi stala i krenula na
-     svaki mali pomak skrola oko te granice.
-
-     Ako je scena viša od ekrana (npr. telefon položeno), nikad ne bi bila
-     95 posto vidljiva, pa tada kreće kad zauzme 90 posto visine ekrana. */
   useEffect(() => {
     const el = sceneRef.current;
     if (!el || !load) return;
@@ -148,7 +110,6 @@ export function SystemDemo({ onPage = false }: { onPage?: boolean }) {
     return () => evs.forEach((ev) => window.removeEventListener(ev, unlock));
   }, []);
 
-  /* 3) Prezentacija javlja da li se trenutno vrti, za dugme na traci. */
   useEffect(() => {
     const onMsg = (e: MessageEvent) => {
       if (e.origin !== window.location.origin) return;
@@ -158,17 +119,12 @@ export function SystemDemo({ onPage = false }: { onPage?: boolean }) {
     return () => window.removeEventListener("message", onMsg);
   }, []);
 
-  /* 5) Link "Pogledajte sistem u pokretu" iz heroja.
-     Dovuče scenu na sredinu ekrana i pusti prezentaciju OD POČETKA, jer je
-     posjetilac izričito rekao da želi da je gleda. Ako prezentacija još nije
-     učitana (daleko je od heroja), zahtjev se zapamti i izvrši čim se učita. */
   useEffect(() => {
     const onWatch = () => {
       setLoad(true);
       const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       sceneRef.current?.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "center" });
       if (frameReady.current) {
-        // malo sačekaj da skrol stigne, pa kreni ispočetka
         window.setTimeout(() => send({ type: "replay" }), smooth ? 650 : 0);
       } else {
         pendingReplay.current = true;
@@ -184,14 +140,12 @@ export function SystemDemo({ onPage = false }: { onPage?: boolean }) {
     return () => window.clearTimeout(t);
   }, [onPage]);
 
-  /* 4) Promjena jezika na sajtu mijenja jezik i u prezentaciji. */
   useEffect(() => { send({ type: "lang", lang: l }); }, [l]);
 
   return (
     <section id={onPage ? "kako-radi" : "rent-a-car"} className="relative bg-white scroll-mt-24">
       <div className="max-w-6xl mx-auto px-6 lg:px-8">
 
-        {/* ── zaglavlje ── */}
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">
             {d.label}
@@ -205,20 +159,11 @@ export function SystemDemo({ onPage = false }: { onPage?: boolean }) {
           </p>
         </div>
 
-        {/* ── plejer ────────────────────────────────────────────────────────
-            Prezentacija i sve što uz nju ide u jednoj kartici: scena gore,
-            a ispod jedna traka s kontrolama, cijenom i dugmetom. Ranije su
-            kontrole bile unutar prezentacije, a dugme i cijena ispod nje,
-            odvojeno, pa je izgledalo kao da su slučajno tu.
-
-            Sjena je postavljena kroz style, jer stranica ima pravilo koje
-            utišava sve klase sa sjenom. */}
         <div
           ref={wrapRef}
           className="mt-14 sm:mt-16 -mx-6 sm:mx-0 overflow-hidden bg-white sm:rounded-[20px] border-y sm:border border-[#E5E7EB]"
           style={{ boxShadow: "0 1px 2px rgba(15,23,42,0.04), 0 24px 48px -24px rgba(15,23,42,0.18)" }}
         >
-          {/* scena: tačno 16:9, kao prezentacija, pa nema klizača ni praznine */}
           <div ref={sceneRef} className="relative aspect-video bg-[#0F3554]">
             {load && (
               <iframe
@@ -227,11 +172,8 @@ export function SystemDemo({ onPage = false }: { onPage?: boolean }) {
                 title={d.frameTitle}
                 scrolling="no"
                 onLoad={() => {
-                  // poruke poslate prije učitavanja su se izgubile, pa ih
-                  // ponavljamo: jezik, i "kreni" ako je sekcija već u vidu
                   frameReady.current = true;
                   send({ type: "lang", lang: l });
-                  // poziv iz heroja stigao prije učitavanja: pusti ispočetka
                   if (pendingReplay.current) { pendingReplay.current = false; send({ type: "replay" }); }
                   else if (visibleRef.current) send({ type: "visible" });
                 }}
@@ -240,7 +182,6 @@ export function SystemDemo({ onPage = false }: { onPage?: boolean }) {
             )}
           </div>
 
-          {/* traka: kontrole lijevo, cijena u sredini, dugme desno */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 px-5 sm:px-6 py-4 sm:py-5 border-t border-[#F3F4F6]">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">

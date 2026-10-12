@@ -1,15 +1,3 @@
-/**
- * lib/rateLimit.ts
- * ─────────────────────────────────────────────────────────────────────────────
- * Najjednostavniji rate limiting: koliko zahtjeva s iste IP adrese u zadatom
- * prozoru. Drži se u memoriji procesa.
- *
- * OGRANIČENJE (svjesno): Vercel pokreće više instanci funkcije, pa brojač nije
- * dijeljen između njih. Ovo zaustavlja obično slanje forme u petlji, ali nije
- * zaštita od ozbiljnog napada. Ako spam ikad postane stvaran problem, ovdje se
- * zamjenjuje Upstash Redis brojačem bez diranja ostatka koda.
- */
-
 type Hit = { count: number; resetAt: number };
 const hits = new Map<string, Hit>();
 

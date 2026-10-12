@@ -1,7 +1,3 @@
-/**
- * components/ui/ThemeProvider.tsx
- * Thin client-side wrapper around next-themes.
- */
 "use client";
 
 import * as React from "react";

@@ -1,28 +1,3 @@
-/**
- * components/sections/Value.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * "Zašto se isplati" (v3).
- *
- * PROBLEM S PRETHODNOM VERZIJOM
- *   "Kompletna aplikacija 6 KM/dan" zvučalo je kao dnevna pretplata, a uz to
- *   je miješalo dvije stvari: 6 KM je aplikacija PLUS mjesečna podrška.
- *   Sama aplikacija je 1.000 KM jednom, što na prvu godinu daje ~2,74 KM/dan.
- *
- * NOVA LOGIKA, odozgo prema dolje
- *   1. vremenska linija po godinama: prva godina je tamna pločica "1.000 KM,
- *      jednom", sve poslije su "0 KM, vaša je". Na prvi pogled se vidi da se
- *      plaća jednom i da je onda vlasništvo.
- *   2. računica po danu, jasno označena kao računica, a ne cijena:
- *        samo aplikacija       1.000 KM ÷ 365 ≈ 2,74 KM dnevno, prva godina
- *        s podrškom (opciono)  (1.000 + 12 × 100) ÷ 365 ≈ 6 KM dnevno
- *   3. šta je uključeno, kao red kvačica
- *   4. "od haosa do kontrole": prije naspram sa sistemom
- *   5. tamni baner s pozivom na konsultacije
- *
- * Boje: #0F172A (tamna pločica, baner), #0F3554 (naglasak), #16A34A
- * (kvačice, "0 KM"). Sve pune, bez prozirnosti.
- */
-
 "use client";
 
 import { Check, ArrowRight, X, Coffee } from "lucide-react";
@@ -110,7 +85,6 @@ const T: { bs: Content; en: Content } = {
   },
 };
 
-
 const RC: { bs: Partial<Content>; en: Partial<Content> } = {
   bs: {
     sub: "Sistem plaćate jednom i on je zauvijek vaš. Nema mjesečne pretplate, provizije po rezervaciji ni naplate po vozilu.",
@@ -160,7 +134,6 @@ export function Value({ rentACar = false }: { rentACar?: boolean }) {
     <section id={rentACar ? "isplati" : "vrijednost"} className="relative bg-white scroll-mt-24">
       <div className="mx-auto max-w-5xl px-6 lg:px-8">
 
-        {/* ── zaglavlje ── */}
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">{d.eyebrow}</p>
           <h2 className="mt-4 text-[32px] leading-[1.12] sm:text-[44px] font-semibold tracking-[-0.03em] text-[#0F172A]">
@@ -169,10 +142,8 @@ export function Value({ rentACar = false }: { rentACar?: boolean }) {
           <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-[#475569]">{d.sub}</p>
         </div>
 
-        {/* ══ 1 + 2. godine i računica, jedna kartica ══ */}
         <div className="mt-12 overflow-hidden rounded-[20px] border border-[#E5E7EB] bg-white" style={{ boxShadow: SOFT }}>
 
-          {/* vremenska linija po godinama */}
           <div className="p-6 sm:p-8">
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#DCFCE7] px-2.5 py-1 text-[12px] font-semibold text-[#15803D]">
@@ -181,13 +152,11 @@ export function Value({ rentACar = false }: { rentACar?: boolean }) {
             </div>
 
             <ol className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              {/* prva godina: jedina koja košta */}
               <li className="rounded-2xl bg-[#0F172A] p-4 sm:p-5 text-white">
                 <p className="text-[12px] font-medium text-[#94A3B8]">{d.year} 1</p>
                 <p className="whitespace-nowrap mt-2 text-[22px] sm:text-[26px] font-semibold tracking-tight tabular-nums">{d.yearOnePrice}</p>
                 <p className="mt-0.5 text-[12.5px] text-[#CBD5E1]">{d.yearOneNote}</p>
               </li>
-              {/* sve poslije: 0 */}
               {[2, 3, 4].map((y, i) => (
                 <li key={y} className="rounded-2xl border border-[#BBF7D0] bg-[#F0FDF4] p-4 sm:p-5">
                   <p className="text-[12px] font-medium text-[#64748B]">
@@ -200,7 +169,6 @@ export function Value({ rentACar = false }: { rentACar?: boolean }) {
             </ol>
           </div>
 
-          {/* računica po danu */}
           <div className="border-t border-[#F1F5F9] bg-[#F8FAFC] p-6 sm:p-8">
             <p className="text-[13px] font-semibold text-[#0F172A]">{d.calcTitle}</p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -224,7 +192,6 @@ export function Value({ rentACar = false }: { rentACar?: boolean }) {
           </div>
         </div>
 
-        {/* ══ 3. šta je uključeno ══ */}
         <ul className="mt-8 lg:-mx-8 flex flex-wrap justify-center gap-x-5 gap-y-2.5">
           {d.included.map((c) => (
             <li key={c} className="flex items-center gap-2 text-[14px] text-[#334155]">
@@ -233,7 +200,6 @@ export function Value({ rentACar = false }: { rentACar?: boolean }) {
           ))}
         </ul>
 
-        {/* ══ 4. od haosa do kontrole ══ */}
         <div className="mt-20">
           <h3 className="text-center text-[24px] sm:text-[28px] font-semibold tracking-[-0.02em] text-[#0F172A]">{d.trHead}</h3>
           <div className="mx-auto mt-8 max-w-3xl overflow-hidden rounded-[20px] border border-[#E5E7EB] bg-white" style={{ boxShadow: SOFT }}>
@@ -257,7 +223,6 @@ export function Value({ rentACar = false }: { rentACar?: boolean }) {
           </p>
         </div>
 
-        {/* ══ 5. tamni baner ══ */}
         <div className="mt-14 flex flex-col sm:flex-row sm:items-center gap-6 rounded-[20px] bg-[#0F172A] p-7 sm:p-9">
           <div className="flex-1">
             <p className="text-[20px] sm:text-[22px] font-semibold leading-snug tracking-tight text-white">

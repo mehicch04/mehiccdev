@@ -1,29 +1,13 @@
-/**
- * components/ui/WhatsAppButton.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Plutajuće WhatsApp dugme u donjem desnom uglu, na svim stranicama.
- *
- * ⚠ BROJ SE UPISUJE U lib/contact.ts (jedno mjesto za cijeli sajt).
- *   Format: država + broj, bez plusa, razmaka i nula na početku.
- *   Primjer za +387 61 234 567  →  "38761234567"
- *   Dok je prazno, dugme se uopšte ne prikazuje, pa ništa ne pukne.
- *
- * Zašto postoji: vlasnici firmi u regionu rijetko pišu mail, a skoro svi
- * koriste WhatsApp. Ovo je najkraći put od posjetioca do razgovora.
- */
-
 "use client";
 
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import { waLink } from "@/lib/contact";
 
-
 export function WhatsAppButton() {
   const { lang } = useLanguage();
   const [show, setShow] = useState(false);
 
-  // pojavi se tek kad posjetilac malo skrola, da ne smeta u hero sekciji
   useEffect(() => {
     const onScroll = () => setShow(window.scrollY > 500);
     onScroll();

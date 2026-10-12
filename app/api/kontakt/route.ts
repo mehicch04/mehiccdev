@@ -1,15 +1,3 @@
-/**
- * app/api/kontakt/route.ts
- * ─────────────────────────────────────────────────────────────────────────────
- * Prima poruke s kontakt forme na naslovnici i šalje ih na email.
- *
- * Namjerno koristi ISTI servis (Resend) kao rent-a-car forma, da imaš samo
- * jedan nalog i jedan ključ za održavanje. Ako su env varijable već podešene
- * za rent-a-car formu, ova ruta radi odmah, bez ijedne dodatne postavke.
- *
- * Zaštita: honeypot polje + rate limit (3 poruke po IP-u u 10 minuta).
- */
-
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { rateLimit } from "@/lib/rateLimit";
@@ -32,7 +20,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
 
-  // honeypot: bot popuni skriveno polje, čovjek ga ne vidi
   if (body.website && body.website.length > 0) {
     return NextResponse.json({ ok: true });
   }

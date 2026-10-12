@@ -1,37 +1,14 @@
-/**
- * components/ui/SectionRail.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Navigacija kroz stranicu koja pokazuje gdje se posjetilac trenutno nalazi.
- * Koristi se i na naslovnici i na rent-a-car stranici; sekcije se prosljeđuju
- * kao lista {id, label}.
- *
- * DESKTOP (lg i naviše): tanka vertikalna tračnica uz lijevu ivicu. Svaka
- *   sekcija je crtica; aktivna se produži, zasvijetli i pokaže svoj naziv.
- *   Klik skrola na tu sekciju. Naziv se pojavi i na hover.
- *
- * MOBITEL: tračnica se NE prikazuje, jer bi zauzimala ivicu ekrana kojom se
- *   skrola i preklapala sadržaj. Umjesto nje ide tanka linija napretka odmah
- *   ispod navbara, koja pokazuje koliko je stranice pređeno. Isti podatak,
- *   nula smetnje.
- *
- * Tehnika: IntersectionObserver prati sekcije (jeftino, bez skrol petlje),
- * a linija napretka se osvježava kroz requestAnimationFrame. Poštuje
- * reduced-motion: tada nema klizanja, samo trenutni skok.
- */
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
 export type RailItem = { id: string; label: string };
 
 export function SectionRail({ items }: { items: readonly RailItem[] }) {
-
   const [active, setActive] = useState<string>(items[0].id);
-  const [past, setPast]     = useState(false);   // je li hero sekcija prošla
+  const [past, setPast]     = useState(false);
   const [onDark, setOnDark] = useState(false);
   const barRef = useRef<HTMLDivElement>(null);
 
-  // ── koja je sekcija trenutno u fokusu ────────────────────────────────────
   useEffect(() => {
     const els = items
       .map((i) => document.getElementById(i.id))
@@ -40,7 +17,6 @@ export function SectionRail({ items }: { items: readonly RailItem[] }) {
 
     const obs = new IntersectionObserver(
       (entries) => {
-        // uzmi onu koja je najviše u vidnom polju
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
@@ -52,7 +28,6 @@ export function SectionRail({ items }: { items: readonly RailItem[] }) {
     return () => obs.disconnect();
   }, [items]);
 
-  // ── linija napretka (mobitel) + skrivanje tračnice u hero sekciji ───────
   useEffect(() => {
     let raf = 0;
     const update = () => {
@@ -60,8 +35,6 @@ export function SectionRail({ items }: { items: readonly RailItem[] }) {
       const p = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
       if (barRef.current) barRef.current.style.transform = `scaleX(${p})`;
 
-      // Tračnica se prikazuje tek kad posjetilac napusti prvi ekran. U hero
-      // sekciji nema šta da orijentiše, a smeta uz plutajuće kartice.
       setPast(window.scrollY > window.innerHeight * 0.8);
       const mid = window.innerHeight / 2;
       setOnDark(Array.from(document.querySelectorAll<HTMLElement>("[data-dark]")).some((el) => { const r = el.getBoundingClientRect(); return r.top < mid && r.bottom > mid; }));
@@ -87,14 +60,12 @@ export function SectionRail({ items }: { items: readonly RailItem[] }) {
 
   return (
     <>
-      {/* ── MOBITEL: linija napretka ispod navbara ── */}
       <div aria-hidden className="section-progress lg:hidden fixed top-[68px] inset-x-0 z-30 h-[2px] bg-transparent">
         <div ref={barRef}
              className="h-full origin-left bg-gradient-to-r from-brand-600 to-brand-400"
              style={{ transform: "scaleX(0)" }} />
       </div>
 
-      {/* ── DESKTOP: tračnica sekcija ── */}
       <nav aria-label="Sekcije stranice"
            aria-hidden={!past}
            className={`section-rail ${onDark ? "rail-dark" : ""} hidden lg:flex fixed left-6 xl:left-10 top-1/2 -translate-y-1/2 z-30 flex-col gap-3

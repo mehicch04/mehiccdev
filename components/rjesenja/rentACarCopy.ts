@@ -1,17 +1,3 @@
-/**
- * components/rjesenja/rentACarCopy.ts
- * ─────────────────────────────────────────────────────────────────────────────
- * Sav tekst rent-a-car landing stranice, na oba jezika, na jednom mjestu.
- *
- * Zašto ovdje a ne u lib/i18n.ts: sve sekcije sajta drže svoj tekst uz sebe
- * (i18n.ts se više nigdje ne koristi), pa nova stranica prati istu konvenciju.
- * Fajl je običan TS bez "use client", pa ga može čitati i server komponenta
- * (metadata i JSON-LD) i klijentske sekcije.
- *
- * Pravila teksta: bez fraza, bez crtica, obraćanje vlasniku firme, riječ
- * "sistem" ili "aplikacija" umjesto "web stranica".
- */
-
 export type RcCopy = (typeof COPY)["bs"] | (typeof COPY)["en"];
 
 export const COPY = {

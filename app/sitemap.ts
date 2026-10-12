@@ -1,9 +1,3 @@
-/**
- * app/sitemap.ts
- * Mapa stranica koju Google čita na /sitemap.xml.
- * Kada dodamo novo rješenje (vikendice, rezervacija termina), dopisuje se
- * jedan blok ovdje.
- */
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {

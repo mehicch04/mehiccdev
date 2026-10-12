@@ -1,20 +1,3 @@
-/**
- * components/ui/kit.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Zajednički elementi dizajna, isti na naslovnici i na podstranicama:
- *   Backdrop     pozadina heroja (preliv, odsjaji, mreža)
- *   Head         zaglavlje sekcije (oznaka, naslov s naglaskom, podnaslov)
- *   Fade         jedino pojavljivanje pri skrolanju na sajtu, blago i jednom
- *   PhoneMockup  iPhone okvir, sve mjere razmjerne širini
- *   BrowserFrame prozor preglednika oko screenshota
- *   Lightbox     uvećanje slike preko cijelog ekrana
- *   PlanCard     kartica paketa (cjenovnik, rent-a-car paketi)
- *
- * Boje: #0F172A tekst i tamne plohe, #0F3554 naglasak, #16A34A potvrde,
- * #DC2626 samo glavni klik. Sjene su u style, jer globalno pravilo utišava
- * sve klase sa sjenom.
- */
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -27,7 +10,6 @@ export const SOFT  = "0 1px 2px rgba(15,23,42,0.04)";
 export const LIFT  = "0 1px 2px rgba(15,23,42,0.06), 0 28px 56px -28px rgba(15,23,42,0.45)";
 export const FLOAT = "0 1px 2px rgba(15,23,42,0.06), 0 18px 36px -18px rgba(15,23,42,0.28)";
 
-/* ── pozadina heroja, identična naslovnici ───────────────────────────────── */
 export function Backdrop({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative overflow-hidden"
@@ -48,7 +30,6 @@ export function Backdrop({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ── zaglavlje sekcije ───────────────────────────────────────────────────── */
 export function Head({ label, h, accent, sub, align = "center" }: {
   label: string; h: string; accent?: string; sub?: string; align?: "center" | "left";
 }) {
@@ -65,7 +46,6 @@ export function Head({ label, h, accent, sub, align = "center" }: {
   );
 }
 
-/* ── blago pojavljivanje: jednom, kratko, uz isključene animacije nikako ── */
 export function Fade({ children, className = "", delay = 0 }: {
   children: React.ReactNode; className?: string; delay?: number;
 }) {
@@ -83,7 +63,6 @@ export function Fade({ children, className = "", delay = 0 }: {
   );
 }
 
-/* ── prozor preglednika ──────────────────────────────────────────────────── */
 export function BrowserFrame({ url, children }: { url?: string; children: React.ReactNode }) {
   return (
     <div className="overflow-hidden rounded-xl border border-[#E5E7EB] bg-white" style={{ boxShadow: FLOAT }}>
@@ -96,7 +75,6 @@ export function BrowserFrame({ url, children }: { url?: string; children: React.
   );
 }
 
-/* ── uvećanje slike ──────────────────────────────────────────────────────── */
 export type ZoomState = { src: string; alt: string; phone?: boolean } | null;
 
 export function preloadImage(src: string) {
@@ -174,36 +152,16 @@ export function Lightbox({ zoom, onClose, closeLabel }: { zoom: ZoomState; onClo
   );
 }
 
-/* Meka sjena telefona: kratki sloj uz rub i dugi, blijedi ispod. */
 const PHONE_SHADOW =
   "0 1px 2px rgba(15,23,42,0.08), 0 24px 50px -18px rgba(15,23,42,0.30)";
 
-/* ── Okvir telefona, po uzoru na referencu ──────────────────────────────────
-   Tri sloja, od spolja prema unutra:
-     1. srebrni okvir (svijetli gradijent, kao aluminijum)
-     2. tanak crni bezel
-     3. ekran: statusna traka s vremenom, ostrvom i ikonicama, pa slika
-
-   Statusnu traku crtamo sami, jer screenshotovi je nemaju. Boja trake prati
-   vrh stranice na slici, a ikonice su tamne na svijetloj ili svijetle na
-   tamnoj traci.  */
 export function PhoneMockup({ src, alt, bar = "light", barColor, priority = false, sizes = "(max-width: 640px) 45vw, 320px" }: {
   src: string; alt: string; bar?: "light" | "dark"; barColor?: string; priority?: boolean; sizes?: string;
 }) {
   const ink = bar === "dark" ? "#FFFFFF" : "#0F172A";
 
-  /* SVE MJERE SU U cqw, odnosno u postocima ŠIRINE OVOG TELEFONA.
-     Ranije su uglovi bili fiksni (oko 46 px). Na mobitelu je telefon širok
-     svega ~110 px, pa je takav ugao zauzimao skoro pola širine i oblik je
-     postajao ovalan, kao jaje. Pravi iPhone ima ugao oko 14 posto širine,
-     okvir oko 1 posto, a ostrvo oko trećinu širine. Kad je sve izraženo u
-     odnosu na širinu, telefon izgleda isto na svakoj veličini.
-
-     Spoljni div je "kontejner" (container-type), a cqw unutar njega znači
-     "jedan posto širine tog kontejnera". */
   return (
     <div style={{ containerType: "inline-size" }}>
-      {/* srebrni okvir */}
       <div
         style={{
           borderRadius: "15.5cqw",
@@ -212,17 +170,13 @@ export function PhoneMockup({ src, alt, bar = "light", barColor, priority = fals
           boxShadow: PHONE_SHADOW,
         }}
       >
-        {/* crni bezel */}
         <div className="bg-black" style={{ borderRadius: "14.4cqw", padding: "1.9cqw" }}>
-          {/* ekran */}
           <div className="relative overflow-hidden" style={{ borderRadius: "12.5cqw" }}>
-            {/* statusna traka */}
             <div
               className={`relative flex items-center justify-between ${bar === "dark" ? "bg-[#0A0A0A]" : "bg-white"}`}
               style={{ height: "12.5cqw", paddingInline: "8cqw", ...(barColor ? { background: barColor } : {}) }}
             >
               <span className="font-semibold tracking-tight" style={{ color: ink, fontSize: "4.4cqw" }}>9:41</span>
-              {/* dinamičko ostrvo */}
               <span aria-hidden className="absolute left-1/2 -translate-x-1/2 rounded-full bg-black"
                     style={{ top: "2.6cqw", width: "32%", height: "8.6cqw" }} />
               <span className="flex items-center" style={{ gap: "1.2cqw" }} aria-hidden>
@@ -230,7 +184,6 @@ export function PhoneMockup({ src, alt, bar = "light", barColor, priority = fals
                 <svg viewBox="0 0 26 12" style={{ width: "7.4cqw" }}><rect x=".75" y=".75" width="21.5" height="10.5" rx="3" fill="none" stroke={ink} strokeOpacity=".45" strokeWidth="1.5"/><rect x="2.5" y="2.5" width="15" height="7" rx="1.6" fill={ink}/><rect x="23.5" y="4" width="1.8" height="4" rx=".9" fill={ink} fillOpacity=".45"/></svg>
               </span>
             </div>
-            {/* sadržaj ekrana */}
             <div className="relative aspect-[1179/2556] bg-white">
               <Image src={src} alt={alt} fill sizes={sizes} quality={85} priority={priority}
                      className="object-cover object-top" />
@@ -242,15 +195,8 @@ export function PhoneMockup({ src, alt, bar = "light", barColor, priority = fals
   );
 }
 
-/* stavka koja je zapravo naslov grupe ("SVE iz Startera, plus:") */
 const isHeader = (f: string) => f.startsWith("SVE") || f.startsWith("EVERYTHING");
 
-
-/* ── Jedna kartica paketa ──────────────────────────────────────────────────
-   variant:
-     "dark"     preporučeni aplikacijski paket, tamno plava kartica
-     "outline"  preporučeni marketing paket, bijela s tamnim rubom
-     "plain"    ostali paketi */
 export function NoSubscription({ title, sub, dark = false }: { title: string; sub: string; dark?: boolean }) {
   return (
     <div className={`mt-4 flex items-center gap-2.5 rounded-xl border px-3 py-2.5 ${dark ? "border-[#4ADE80]/25 bg-[#16A34A]/[0.12]" : "border-[#BBF7D0] bg-[#F0FDF4]"}`}>
@@ -286,7 +232,6 @@ export function PlanCard({
              : "bg-white border border-[#E5E7EB]"}`}
       style={{ boxShadow: dark || variant === "accent" ? LIFT : SOFT }}
     >
-      {/* ikonica, ime i oznaka */}
       <div className="flex items-start justify-between gap-3">
         <span className={`grid h-11 w-11 place-items-center rounded-xl ${dark ? "bg-white/10 text-white" : "bg-[#EEF3F8] text-[#0F3554]"}`}>
           <Icon size={20} strokeWidth={2} />
@@ -300,7 +245,6 @@ export function PlanCard({
       <h3 className={`mt-4 text-[19px] font-semibold ${txt}`}>{name}</h3>
       <p className={`mt-1.5 text-[14px] leading-relaxed ${body}`}>{tag}</p>
 
-      {/* cijena */}
       <div className={`mt-6 border-t pt-5 ${dark ? "border-white/10" : "border-[#F1F5F9]"}`}>
         {priceLabel && <p className={`text-[11px] font-semibold uppercase tracking-[0.12em] ${muted}`}>{priceLabel}</p>}
         <p className="mt-2 flex flex-wrap items-baseline gap-x-2">
@@ -323,7 +267,6 @@ export function PlanCard({
         {free && <NoSubscription title={free.title} sub={free.sub} dark={dark} />}
       </div>
 
-      {/* stavke */}
       <ul className="mt-6 space-y-2.5">
         {features.map((f) =>
           isHeader(f) ? (
@@ -338,9 +281,6 @@ export function PlanCard({
       </ul>
       {foot && <p className={`mt-4 text-[12.5px] leading-relaxed ${muted}`}>{foot}</p>}
 
-      {/* dugme: crveno samo kod tamne (preporučene) kartice.
-          Omotač s mt-auto gura dugme na dno kartice, pa su dugmad u sve tri
-          kartice poravnata, bez obzira koliko stavki koja ima. */}
       <div className="mt-auto pt-7">
       <a
         href={href}

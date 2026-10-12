@@ -1,15 +1,3 @@
-/**
- * components/ui/LanguageProvider.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * React Context that holds the current language and exposes:
- *   • lang      — current language ("bs" | "en")
- *   • t         — the translation object for the current language
- *   • toggleLang / setLang — change language
- *
- * Default language is Bosnian ("bs"). Language is persisted in localStorage
- * so the visitor's choice is remembered between visits.
- */
-
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
@@ -27,7 +15,6 @@ const LanguageContext = createContext<LanguageContextValue | undefined>(undefine
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Language>("en");
 
-  // On mount, read saved language preference (if any)
   useEffect(() => {
     const saved = localStorage.getItem("mehiccdev-lang") as Language | null;
     if (saved === "bs" || saved === "en") {
@@ -57,7 +44,6 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Custom hook to consume the language context
 export function useLanguage() {
   const ctx = useContext(LanguageContext);
   if (!ctx) {

@@ -4,20 +4,17 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
-/* ─── Theme tokens ─────────────────────────────────────────────────────── */
 :root {
-  /* Svijetla tema, koristi je samo naslovnica (vidi RouteTheme.tsx) */
-  --bg:          #FFFFFF;   /* glavna pozadina */
-  --surface:     #F9FAFB;   /* blage pozadine i kartice */
-  --border:      #F3F4F6;   /* ivice */
-  --text:        #0F172A;   /* naslovi i tekst */
-  --text-muted:  #4B5563;   /* sekundarni tekst, dovoljno taman za čitanje */
-  --accent:      #DC2626;   /* samo glavna dugmad */
+  --bg:          #FFFFFF;
+  --surface:     #F9FAFB;
+  --border:      #F3F4F6;
+  --text:        #0F172A;
+  --text-muted:  #4B5563;
+  --accent:      #DC2626;
   --accent-glow: transparent;
-  --ink:         #0F172A;   /* tamne sekcije: hero i footer */
-  --ok:          #16A34A;   /* bedževi i potvrde */
+  --ink:         #0F172A;
+  --ok:          #16A34A;
 }
-
 
 * { box-sizing: border-box; padding: 0; margin: 0; }
 
@@ -46,7 +43,6 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-
 @layer utilities {
   .text-gradient {
     background: linear-gradient(135deg, #2563EB 0%, #60A5FA 60%, #93C5FD 100%);
@@ -54,52 +50,23 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 
-    /* Gradijent se isijeca po kutiji retka, a repovi slova (g, j, y) u serif
-       kurzivu izlaze ispod nje, pa su se odsijecali. Donja ispuna proširuje
-       tu kutiju taman toliko da repovi stanu.
-       Element je u toku teksta (inline), a kod takvih elemenata okomita
-       ispuna NE pomjera raspored, pa se razmaci između redova ne mijenjaju
-       i tekst se i dalje normalno prelama u novi red. */
     padding-bottom: 0.14em;
   }
 }
 
-
-/* ════════════════════════════════════════════════════════════════════════════
-   NASLOVNICA: minimalistički svijetli dizajn
-   ────────────────────────────────────────────────────────────────────────────
-   Sve ispod važi SAMO kad je na <html> klasa "light", a to je jedino na
-   naslovnici (RouteTheme.tsx). Podstranice ostaju netaknute.
-
-   Pravila dizajna:
-     • bijela pozadina, tamni tekst, sivi rubovi
-     • tamno plava (#0F172A) samo za hero i footer
-     • crvena (#DC2626) samo za glavna dugmad
-     • zelena (#16A34A) samo za potvrde i bedževe
-     • bez sjaja, bez stakla, bez neonskih gradijenata
-   ════════════════════════════════════════════════════════════════════════════ */
-
-/* ── tipografija ─────────────────────────────────────────────────────────── */
 html.light body {
   font-family: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
-/* nulta specifičnost, pa klase u komponentama imaju prednost */
 :where(html.light) :where(h1, h2) { letter-spacing: -0.025em; }
 html.light p { line-height: 1.7; }
 
-/* Naglašeni dio naslova: bez kurziva i bez gradijenta. Umjesto boje, razlika
-   se pravi tonom: isti font, prigušena boja. Tako izgledaju naslovi kod
-   modernih SaaS sajtova. */
 html.light .text-gradient {
   background: none;
   -webkit-text-fill-color: currentColor;
   color: #64748B;
   padding-bottom: 0;
 }
-/* Naglašeni dio svih naslova: duboka plava iz prikaza sistema (#0F3554),
-   umjesto sive. Dovoljno je tamna za čitanje, a razlikuje se od crnog
-   ostatka naslova. */
 html.light :is(h1, h2, h3) .text-gradient { color: #0F3554; }
 
 html.light :is(h1, h2, h3) .font-serif {
@@ -109,22 +76,16 @@ html.light :is(h1, h2, h3) .font-serif {
   letter-spacing: inherit;
 }
 
-/* ── uklanjanje "AI" efekata ─────────────────────────────────────────────── */
-/* dekorativni sjajevi i mrlje svjetla */
 html.light [class*="bg-[radial-gradient"],
 html.light [class*="blur-3xl"],
 html.light [class*="blur-2xl"] { display: none !important; }
 
-/* staklo: na naslovnici svaka površina je puna, bez zamućenja */
 html.light [class*="backdrop-blur"] { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 
-/* sjene: samo najmekša moguća, umjesto obojenih i jakih */
 html.light [class*="shadow-"] {
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.04) !important;
 }
 
-/* ── boje akcenta ────────────────────────────────────────────────────────── */
-/* Sva ostala dugmad: puna tamno plava, smirena */
 html.light :is(a, button)[class*="from-brand-600"],
 html.light :is(a, button)[class*="bg-brand-600"]:not([class*="bg-brand-600/"]) {
   background: #0F172A !important;
@@ -133,73 +94,42 @@ html.light :is(a, button)[class*="bg-brand-600"]:not([class*="bg-brand-600/"]) {
 html.light :is(a, button)[class*="from-brand-600"]:hover,
 html.light :is(a, button)[class*="bg-brand-600"]:not([class*="bg-brand-600/"]):hover { background: #1E293B !important; }
 
-/* Glavni klikovi: jedina crvena stvar na stranici. Samo tri dugmeta:
-   hero, Business paket i slanje kontakt forme. */
-/* body + [class] podižu specifičnost iznad svih pravila za ostala dugmad */
 html.light body :is(a, button).cta-primary[class] { background: #DC2626 !important; color: #FFFFFF !important; }
 html.light body :is(a, button).cta-primary[class]:hover { background: #B91C1C !important; }
 html.light body :is(a, button).cta-primary[class] * { color: #FFFFFF !important; }
 
-/* Ikonice u gradijentnim kvadratima: pune tamne pločice */
 html.light span[class*="from-brand-600"],
 html.light div[class*="from-brand-600"] {
   background: #0F172A !important;
   color: #FFFFFF !important;
 }
 
-/* Plave nijanse teksta i rubova postaju neutralne */
 html.light :not(a, button)[class*="text-brand-"] { color: #0F172A !important; }
 html.light [class*="border-brand-"] { border-color: #E5E7EB !important; }
 html.light :not(a, button)[class*="bg-brand-"]:not([class*="from-brand"]) { background-color: #F3F4F6 !important; }
 
-/* ── kartice ─────────────────────────────────────────────────────────────── */
 html.light [class*="rounded-3xl"][class*="border"],
 html.light [class*="rounded-2xl"][class*="border"] { border-color: #F3F4F6; }
 
-/* ── tamni mockupi aplikacije ────────────────────────────────────────────── */
-/* Prikazi ekrana ostaju tamni, jer predstavljaju aplikaciju, ali u istoj
-   tamnoj boji kao hero i footer, pa se ne pojavljuje nova nijansa. */
 html.light :is(.bg-\[\#080D1E\], .bg-\[\#0A122B\], .bg-\[\#070B1A\], .bg-\[\#070C1D\]) {
   background-color: #0F172A !important;
 }
 
-/* ── prostor ─────────────────────────────────────────────────────────────── */
-
-/* ── tamni blokovi: hero i footer ────────────────────────────────────────── */
-
-/* ── gradijentni rubovi upisani u style ──────────────────────────────────── */
 html.light [style*="border-box"] {
   background: #FFFFFF !important;
   border: 1px solid #E5E7EB !important;
 }
 
-/* ── mjerači i linije: tamno umjesto plavog ──────────────────────────────── */
 html.light svg [stroke^="url"] { stroke: #0F172A; }
 html.light [class*="from-brand-600"][class*="bg-gradient-to-b"] { background: #E5E7EB !important; }
 
-/* ── manje kartica: sitni elementi postaju ravni ────────────────────────────
-   Gdje je bilo previše malih kutija jedna do druge, sadržaj ostaje isti, ali
-   bez okvira i pozadine. Odvaja ih samo prazan prostor, pa se stranica
-   smiruje, a ništa se ne gubi. */
-
-
-
-/* ── bedževi: zelena je boja potvrda i oznaka ("Novo", "Najpopularnije") ── */
 html.light span[class*="bg-brand-600"][class*="text-white"] {
   background: #16A34A !important;
   color: #FFFFFF !important;
 }
 
-/* ── pilula u heroju: tamna, uklopljena u tamni blok ─────────────────────── */
+html.light [style*="radial-gradient"] { display: none !important; }
 
-
-
-/* ── pilule s gradijentnim rubom unutar tamnog bloka ─────────────────────── */
-
-/* ── preostali sjajevi upisani direktno u style ─────────────────────────── */
-html.light [style*="radial-gradient"] { display: none !important; }  /* PageSpeed prsten: zelen, jer je 100 potvrda */
-
-/* ── sporedni linkovi s plavom podlogom (npr. LinkedIn profil): neutralni ── */
 html.light a[class*="bg-brand-600/"] {
   background: #F3F4F6 !important;
   color: #0F172A !important;
@@ -207,35 +137,26 @@ html.light a[class*="bg-brand-600/"] {
 }
 html.light a[class*="bg-brand-600/"]:hover { background: #E5E7EB !important; }
 
-/* ── inicijali u kontaktu: tamni krugovi umjesto plavog gradijenta ───────── */
 html.light #kontakt :is([class*="from-blue-600"], [class*="from-indigo-500"]) { background: #0F172A !important; }
 
-/* ── tračnica sekcija na svijetloj naslovnici ────────────────────────────────
-   Crtice su bile pravljene za tamnu pozadinu, pa su na bijeloj nestajale.
-   Neaktivne su sada srednje sive, aktivna je tamno plava i duža, a njena
-   oznaka čitljiva. Podstranice (tamne) zadržavaju svoje boje. */
 html.light .section-rail button > span:first-child { background-color: #CBD5E1 !important; }
 html.light .section-rail button:hover > span:first-child { background-color: #64748B !important; }
 html.light .section-rail button[aria-current="true"] > span:first-child { background-color: #0F172A !important; }
 html.light .section-rail button > span:last-child { color: #0F172A !important; }
 html.light .section-progress > div { background: #0F172A !important; }
 
-/* ── traka s tehnologijama (TechMarquee.tsx) ─────────────────────────────── */
 @keyframes tech-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 .tech-marquee {
-  /* ivice blijede u bijelo, logotipi ne nestaju naglo */
   -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
           mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
 }
 .tech-track { animation: tech-scroll 45s linear infinite; }
 .tech-marquee:hover .tech-track { animation-play-state: paused; }
 
-/* jednobojno i mirno; na prelazak mišem prava boja brenda */
 .tech-item { color: #64748B; transition: color 200ms ease; }
 .tech-item:hover { color: var(--brand); }
 
-/* isključene animacije: traka stoji, logotipi se prelamaju u redove */
 @media (prefers-reduced-motion: reduce) {
   .tech-track { animation: none; width: auto; flex-wrap: wrap; justify-content: center; }
   .tech-track > ul:last-child { display: none; }

@@ -1,14 +1,3 @@
-/**
- * components/sections/HomeRail.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Navigacija kroz sekcije naslovnice. Samo lista sekcija na oba jezika;
- * sav prikaz radi zajednička komponenta SectionRail (desktop tračnica,
- * mobilna linija napretka).
- *
- * Redoslijed prati stvarni redoslijed sekcija na stranici. Ako se sekcije
- * ikad presложe, ovdje se samo promijeni redoslijed.
- */
-
 "use client";
 
 import { useLanguage } from "@/components/ui/LanguageProvider";

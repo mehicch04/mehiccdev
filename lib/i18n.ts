@@ -1,18 +1,6 @@
-/**
- * lib/i18n.ts
- * ─────────────────────────────────────────────────────────────────────────────
- * Central place for ALL website text in both languages.
- * To edit any text on the site, change it here — nothing else needed.
- *
- * Structure:  translations[language].section.key
- */
-
 export type Language = "bs" | "en";
 
 export const translations = {
-  // ════════════════════════════════════════════════════════════════════════
-  //  BOSANSKI / HRVATSKI / SRPSKI
-  // ════════════════════════════════════════════════════════════════════════
   bs: {
     nav: {
       services:  "Usluge",
@@ -207,9 +195,6 @@ export const translations = {
     },
   },
 
-  // ════════════════════════════════════════════════════════════════════════
-  //  ENGLISH
-  // ════════════════════════════════════════════════════════════════════════
   en: {
     nav: {
       services:  "Services",
@@ -405,5 +390,4 @@ export const translations = {
   },
 } as const;
 
-// Helper type for autocompletion
 export type Translation = (typeof translations)["bs"];

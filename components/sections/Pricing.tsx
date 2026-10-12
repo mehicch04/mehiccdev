@@ -1,26 +1,3 @@
-/**
- * components/sections/Pricing.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Cjenovnik (v3, u boji palete).
- *
- * Ranije su sve kartice bile iste svijetle boje, a ikonice sive pločice koje
- * se skoro nisu vidjele, pa je sekcija djelovala monotono.
- *
- * Boje palete i čemu služe ovdje:
- *   #0F172A  tamno plava: preporučeni paket (Business) je cijela tamna
- *            kartica, pa se odmah vidi bez ijedne jake boje
- *   #0F3554  okean plava: ikonice na bijelim karticama, na nježnoj podlozi
- *   #16A34A  zelena: kvačice i oznaka "Najpopularniji"
- *   #DC2626  crvena: SAMO dugme preporučenog paketa, kao glavni klik
- *
- * Marketing paketi imaju isti oblik kartica, ali preporučeni je istaknut
- * tamnim rubom, a ne tamnom karticom, da se dvije tamne kartice na istoj
- * stranici ne takmiče.
- *
- * Sjene su postavljene kroz style, jer stranica ima pravilo koje utišava sve
- * klase sa sjenom.
- */
-
 "use client";
 
 import {
@@ -45,7 +22,6 @@ type PricingData = {
   mktEyebrow: string; mktHeading: string; mktSubtitle: string; mktCta: string; mktNote: string; mkt: MktPlan[];
 };
 
-// ── Content (BS / EN) ─────────────────────────────────────────────────────────
 const PRICING: Record<"bs" | "en", PricingData> = {
   bs: {
     eyebrow: "WEB APLIKACIJE",

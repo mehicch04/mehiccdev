@@ -1,25 +1,3 @@
-/**
- * components/sections/Hero.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Hero (v3, minimalistički svijetli).
- *
- * Raspored, odozgo prema dolje, sve centrirano:
- *   1. bedž "Novo · Rezervacioni sistem za rent a car firme" (link)
- *   2. naslov u dva reda, drugi red prigušen
- *   3. podnaslov
- *   4. dva dugmeta: crveno glavno i obrubljeno sporedno
- *   5. tri telefona koja se preklapaju: srednji naprijed, bočni blago
- *      umanjeni, nagnuti i povučeni iza, a dno se utapa u bijelo
- *
- * Šta je namjerno izbačeno: plutajuće kartice sa strane, bedž dostupnosti,
- * red "Uživo u produkciji", strelica za skrol i duplirana pilula. Sve to se
- * takmičilo s naslovom.
- *
- * Bez sjaja, stakla i gradijenata. Sjene na telefonima su postavljene kroz
- * style, a ne kroz klasu, jer stranica ima pravilo koje utišava sve klase
- * sa sjenom, a telefonima treba tačno ova mekana, duboka sjena.
- */
-
 "use client";
 
 import Image from "next/image";
@@ -81,11 +59,6 @@ export function Hero() {
   const d = T[(lang as "bs" | "en")] ?? T.bs;
   const reduce = useReducedMotion() ?? false;
 
-  /* Ulazak: tekst se pojavi odozdo, telefoni malo kasnije.
-
-     Animacija se UVIJEK zadaje, a uz reduced-motion samo traje nula sekundi.
-     Da je izostavimo, server bi element iscrtao proziran (početno stanje), a
-     ništa ga ne bi vratilo na vidljivo, pa bi hero ostao prazan. */
   const rise = (delay: number) => ({
     initial: { opacity: 0, y: 18 },
     animate: { opacity: 1, y: 0 },
@@ -96,19 +69,13 @@ export function Hero() {
 
   return (
     <section className="hero-light relative bg-white">
-      {/* ── PANEL ───────────────────────────────────────────────────────────
-          Pozadina heroja ide od ivice do ivice ekrana. Pozadina je meki preliv iz svijetle nijanse naše plave
-          (#0F3554) u bijelo, a preko nje dva blaga dijagonalna odsjaja.
-          Navigacija je na vrhu providna, pa se stapa s panelom. */}
       <div className="relative overflow-hidden"
            style={{ background: "linear-gradient(180deg, #D9E4F0 0%, #E7EEF6 34%, #F4F7FB 68%, #FFFFFF 100%)" }}>
 
-        {/* dijagonalni odsjaji, kao staklo na referenci */}
         <div aria-hidden className="pointer-events-none absolute -left-[12%] top-0 h-[70%] w-[38%] -skew-x-[24deg] opacity-60"
              style={{ background: "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 100%)" }} />
         <div aria-hidden className="pointer-events-none absolute right-[-8%] top-0 h-[60%] w-[26%] -skew-x-[24deg] opacity-50"
              style={{ background: "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%)" }} />
-        {/* fina mreža koja blijedi prema dnu */}
         <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.35]"
              style={{
                backgroundImage: "linear-gradient(to right, rgba(15,53,84,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,53,84,0.06) 1px, transparent 1px)",
@@ -117,12 +84,6 @@ export function Hero() {
                WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 60%)",
              }} />
 
-      {/* ── PROZORČIĆI SA STRANE ─────────────────────────────────────────────
-          Popunjavaju prazninu pored naslova, kao na referenci. Sadržaj nije
-          izmišljen: lijevo je stvarni rezultat Maximuma, desno trenutak iz
-          sistema (rezervacija potvrđena jednim klikom). Nagnuti su blago
-          prema van i lagano lebde. Samo na širokim ekranima, jer na užim
-          ne bi imali gdje stati. */}
       <motion.div
         {...rise(0.35)}
         className="pointer-events-none absolute left-[3%] xl:left-[6%] top-[300px] hidden lg:block"
@@ -137,7 +98,6 @@ export function Hero() {
             <span className="text-[12px] font-medium text-[#64748B]">{d.cardSpeed.label}</span>
           </div>
           <p className="mt-3 text-[30px] font-semibold leading-none tracking-[-0.03em] text-[#0F172A]">{d.cardSpeed.value}</p>
-          {/* dvije trake: sada naspram ranije */}
           <div className="mt-3 space-y-1.5">
             <div className="h-1.5 w-[15%] rounded-full bg-[#16A34A]" />
             <div className="h-1.5 w-full rounded-full bg-[#E5E7EB]" />
@@ -175,7 +135,6 @@ export function Hero() {
 
       <div className="relative max-w-5xl mx-auto px-6 pt-32 sm:pt-36 lg:pt-40 text-center">
 
-        {/* ── 1. bedž ── */}
         <motion.div {...rise(0)} className="flex justify-center">
           <a
             href="/rjesenja/rent-a-car"
@@ -191,16 +150,13 @@ export function Hero() {
           </a>
         </motion.div>
 
-        {/* ── 2. naslov ── */}
         <motion.h1
           {...rise(0.06)}
           className="mt-8 text-[40px] leading-[1.08] sm:text-6xl lg:text-[68px] font-semibold tracking-[-0.035em] text-[#0F172A]"
-          style={{ textWrap: "balance" }}   /* redovi jednake dužine, bez usamljene riječi */
+          style={{ textWrap: "balance" }}
         >
           {d.h1a}
-          {/* drugi dio uvijek u svom redu, i na telefonu */}
           <span className="block text-[#0F3554]">
-            {/* mala ikonica rasta ispred naglašenog dijela, kao na referenci */}
             <svg viewBox="0 0 24 24" aria-hidden
                  className="hidden sm:inline-block h-[0.6em] w-[0.6em] mr-[0.16em] align-[0.02em]">
               <rect x="2"  y="13" width="5" height="9"  rx="1.5" fill="currentColor" opacity=".45" />
@@ -211,7 +167,6 @@ export function Hero() {
           </span>
         </motion.h1>
 
-        {/* ── 3. podnaslov ── */}
         <motion.p
           {...rise(0.12)}
           className="mx-auto mt-7 max-w-2xl text-[17px] sm:text-lg leading-relaxed text-[#475569]"
@@ -219,12 +174,10 @@ export function Hero() {
           {d.sub}
         </motion.p>
 
-        {/* ── 4. dugmad ── */}
         <motion.div
           {...rise(0.18)}
           className="relative mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3"
         >
-          {/* isprekidana strelica koja vodi pogled do glavnog dugmeta */}
           <svg aria-hidden viewBox="0 0 120 70" fill="none"
                className="pointer-events-none absolute right-[calc(50%+188px)] top-[-14px] hidden md:block w-[104px] text-[#94A3B8]">
             <path d="M6 8 C 10 44, 46 64, 104 52" stroke="currentColor" strokeWidth="1.6"
@@ -252,11 +205,6 @@ export function Hero() {
           </a>
         </motion.div>
 
-        {/* ── 4b. link na video ──
-            Tih, kao rečenica, da se ne takmiči s dva dugmeta iznad. Klik
-            šalje događaj sekciji s prikazom: ona se dovuče na sredinu ekrana
-            i pusti prezentaciju od početka. Bez JavaScripta href i dalje
-            vodi do sekcije. */}
         <motion.div {...rise(0.24)} className="mt-6 flex justify-center">
           <a
             href="#rent-a-car"
@@ -276,35 +224,22 @@ export function Hero() {
         </motion.div>
       </div>
 
-      {/* ── 5. tri telefona ──────────────────────────────────────────────────
-          Po referenci: stoje JEDAN PORED DRUGOG s malim razmakom, bez
-          preklapanja. Srednji je najveći i najviši, bočni su manji, spušteni
-          i blago nagnuti prema van. Vidi se gornji dio, a dno se postepeno
-          zamućuje i nestaje u bijelom. */}
       <motion.div {...rise(0.28)} className="relative mx-auto mt-16 sm:mt-20 max-w-5xl px-4 sm:px-6">
         <div style={{ perspective: "1100px" }} className="relative flex items-start justify-center gap-[2%] pt-2
                         h-[300px] sm:h-[440px] lg:h-[520px] overflow-hidden">
-          {/* lijevi: manji, niže, nagnut ulijevo */}
           <div className="w-[33%] max-w-[290px] mt-[4%]" style={{ transform: "rotateY(-22deg)", transformOrigin: "100% 50%" }}>
             <div className="relative"><span aria-hidden className="absolute inset-y-[1%] -right-[3%] left-[3%] rounded-[15.5%/7%] bg-[#C9CDD3]" /><div className="relative"><PhoneMockup src="/portfolio/gosto-mob.webp" alt={d.shots.left} bar="dark" barColor="#0A0A0A" /></div></div>
           </div>
 
-          {/* srednji: najveći i najviši */}
           <div className="relative z-10 w-[35%] max-w-[310px]">
             <PhoneMockup src="/portfolio/maximum-poslije-mob.webp" alt={d.shots.center} priority />
           </div>
 
-          {/* desni: manji, niže, nagnut udesno */}
           <div className="w-[33%] max-w-[290px] mt-[4%]" style={{ transform: "rotateY(22deg)", transformOrigin: "0% 50%" }}>
             <div className="relative"><span aria-hidden className="absolute inset-y-[1%] -left-[3%] right-[3%] rounded-[15.5%/7%] bg-[#C9CDD3]" /><div className="relative"><PhoneMockup src="/portfolio/roobet-mob.webp" alt={d.shots.right} bar="dark" barColor="#191939" /></div></div>
           </div>
         </div>
 
-        {/* Zamućenje pri dnu, u dva sloja:
-              1. zamućenje koje jača prema dnu (maska ga postepeno uvodi)
-              2. preliv u bijelo preko njega, da donja ivica potpuno nestane
-            Zamućenje je u style, jer stranica ima pravilo koje gasi klase
-            sa zamućenjem. */}
         <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[30%]"
              style={{
                backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
@@ -315,7 +250,7 @@ export function Hero() {
              style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.75) 55%, #FFFFFF 100%)" }} />
       </motion.div>
 
-      </div>{/* kraj panela */}
+      </div>
     </section>
   );
 }

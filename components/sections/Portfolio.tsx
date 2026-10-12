@@ -1,24 +1,3 @@
-/**
- * components/sections/Portfolio.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Naš rad (v3, u stilu ostatka naslovnice).
- *
- * Ranije: velika kartica s četiri male kartice brojki unutra, tri dugmeta i
- * tamnim mockupom, a desno tri kartice različitog stila. Previše okvira.
- *
- * Sada:
- *   1. zaglavlje centrirano, kao u ostalim sekcijama
- *   2. Maximum u JEDNOJ kartici s dvije kolone:
- *        lijevo  oznaka, naslov, opis, četiri brojke u jednom redu bez
- *                kutija, četiri stavke, jedno glavno dugme, jedno sporedno
- *                i tihi link
- *        desno   svijetli prikaz sajta i admin panela na telefonu; klik
- *                otvara sliku u punoj veličini
- *   3. tri manja projekta u redu ispod, kao jednake kartice
- *
- * Svi tekstovi i linkovi su ostali isti.
- */
-
 "use client";
 
 import { useState, useCallback } from "react";
@@ -27,7 +6,6 @@ import { ArrowUpRight, ArrowRight, Check, Star, ZoomIn, Dumbbell } from "lucide-
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import { Lightbox, preloadImage } from "@/components/ui/kit";
 
-/* svijetli screenshotovi, jer se slažu s bijelom naslovnicom */
 const SCREEN_DESKTOP = "/portfolio/maximum-poslije.webp";
 const SCREEN_MOBILE  = "/portfolio/maximum-admin-mob-svijetla.webp";
 const FEATURE_URL    = "https://maximum-rent.vercel.app";
@@ -114,8 +92,6 @@ const T: Record<"bs" | "en", Content> = {
   },
 };
 
-/* slike i linkovi za tri manja projekta, istim redom kao T.minis.
-   img "" znači da screenshota još nema: tada ide mirna siva ploha. */
 const MINI_META = [
   { img: "/portfolio/oxybaric.png", href: "https://oxybaricmostar.ba" },
   { img: "/portfolio/roobet.png",   href: "https://roobet.com/" },
@@ -134,7 +110,6 @@ export function Portfolio() {
     <section id="portfolio" className="relative bg-white scroll-mt-24">
       <div className="mx-auto max-w-6xl px-6 lg:px-8">
 
-        {/* ── zaglavlje ── */}
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">{d.label}</p>
           <h2 className="mt-4 text-[32px] leading-[1.12] sm:text-[44px] font-semibold tracking-[-0.03em] text-[#0F172A]">
@@ -143,10 +118,8 @@ export function Portfolio() {
           <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-[#475569]">{d.subtitle}</p>
         </div>
 
-        {/* ══ Maximum: jedna kartica, dvije kolone ══ */}
         <article className="mt-12 grid overflow-hidden rounded-[20px] border border-[#E5E7EB] bg-white lg:grid-cols-[1fr_1.05fr]">
 
-          {/* tekst */}
           <div className="p-6 sm:p-9">
             <p className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-[#64748B]">
               <Star size={12} className="fill-[#0F3554] text-[#0F3554]" /> {d.badge}
@@ -154,7 +127,6 @@ export function Portfolio() {
             <h3 className="mt-3 text-[26px] font-semibold tracking-tight text-[#0F172A]">{d.title}</h3>
             <p className="mt-3 text-[15px] leading-relaxed text-[#475569]">{d.desc}</p>
 
-            {/* četiri brojke u jednom redu, bez kutija */}
             <dl className="mt-7 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-y-5 border-y border-[#F1F5F9] py-5">
               {d.stats.map((s, i) => (
                 <div key={s.l} className={`pr-3 ${i > 0 ? "sm:border-l sm:border-[#F1F5F9] sm:pl-4 lg:border-l-0 lg:pl-0 xl:border-l xl:pl-4" : ""}`}>
@@ -173,7 +145,6 @@ export function Portfolio() {
               ))}
             </ul>
 
-            {/* jedno glavno, jedno sporedno, jedan tihi link */}
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <a href="/maximum"
                  className="inline-flex items-center gap-2 rounded-xl bg-[#0F172A] px-5 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#1E293B]">
@@ -190,7 +161,6 @@ export function Portfolio() {
             </div>
           </div>
 
-          {/* prikaz: sajt u prozoru, admin panel na telefonu */}
           <div className="relative border-t lg:border-t-0 lg:border-l border-[#E5E7EB] bg-[#F8FAFC] p-6 sm:p-9 flex items-center">
             <div className="relative w-full pb-[12%]">
               <button type="button" onPointerEnter={() => preloadImage(SCREEN_DESKTOP)} onClick={() => setZoom({ src: SCREEN_DESKTOP, alt: d.title, phone: false })}
@@ -208,7 +178,6 @@ export function Portfolio() {
                 </span>
               </button>
 
-              {/* telefon s admin panelom, preko donjeg desnog ugla */}
               <button type="button" onPointerEnter={() => preloadImage(SCREEN_MOBILE)} onClick={() => setZoom({ src: SCREEN_MOBILE, alt: `${d.title} · admin`, phone: true })}
                       aria-label={`${d.title} · admin · ${d.zoomHint}`}
                       className="absolute bottom-0 right-[4%] w-[27%] cursor-zoom-in"
@@ -224,7 +193,6 @@ export function Portfolio() {
           </div>
         </article>
 
-        {/* ══ tri manja projekta ══ */}
         <div className="mt-6 grid gap-6 sm:grid-cols-3">
           {d.minis.map((m, i) => {
             const meta = MINI_META[i];

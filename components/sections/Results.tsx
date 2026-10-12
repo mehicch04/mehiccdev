@@ -1,23 +1,3 @@
-/**
- * components/sections/Results.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Rezultati (v3, kompaktno).
- *
- * Ranije: tri bloka jedan ispod drugog (velika kartica s trkom, red s četiri
- * kruga, red s tri činjenice), pa je sekcija bila duga i nabacana.
- *
- * Sada je sve u JEDNOJ kartici s dvije kolone:
- *   lijevo   brzina: 3,2 s naspram 21,6 s, dvije tanke trake i "6,7× brže"
- *   desno    četiri Google ocjene kao brojke, bez krugova, s izvorom ispod
- * a tri činjenice su jedan tihi red ispod kartice.
- *
- * Svi podaci su ostali. Izbačena je samo animacija "trke" s brojačem i
- * natpisima "Učitano" i "još se učitava", jer su efekat, a ne podatak.
- *
- * Trake se jednom izdužе kad uđu u vid (samo širina, nikakav filter), a uz
- * isključene animacije odmah stoje na mjestu.
- */
-
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
@@ -95,7 +75,6 @@ const FACT_ICONS: LucideIcon[] = [Rocket, PhoneOff, Clock];
 const OLD_SEC = 21.6;
 const NEW_SEC = 3.2;
 
-/* broj u lokalnom formatu: 3,2 na bosanskom, 3.2 na engleskom */
 const fmt = (n: number, lang: string) => n.toFixed(1).replace(".", lang === "en" ? "." : ",");
 
 export function Results() {
@@ -103,7 +82,6 @@ export function Results() {
   const d = T[(lang as "bs" | "en")] ?? T.bs;
   const reduce = useReducedMotion() ?? false;
 
-  /* traka koja se jednom izduži do svoje širine kad uđe u vid */
   const bar = (pct: number) => ({
     style: { width: `${pct}%`, transformOrigin: "0% 50%" },
     initial: { scaleX: reduce ? 1 : 0 },
@@ -116,7 +94,6 @@ export function Results() {
     <section id="rezultati" className="relative bg-white scroll-mt-24">
       <div className="mx-auto max-w-5xl px-6 lg:px-8">
 
-        {/* ── zaglavlje ── */}
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">{d.label}</p>
           <h2 className="mt-4 text-[32px] leading-[1.12] sm:text-[44px] font-semibold tracking-[-0.03em] text-[#0F172A]">
@@ -125,10 +102,8 @@ export function Results() {
           <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-[#475569]">{d.sub}</p>
         </div>
 
-        {/* ── kartica: brzina lijevo, ocjene desno ── */}
         <div className="mt-12 grid overflow-hidden rounded-[20px] border border-[#E5E7EB] bg-white lg:grid-cols-[1.3fr_1fr]">
 
-          {/* brzina */}
           <div className="p-6 sm:p-8">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -164,7 +139,6 @@ export function Results() {
             <p className="mt-6 text-[13px] leading-relaxed text-[#64748B]">{d.raceNote}</p>
           </div>
 
-          {/* ocjene */}
           <div className="border-t lg:border-t-0 lg:border-l border-[#E5E7EB] bg-[#F9FAFB] p-6 sm:p-8 flex flex-col">
             <dl className="grid grid-cols-2 gap-x-6 gap-y-7">
               {d.gauges.map((g) => (
@@ -188,7 +162,6 @@ export function Results() {
           </div>
         </div>
 
-        {/* ── činjenice: jedan tihi red ── */}
         <ul className="mt-8 lg:-mx-6 flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center justify-center gap-x-6 gap-y-3">
           {d.facts.map((f, i) => {
             const Icon = FACT_ICONS[i];

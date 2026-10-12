@@ -1,28 +1,3 @@
-/**
- * components/sections/SaasTeaser.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Flagship: platforma za nekretnine (v3).
- *
- * Cilj: da se osjeti da je ovo PROIZVOD, a ne još jedna sekcija. Zato je sve
- * u jednoj velikoj ploči, kao kartica proizvoda:
- *
- *   ┌ statusna traka: oznaka platforme · vremenska linija razvoja ┐
- *   │ lijevo: naslov, opis, tržišta, šest funkcija                  │
- *   │ desno:  SVIJETLI prikaz platforme (pretraga, oglasi)          │
- *   └ dno: tamno plava traka "rani pristup" s formom                ┘
- *
- * Tamni plavi prozor je zamijenjen svijetlim prikazom, jer je previše iskakao
- * iz bijele stranice. "Fotografije" nekretnina su ilustracije zgrada u
- * prigušenim tonovima, bez stvarnih slika i bez neonskih boja.
- *
- * FORMA: ranije je samo glumila slanje (čekala 1,2 s i rekla "hvala"), pa se
- * nijedna prijava nije sačuvala. Sada šalje preko /api/kontakt (Resend), s
- * jasnom temom poruke, a ako slanje ne uspije, posjetilac to vidi.
- *
- * Sjene su postavljene kroz style, jer stranica ima pravilo koje utišava sve
- * klase sa sjenom.
- */
-
 "use client";
 
 import { useState } from "react";
@@ -37,7 +12,7 @@ type Content = {
   label: string; heading1: string; headingAccent: string;
   badge: string; title: string; desc: string;
   roadmap: { icon: "start" | "launch"; date: string; label: string }[];
-  chips: [string, string][];           // plutajuće kartice: [naslov, vrijednost]
+  chips: [string, string][];
   mockSearch: string;
   features: { t: string; d: string }[];
   earlyAccess: string; earlyAccessDesc: string;
@@ -120,7 +95,6 @@ const FEATURE_ICONS: LucideIcon[] = [Sparkles, RefreshCw, Landmark, Globe2, Tren
 const CHIP_ICONS: LucideIcon[]    = [Sparkles, RefreshCw, Landmark];
 const MARKETS = [["BA", "BiH"], ["RS", "Srbija"], ["HR", "Hrvatska"], ["ME", "Crna Gora"]] as const;
 
-/* Ilustrativni oglasi u prikazu platforme. Nisu stvarni, glume proizvod. */
 const LISTINGS = {
   bs: [
     { t: "Trosoban stan, Centar",  m: "78 m² · 3 sobe",  p: "185.000 KM", tag: "boost" },
@@ -136,7 +110,6 @@ const LISTINGS = {
   ],
 } as const;
 
-/* prigušeni tonovi za "fotografije": nebo i fasada svake ilustracije */
 const TONES = [
   ["#E8EEF5", "#C9D6E4"], ["#EEF1E8", "#D3DCC6"], ["#F3EEE6", "#E0D4C2"], ["#E9ECF2", "#CDD3DF"],
 ];
@@ -144,7 +117,6 @@ const TONES = [
 const SOFT = "0 1px 2px rgba(15,23,42,0.04)";
 const FLOAT = "0 1px 2px rgba(15,23,42,0.06), 0 18px 36px -18px rgba(15,23,42,0.28)";
 
-/* ── ilustracija zgrade umjesto fotografije ───────────────────────────── */
 function Building({ i }: { i: number }) {
   const [sky, wall] = TONES[i % TONES.length];
   return (
@@ -162,18 +134,15 @@ function Building({ i }: { i: number }) {
   );
 }
 
-/* ── svijetli prikaz platforme ───────────────────────────────────────── */
 function PlatformMock({ lang, search }: { lang: "bs" | "en"; search: string }) {
   const items = LISTINGS[lang];
   return (
     <div className="overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white" style={{ boxShadow: FLOAT }}>
-      {/* traka prozora */}
       <div className="flex items-center gap-1.5 border-b border-[#F1F5F9] px-4 py-2.5">
         <span className="h-2 w-2 rounded-full bg-[#E2E8F0]" /><span className="h-2 w-2 rounded-full bg-[#E2E8F0]" /><span className="h-2 w-2 rounded-full bg-[#E2E8F0]" />
       </div>
 
       <div className="p-4 sm:p-5">
-        {/* zaglavlje aplikacije */}
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-2">
             <span className="grid h-6 w-6 place-items-center rounded-md bg-[#0F3554] text-white"><Building2 size={13} /></span>
@@ -184,7 +153,6 @@ function PlatformMock({ lang, search }: { lang: "bs" | "en"; search: string }) {
           </span>
         </div>
 
-        {/* pretraga i filteri */}
         <div className="mt-4 flex items-center gap-2 rounded-xl border border-[#E5E7EB] px-3 py-2">
           <Search size={14} className="text-[#94A3B8]" />
           <span className="flex-1 truncate text-[12px] text-[#475569]">{search}</span>
@@ -198,7 +166,6 @@ function PlatformMock({ lang, search }: { lang: "bs" | "en"; search: string }) {
           ))}
         </div>
 
-        {/* oglasi */}
         <div className="mt-4 grid grid-cols-2 gap-3">
           {items.map((it, i) => (
             <div key={it.t} className="overflow-hidden rounded-xl border border-[#F1F5F9]">
@@ -229,8 +196,6 @@ export function SaasTeaser() {
   const [email, setEmail]   = useState("");
   const [state, setState]   = useState<"idle" | "sending" | "done" | "error">("idle");
 
-  /* Prijava ide kroz isti put kao kontakt forma (/api/kontakt, Resend).
-     API traži ime i poruku, pa šaljemo jasnu temu i poruku s emailom. */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || state === "sending") return;
@@ -246,7 +211,7 @@ export function SaasTeaser() {
           message: (l === "en"
             ? "An agency signed up for early access to the real estate platform: "
             : "Agencija se prijavila za rani pristup platformi za nekretnine: ") + email,
-          website: "",   // honeypot, uvijek prazno kod ljudi
+          website: "",
         }),
       });
       setState(res.ok ? "done" : "error");
@@ -255,13 +220,10 @@ export function SaasTeaser() {
     }
   };
 
-  /* plutajuće oznake oko prikaza: blago lebde, uz isključene animacije stoje */
-
   return (
     <section id="saas" className="relative bg-white scroll-mt-24">
       <div className="mx-auto max-w-6xl px-6 lg:px-8">
 
-        {/* ── zaglavlje ── */}
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">{d.label}</p>
           <h2 className="mt-4 text-[32px] leading-[1.12] sm:text-[44px] font-semibold tracking-[-0.03em] text-[#0F172A]"
@@ -270,11 +232,9 @@ export function SaasTeaser() {
           </h2>
         </div>
 
-        {/* ══ ploča proizvoda ══ */}
         <div className="mt-12 overflow-hidden rounded-[28px] border border-[#E5E7EB]"
              style={{ background: "linear-gradient(180deg, #F5F8FC 0%, #FFFFFF 38%)", boxShadow: SOFT }}>
 
-          {/* statusna traka: oznaka i vremenska linija razvoja */}
           <div className="flex flex-col gap-4 border-b border-[#E5E7EB] px-6 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-9">
             <span className="inline-flex flex-wrap items-center gap-2.5">
               <span className="grid h-8 w-8 place-items-center rounded-lg bg-[#0F3554] text-white"><Building2 size={16} /></span>
@@ -297,7 +257,6 @@ export function SaasTeaser() {
             </ol>
           </div>
 
-          {/* sadržaj: tekst lijevo, prikaz desno */}
           <div className="grid gap-12 px-6 py-10 sm:px-9 lg:grid-cols-[1fr_1.1fr] lg:gap-14 lg:py-12">
             <div>
               <h3 className="text-[26px] leading-[1.2] font-semibold tracking-tight text-[#0F172A]" style={{ textWrap: "balance" }}>{d.title}</h3>
@@ -311,7 +270,6 @@ export function SaasTeaser() {
                 ))}
               </ul>
 
-              {/* šest funkcija kao uredna lista u dvije kolone */}
               <ul className="mt-8 grid gap-x-6 gap-y-5 sm:grid-cols-2">
                 {d.features.map((f, i) => {
                   const Icon = FEATURE_ICONS[i];
@@ -328,13 +286,10 @@ export function SaasTeaser() {
               </ul>
             </div>
 
-            {/* prikaz platforme s tri plutajuće oznake */}
             <div className="relative self-center lg:pl-4">
               <PlatformMock lang={l} search={d.mockSearch} />
               {d.chips.map(([title, value], i) => {
                 const Icon = CHIP_ICONS[i];
-                // pozicije biraju prazna mjesta: traka prozora, fotografija oglasa i dno,
-                // da nijedna oznaka ne prekrije cijenu ili filter
                 const pos = ["-left-3 sm:-left-10 -top-5", "-right-3 sm:-right-10 top-[36%]", "left-[12%] -bottom-6"][i];
                 return (
                   <div key={title}
@@ -352,7 +307,6 @@ export function SaasTeaser() {
             </div>
           </div>
 
-          {/* ══ rani pristup: tamno plava traka na dnu ploče ══ */}
           <div className="m-3 sm:m-4 flex flex-col gap-5 rounded-[20px] bg-[#0F172A] px-6 py-6 sm:px-8 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="flex items-center gap-2 text-[16px] font-semibold text-white">

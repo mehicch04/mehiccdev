@@ -46,7 +46,7 @@ export async function renderOg({ eyebrow, h1, h2, sub, chips, phone }: Og) {
         </div>
         <div style={{ display: "flex", position: "absolute", right: 70, top: 70, width: 300, height: 600, padding: 10, borderRadius: 54, background: "#0F172A", boxShadow: "0 30px 60px -20px rgba(15,23,42,0.45)" }}>
           <div style={{ display: "flex", width: "100%", height: "100%", borderRadius: 44, overflow: "hidden", background: "#FFFFFF" }}>
-            <img src={src} width={280} height={513} style={{ objectFit: "cover", objectPosition: "top" }} />
+            <img src={src} alt="" width={280} height={513} style={{ objectFit: "cover", objectPosition: "top" }} />
           </div>
         </div>
       </div>

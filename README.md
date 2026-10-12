@@ -1,114 +1,93 @@
-# mehiccdev — Bilingual Agency Website
+# mehiccdev.com
 
-Next.js 14 + Tailwind + Framer Motion. **Bilingual (BS / EN)**, dark/light mode,
-animated charts, contact form, and photo placeholders for the team.
+The website of **mehiccdev**, a web and digital studio from Mostar, Bosnia and Herzegovina. It presents our services, pricing and portfolio, and doubles as a live showcase for the car rental booking system we build for clients.
 
-✅ **This version builds cleanly** (tested) — no `node_modules` issues, no font-fetch errors.
+**Live:** [mehiccdev.com](https://mehiccdev.com)
 
----
+![mehiccdev.com preview](https://mehiccdev.com/opengraph-image)
 
-## 🚀 Pokretanje lokalno (na računaru)
+## Highlights
+
+- **Bilingual (BS / EN)** with instant client side switching and a remembered preference
+- **Interactive product demo** embedded on the homepage, synced with the page through `postMessage` (language, visibility, play state)
+- **Portfolio page** with category filters, animated layout transitions and an image lightbox
+- **Working contact and inquiry forms** with server side validation (Zod), rate limiting, a honeypot field and email delivery through Resend
+- **SEO ready:** per page metadata, Open Graph images generated at build time, JSON LD structured data, sitemap and robots
+- **Performance focused:** optimized images with `next/image`, lazy loaded embeds, compositor friendly animations and no layout shift on modal open
+- **Responsive and accessible:** mobile first layouts, keyboard friendly menus and reduced motion support
+
+## Tech stack
+
+| Area | Tools |
+| --- | --- |
+| Framework | Next.js 14 (App Router), React 18 |
+| Language | TypeScript |
+| Styling | Tailwind CSS |
+| Animation | Framer Motion |
+| Validation | Zod |
+| Email | Resend |
+| Icons | Lucide |
+| Hosting | Vercel |
+
+## Project structure
+
+```
+app/                  Routes, layouts, API handlers and Open Graph images
+  api/                Contact and rent a car inquiry endpoints
+  portfolio/          Portfolio page
+  maximum/            Maximum Rent a Car case study
+  rjesenja/rent-a-car Car rental system landing page
+components/
+  sections/           Homepage sections (hero, pricing, portfolio, contact...)
+  portfolio/          Portfolio and case study pages
+  rjesenja/           Car rental landing page sections and copy
+  ui/                 Shared UI kit (cards, phone mockup, lightbox, providers)
+lib/                  Utilities, i18n, validation schemas, rate limiting
+public/               Images, brand assets and the embedded product demo
+```
+
+## Getting started
+
+Requirements: Node.js 18.17 or newer.
 
 ```bash
 npm install
 npm run dev
 ```
-Otvori → http://localhost:3000
 
----
+The site runs at [http://localhost:3000](http://localhost:3000).
 
-## 🌐 Deploy na Vercel (NAJLAKŠI NAČIN — bez Git komplikacija)
+### Environment variables
 
-Ovaj projekat ima `.gitignore` koji automatski isključuje `node_modules`,
-tako da NEĆEŠ imati problem od prošlog puta. Dva načina:
+Create a `.env.local` file to enable the forms:
 
-### Način A — Drag & Drop (najlakše)
-1. **VAŽNO:** Prvo OBRIŠI `node_modules` folder ako postoji (da zip bude mali)
-2. Selektuj sve fajlove → desni klik → "Compress to ZIP"
-3. Idi na [vercel.com/new](https://vercel.com/new)
-4. Prevuci zip i klikni Deploy
-
-### Način B — GitHub (preporučeno, automatski update)
-U VS Code terminalu, jednom:
 ```bash
-git init
-git add .
-git commit -m "mehiccdev website"
-git branch -M main
-git remote add origin https://github.com/TVOJ-USERNAME/REPO.git
-git push -u origin main
-```
-> `node_modules` se NEĆE poslati jer ga `.gitignore` blokira. ✅
-
-Pa onda na Vercel: Import Project → izaberi repo → Deploy.
-
----
-
-## 🌍 Jezici (BS / EN)
-
-- Posjetilac klikne **globus + BS/EN** dugme u navbaru → cijeli sajt se prevodi
-- Izbor jezika se pamti (localStorage)
-- **Sav tekst je u jednom fajlu:** `lib/i18n.ts`
-  - Mijenjaš tekst? Samo edituj `lib/i18n.ts` — ništa drugo.
-
----
-
-## 📸 Dodavanje vaših slika (tim)
-
-1. Ubaci slike u `public/team/` (npr. `bakir.jpg`, `nedim.jpg`)
-2. Otvori `components/sections/About.tsx`
-3. U `PHOTOS` nizu postavi `src`:
-```ts
-const PHOTOS = [
-  { src: "/team/bakir.jpg", ... },
-  { src: "/team/nedim.jpg", ... },
-];
-```
-Placeholder (plavi gradijent s inicijalima) nestaje automatski.
-
----
-
-## 📬 Kontakt forma — da stvarno šalje email
-
-Forma trenutno samo simulira slanje. Najlakše rješenje = **Formspree** (besplatno):
-1. Registruj se na [formspree.io](https://formspree.io), napravi formu, dobiješ ID
-2. Otvori `components/sections/Contact.tsx`, nađi `handleSubmit`
-3. Otkomentariši `fetch` blok i ubaci svoj Formspree ID
-
----
-
-## 📁 Struktura
-
-```
-app/
-  layout.tsx          # Providers (theme + jezik) + SEO
-  page.tsx            # Slaže sve sekcije
-  globals.css         # Teme + font
-components/
-  ui/
-    ThemeProvider.tsx
-    LanguageProvider.tsx   # ⭐ logika za jezike
-  sections/
-    Navbar.tsx        # nav + BS/EN toggle + dark mode
-    Hero.tsx          # hero + animirani statovi
-    Services.tsx      # 4 usluge
-    Satisfaction.tsx  # ⭐ animirani grafovi (zadovoljstvo + rast)
-    About.tsx         # tim + placeholder za slike
-    Portfolio.tsx     # projekti
-    SaasTeaser.tsx    # Rent-a-Car SaaS + rani pristup
-    Contact.tsx       # ⭐ jasna kontakt forma
-    Footer.tsx        # footer + social linkovi
-lib/
-  i18n.ts             # ⭐ SVI tekstovi (BS + EN)
-  animations.ts       # Framer Motion varijante
-  utils.ts
-public/team/          # ovdje idu slike tima
+RESEND_API_KEY=your_resend_api_key
+UPIT_EMAIL_TO=inbox@example.com
+UPIT_EMAIL_FROM="mehiccdev <noreply@example.com>"
 ```
 
----
+Without these, the site works normally and the forms show a friendly error instead of sending.
 
-## 🔧 Što ažurirati prije launcha
-- [ ] Instagram/LinkedIn linkovi u `Footer.tsx`
-- [ ] Slike tima u `public/team/` + `About.tsx`
-- [ ] Formspree ID u `Contact.tsx`
-- [ ] Pravi linkovi projekata u `Portfolio.tsx`
+## Scripts
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the development server |
+| `npm run build` | Create a production build |
+| `npm run start` | Serve the production build |
+| `npm run lint` | Run ESLint |
+| `npm run typecheck` | Run the TypeScript compiler without emitting |
+
+## Deployment
+
+Every push to `main` is deployed automatically to Vercel.
+
+## Author
+
+**Bakir Mehić**, founder of mehiccdev
+[mehiccdev.com](https://mehiccdev.com) · [bakir.mehic@mehiccdev.com](mailto:bakir.mehic@mehiccdev.com) · [LinkedIn](https://www.linkedin.com/in/bakir-mehic-qa-engineer/)
+
+## License
+
+© mehiccdev. All rights reserved. The code is public for review and reference.

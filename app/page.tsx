@@ -1,15 +1,8 @@
-/**
- * app/page.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Landing page — composes all sections in order.
- */
-
 import { HomeRail }      from "@/components/sections/HomeRail";
 import { SystemDemo } from "@/components/sections/SystemDemo";
 import { TechMarquee } from "@/components/sections/TechMarquee";
 import { Navbar }       from "@/components/sections/Navbar";
 import { Hero }         from "@/components/sections/Hero";
-import { Satisfaction } from "@/components/sections/Satisfaction";
 import { About }        from "@/components/sections/About";
 import { Portfolio }    from "@/components/sections/Portfolio";
 import { Pricing }      from "@/components/sections/Pricing";

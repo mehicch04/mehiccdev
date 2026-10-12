@@ -1,32 +1,14 @@
-/**
- * app/layout.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Root layout — wraps app with ThemeProvider + LanguageProvider,
- * loads Plus Jakarta Sans, sets SEO metadata.
- */
-
 import type { Metadata } from "next";
 import { ThemeProvider }    from "@/components/ui/ThemeProvider";
 import { LanguageProvider } from "@/components/ui/LanguageProvider";
-/* Inter je font naslovnice. Servira se s našeg domena (npm paket), bez
-   poziva prema Google serverima, pa je brži i ne zavisi od tuđe usluge.
-   Koristi se samo u svijetloj temi (globals.css, html.light), pa podstranice
-   zadržavaju svoj font. */
 import "@fontsource-variable/inter";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { ScrollTopButton } from "@/components/ui/ScrollTopButton";
 import "./globals.css";
 
-// NOTE: Plus Jakarta Sans is loaded via @import in globals.css (not next/font).
-// This avoids any build-time font fetch and keeps deployment rock-solid.
-
 export const metadata: Metadata = {
   metadataBase: new URL("https://mehiccdev.com"),
 
-  /* Naslov je i tekst u tabu i plavi link u Google rezultatima.
-     Brend ide prvi (tab prikaže samo prvih ~20 znakova, pa se vidi
-     "mehiccdev · Web apl…"), a ostatak nosi ključne riječi i grad.
-     template dodaje brend na naslove podstranica automatski. */
   title: { absolute: "mehiccdev" },
   description:
     "Gradimo web aplikacije za rezervacije i najam, sajtove koje sami uređujete i marketing koji dovodi upite. Iz Mostara za cijeli region.",
@@ -62,9 +44,6 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-/* Strukturirani podaci: ovako Google prepoznaje mehiccdev kao lokalnu
-   uslužnu firmu iz Mostara, što pomaže kod pretraga tipa
-   "izrada sajtova Mostar". */
 const JSON_LD = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
@@ -76,7 +55,6 @@ const JSON_LD = {
   address: { "@type": "PostalAddress", addressLocality: "Mostar", addressCountry: "BA" },
   areaServed: ["Bosnia and Herzegovina", "Croatia", "Serbia", "Montenegro"],
   knowsLanguage: ["bs", "en"],
-  // zvanični profili firme, da ih Google poveže s mehiccdev.com
   sameAs: ["https://www.instagram.com/mehiccdev"],
 };
 

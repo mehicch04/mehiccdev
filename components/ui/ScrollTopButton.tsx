@@ -1,20 +1,3 @@
-/**
- * components/ui/ScrollTopButton.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Dugme za povratak na vrh stranice.
- *
- * Stoji u donjem desnom uglu, IZNAD WhatsApp dugmeta, i namjerno je manje i
- * diskretnije od njega: WhatsApp donosi kontakte i mora ostati dominantan, a
- * ovo je pomoćna radnja.
- *
- * Pojavljuje se tek kad posjetilac pređe visinu jednog ekrana, pa ne smeta na
- * vrhu. Radi i na desktopu i na mobitelu. Poštuje "reduced motion": tada skače
- * na vrh bez klizanja.
- *
- * NAPOMENA O RASPOREDU: donji položaj (bottom-24) računa visinu WhatsApp
- * dugmeta. Ako se ono ikad promijeni, uskladiti i ovu vrijednost.
- */
-
 "use client";
 
 import { useEffect, useState } from "react";

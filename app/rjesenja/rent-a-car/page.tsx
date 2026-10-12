@@ -1,17 +1,3 @@
-/**
- * app/rjesenja/rent-a-car/page.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Landing stranica za rent-a-car rezervacioni sistem.
- *
- * Server komponenta: nosi metadata i strukturirane podatke, a sam sadržaj
- * renderuje klijentska komponenta (jezik se bira na klijentu).
- *
- * NAPOMENA O JEZIKU: sajt mijenja jezik na klijentu (LanguageProvider), nema
- * odvojene /bs i /en rute, pa metadata mora biti u jednom jeziku. Bosanski je
- * primarni jer su kupci ovdje, a engleski opis je u openGraph alternativi.
- * Kada (ako) uvedemo prave locale rute, metadata se dijeli po jeziku.
- */
-
 import type { Metadata } from "next";
 import { COPY } from "@/components/rjesenja/rentACarCopy";
 import { RentACarSections } from "@/components/rjesenja/RentACarSections";
@@ -51,9 +37,6 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-/* Service schema: Google ovako razumije da je ovo konkretna usluga, s
-   ponuđačem, područjem i paketima. FAQ schema dolazi iz FAQ sekcije i može
-   donijeti prošireni prikaz u rezultatima pretrage. */
 const SERVICE_LD = {
   "@context": "https://schema.org",
   "@type": "Service",
