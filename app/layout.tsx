@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { ThemeProvider }    from "@/components/ui/ThemeProvider";
 import { LanguageProvider } from "@/components/ui/LanguageProvider";
 import "@fontsource-variable/inter";
@@ -44,6 +45,8 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+
 const JSON_LD = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
@@ -73,6 +76,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <ScrollTopButton />
           </LanguageProvider>
         </ThemeProvider>
+        {GA_ID && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+            <Script id="ga" strategy="afterInteractive">
+              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );
