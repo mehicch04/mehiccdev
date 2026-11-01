@@ -5,6 +5,7 @@ import { LanguageProvider } from "@/components/ui/LanguageProvider";
 import "@fontsource-variable/inter";
 import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { ScrollTopButton } from "@/components/ui/ScrollTopButton";
+import { IntroLoader, INTRO_SCRIPT } from "@/components/ui/IntroLoader";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -65,10 +66,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="bs" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
         <script type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }} />
       </head>
       <body className="antialiased">
+        <IntroLoader />
         <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" enableSystem={false}>
           <LanguageProvider>
             {children}
