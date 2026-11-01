@@ -184,13 +184,18 @@ html.light :is(input, textarea) { text-wrap: wrap; }
 @media (prefers-reduced-motion: reduce) { .float-y { animation: none; } }
 
 .intro-root { display: none; }
+html[data-intro],
+html[data-intro] body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
 html[data-intro] .intro-root {
   display: block;
   position: fixed;
   inset: 0;
   z-index: 2147483000;
   cursor: default;
-  animation: intro-failsafe 0.01s linear 9s forwards;
+  touch-action: none;
 }
 .intro {
   position: absolute;
@@ -261,7 +266,7 @@ html[data-intro] .intro-root {
   opacity: 0;
   pointer-events: none;
 }
-html[data-intro] .intro-root.out { pointer-events: none; animation: none; }
+html[data-intro] .intro-root.out { pointer-events: none; }
 .intro-root.out .intro { animation: intro-wipe 0.85s cubic-bezier(0.7, 0, 0.2, 1) forwards; }
 .intro-root.out .intro-scan { animation: intro-scan 0.85s cubic-bezier(0.7, 0, 0.2, 1) forwards; }
 @keyframes intro-wipe { to { clip-path: inset(100% 0 0 0); } }
@@ -271,5 +276,7 @@ html[data-intro] .intro-root.out { pointer-events: none; animation: none; }
   100% { opacity: 0; transform: translateY(100vh); }
 }
 @keyframes intro-blink { 50% { opacity: 0; } }
-@keyframes intro-failsafe { to { visibility: hidden; pointer-events: none; } }
-@media (prefers-reduced-motion: reduce) { html[data-intro] .intro-root { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  html[data-intro] .intro-root { display: none; }
+  html[data-intro], html[data-intro] body { overflow: visible; }
+}
