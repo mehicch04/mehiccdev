@@ -344,7 +344,7 @@ html[data-intro] .intro-root.out { pointer-events: none; }
   .race-score:hover { transform: none; }
 }
 
-#o-nama, #vrijednost, #isplati, #razlika, #pitanja {
+#usluge, #o-nama, #vrijednost, #isplati, #razlika, #pitanja {
   background: linear-gradient(180deg, #FFFFFF 0, #F4F7FB 140px, #F4F7FB calc(100% - 140px), #FFFFFF 100%);
 }
 #kontakt, #upit {
@@ -377,3 +377,6 @@ html[data-intro] .intro-root.out { pointer-events: none; }
 @media (prefers-reduced-motion: reduce) {
   .river-flow { animation: none; }
 }
+
+@keyframes hero-progress { from { width: 0; } to { width: 100%; } }
+.hero-progress { width: 0; animation: hero-progress linear forwards; }

@@ -1,16 +1,18 @@
-import { HomeRail }      from "@/components/sections/HomeRail";
-import { SystemDemo } from "@/components/sections/SystemDemo";
-import { TechMarquee } from "@/components/sections/TechMarquee";
-import { Navbar }       from "@/components/sections/Navbar";
-import { Hero }         from "@/components/sections/Hero";
-import { About }        from "@/components/sections/About";
-import { Portfolio }    from "@/components/sections/Portfolio";
-import { Pricing }      from "@/components/sections/Pricing";
-import { SaasTeaser }   from "@/components/sections/SaasTeaser";
-import { Contact }      from "@/components/sections/Contact";
-import { Footer }       from "@/components/sections/Footer";
-import { Results } from "@/components/sections/Results";
-import { Value } from "@/components/sections/Value";
+import { HomeRail }   from "@/components/sections/HomeRail";
+import { Navbar }     from "@/components/sections/Navbar";
+import { Hero }       from "@/components/sections/Hero";
+import { Clients }    from "@/components/sections/Clients";
+import { Services }   from "@/components/sections/Services";
+import { Portfolio }  from "@/components/sections/Portfolio";
+import { Results }    from "@/components/sections/Results";
+import { Process }    from "@/components/sections/Process";
+import { Pricing }    from "@/components/sections/Pricing";
+import { Value }      from "@/components/sections/Value";
+import { SaasTeaser } from "@/components/sections/SaasTeaser";
+import { About }      from "@/components/sections/About";
+import { Faq }        from "@/components/sections/Faq";
+import { Contact }    from "@/components/sections/Contact";
+import { Footer }     from "@/components/sections/Footer";
 
 export default function HomePage() {
   return (
@@ -18,14 +20,16 @@ export default function HomePage() {
       <Navbar />
       <HomeRail />
       <Hero />
-      <TechMarquee />
-      <About />
-      <SystemDemo />
-      <Results />
+      <Clients />
+      <Services />
       <Portfolio />
+      <Results />
+      <Process />
       <Pricing />
       <Value />
       <SaasTeaser />
+      <About />
+      <Faq />
       <Contact />
       <Footer />
     </main>

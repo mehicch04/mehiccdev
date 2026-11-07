@@ -36,8 +36,9 @@ export function Navbar() {
   }, []);
 
   const NAV_LINKS = [
+    { label: L.services,  href: "/#usluge"    },
     { label: L.about,     href: "/#o-nama"    },
-    { label: L.pricing,   href: "/#cjenovnik", promo: true },
+    { label: L.pricing,   href: "/#cjenovnik" },
     { label: L.saas,      href: "/#saas"      },
   ];
 
@@ -124,15 +125,6 @@ export function Navbar() {
                              transition-all duration-200"
                 >
                   {link.label}
-                  {"promo" in link && link.promo && (
-                    <span className="absolute -top-0.5 right-0 w-[15px] h-[15px] rounded-full
-                                     flex items-center justify-center
-                                     bg-red-500 text-white text-[8px] font-extrabold
-                                     shadow-sm shadow-red-500/40 animate-pulse pointer-events-none"
-                          aria-label="Akcijske cijene">
-                      %
-                    </span>
-                  )}
                 </a>
               </li>
             ))}
@@ -235,14 +227,6 @@ export function Navbar() {
                 >
                   <span className="relative inline-block">
                     {link.label}
-                    {"promo" in link && link.promo && (
-                      <span className="absolute -top-1.5 -right-4 w-[15px] h-[15px] rounded-full
-                                       flex items-center justify-center
-                                       bg-red-500 text-white text-[8px] font-extrabold pointer-events-none"
-                            aria-label="Akcijske cijene">
-                        %
-                      </span>
-                    )}
                   </span>
                   <ArrowUpRight size={14} className="text-[var(--text-muted)]" />
                 </a>

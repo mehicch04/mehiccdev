@@ -4,13 +4,16 @@ import {
   ArrowRight, Check, CircleCheck, Clock, Star, LayoutDashboard, Car, Crown, Rocket, TrendingUp,
   CalendarClock, Wrench, ShieldCheck, Gift, type LucideIcon,
 } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useLanguage } from "@/components/ui/LanguageProvider";
-import { PlanCard, NoSubscription } from "@/components/ui/kit";
+import { NoSubscription } from "@/components/ui/kit";
 
 type AppPlan = { name: string; tag: string; price: string; alt?: string; kmNote?: string; oldPrice?: string; promoNote?: string; discountBadge?: string; ctaLabel?: string; monthly: string; from?: boolean; gift: string; features: string[] };
 type MktPlan = { alt?: string; name: string; tag: string; price: string; note: string; features: string[] };
 type PricingData = {
   eyebrow: string; heading: string; headingAccent: string; subtitle: string;
+  tabApps: string; tabAppsSub: string; tabMkt: string; tabMktSub: string; tabGift: string; tabsLabel: string;
   buildLabel: string; once: string; monthlyLabel: string; monthlySub: string;
   afterHeading: string; afterSub: string;
   afterTitle: string; afterAccent: string; afterGift: string; freeTitle: string; freeSub: string; defaultTag: string;
@@ -24,9 +27,10 @@ type PricingData = {
 
 const PRICING: Record<"bs" | "en", PricingData> = {
   bs: {
-    eyebrow: "WEB APLIKACIJE",
-    heading: "Poslovne aplikacije",
-    headingAccent: "po mjeri",
+    eyebrow: "CJENOVNIK",
+    heading: "Jasne cijene,",
+    headingAccent: "bez sitnih slova",
+    tabApps: "Web aplikacije", tabAppsSub: "plaćate jednom", tabMkt: "Marketing", tabMktSub: "mjesečno", tabGift: "1. mjesec gratis", tabsLabel: "Vrsta usluge",
     subtitle:
       "Gradimo aplikaciju koja vodi vaš biznis, od rezervacija i evidencije klijenata do internog alata za vaš tim. Uz svaki paket dobijate i mjesec besplatnog marketing paketa Rast.",
     buildLabel: "Razvoj (jednokratno)",
@@ -76,7 +80,7 @@ const PRICING: Record<"bs" | "en", PricingData> = {
       },
       {
         name: "Business", tag: "Web aplikacija za rezervacije i termine. Gost bira datum i šalje upit, vi potvrđujete iz panela. Za sve što se iznajmljuje ili zakazuje.",
-        price: "1.800 KM", alt: "oko €920", from: true, oldPrice: "2.200 KM", discountBadge: "-18%", promoNote: "Za prve klijente · vrijedi do 30.10.", ctaLabel: "Zakažimo razgovor", monthly: "75", gift: "Rast",
+        price: "1.800 KM", alt: "oko €920", from: true, ctaLabel: "Zakažimo razgovor", monthly: "75", gift: "Rast",
         features: [
           "2 mjeseca besplatne podrške nakon isporuke, za sve nejasnoće i probleme",
           "SVE iz Startera, plus:",
@@ -125,9 +129,10 @@ const PRICING: Record<"bs" | "en", PricingData> = {
     ],
   },
   en: {
-    eyebrow: "WEB APPLICATIONS",
-    heading: "Business applications,",
-    headingAccent: "built to order",
+    eyebrow: "PRICING",
+    heading: "Clear prices,",
+    headingAccent: "no fine print",
+    tabApps: "Web apps", tabAppsSub: "paid once", tabMkt: "Marketing", tabMktSub: "monthly", tabGift: "1st month free", tabsLabel: "Type of service",
     subtitle:
       "We build the app that runs your business, from bookings and client records to an internal tool for your team. Every package includes a free month of our Rast marketing package.",
     buildLabel: "Development, paid once",
@@ -177,7 +182,7 @@ const PRICING: Record<"bs" | "en", PricingData> = {
       },
       {
         name: "Business", tag: "A web app for bookings and appointments. The guest picks a date and sends a request, you confirm it from the panel. For anything you rent out or schedule.",
-        price: "€920", alt: "about 1,800 KM", from: true, oldPrice: "€1,125", discountBadge: "-18%", promoNote: "Early client price · until Oct 30", ctaLabel: "Let\u0027s talk", monthly: "75", gift: "Growth",
+        price: "€920", alt: "about 1,800 KM", from: true, ctaLabel: "Let\u0027s talk", monthly: "75", gift: "Growth",
         features: [
           "2 months of free support after launch, for any questions or issues",
           "EVERYTHING in Starter, plus:",
@@ -296,94 +301,159 @@ function AppCard({ plan, icon: Icon, featured, d }: { plan: AppPlan; icon: Lucid
   );
 }
 
+function MktCard({ plan, icon: Icon, featured, d }: { plan: MktPlan; icon: LucideIcon; featured: boolean; d: (typeof PRICING)["bs"] }) {
+  return (
+    <article
+      className={`relative flex flex-col rounded-[22px] border ${featured ? "border-white/15" : "border-white/[0.08] bg-white/[0.03]"}`}
+      style={featured ? { background: "linear-gradient(165deg, #1D4E78 0%, #0F3554 55%, #0C2B45 100%)", boxShadow: "0 30px 60px -30px rgba(0,0,0,0.6)" } : undefined}
+    >
+      <div className="p-6 sm:p-7">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <span className={`grid h-9 w-9 place-items-center rounded-xl ${featured ? "bg-white/15" : "bg-white/[0.06]"} text-white`}><Icon size={17} /></span>
+          <h3 className="text-[19px] font-semibold text-white">{plan.name}</h3>
+          {featured && <span className="rounded-md bg-white/15 px-2 py-0.5 text-[11px] font-semibold text-white">{d.popular}</span>}
+        </div>
+        <p className={`mt-3 text-[14px] leading-relaxed ${featured ? "text-[#C7D7E8]" : "text-[#94A3B8]"}`}>{plan.tag}</p>
+        <p className="mt-6 flex flex-wrap items-baseline gap-x-2">
+          <span className="text-[40px] leading-none font-semibold tracking-tight text-white tabular-nums">{plan.price}</span>
+          <span className={`text-[15px] ${featured ? "text-[#C7D7E8]" : "text-[#94A3B8]"}`}>{d.perMonth}</span>
+        </p>
+        <p className={`mt-2 text-[12.5px] ${featured ? "text-[#C7D7E8]" : "text-[#94A3B8]"}`}>{[plan.alt, plan.note].filter(Boolean).join(" · ")}</p>
+      </div>
+      <div className={`border-t px-6 py-6 sm:px-7 ${featured ? "border-white/15" : "border-white/[0.08]"}`}>
+        <ul className="space-y-3">
+          {plan.features.map((f) =>
+            isHeader(f) ? (
+              <li key={f} className={`pt-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${featured ? "text-[#8FB3D9]" : "text-[#64748B]"}`}>{f}</li>
+            ) : (
+              <li key={f} className={`flex items-start gap-2.5 text-[14px] leading-snug ${featured ? "text-white" : "text-[#CBD5E1]"}`}>
+                <CircleCheck size={16} className="mt-0.5 shrink-0 text-[#4ADE80]" />{f}
+              </li>
+            )
+          )}
+        </ul>
+      </div>
+      <div className="mt-auto px-6 pb-6 sm:px-7 sm:pb-7">
+        <a href="#kontakt"
+           className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-[14px] font-semibold transition-colors ${featured ? "bg-[#DC2626] text-white hover:bg-[#B91C1C]" : "bg-white text-[#0F172A] hover:bg-[#E2E8F0]"}`}>
+          {d.mktCta} <ArrowRight size={15} />
+        </a>
+      </div>
+    </article>
+  );
+}
+
 export function Pricing() {
   const { lang } = useLanguage();
   const d = PRICING[(lang as "bs" | "en")] ?? PRICING.bs;
+  const reduce = useReducedMotion() ?? false;
+  const [tab, setTab] = useState<"apps" | "mkt">("apps");
   const AFTER_ICONS: LucideIcon[] = [ShieldCheck, CalendarClock, Wrench];
+  const tabs = [
+    { id: "apps" as const, label: d.tabApps, sub: d.tabAppsSub },
+    { id: "mkt" as const, label: d.tabMkt, sub: d.tabMktSub, gift: d.tabGift },
+  ];
+  const swap = {
+    initial: { opacity: 0, y: 16 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -10 },
+    transition: { duration: reduce ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] as const },
+  };
 
   return (
-    <>
-      <section id="cjenovnik" data-dark className="relative scroll-mt-24 overflow-hidden"
-               style={{ background: "linear-gradient(180deg, #0B1324 0%, #0F172A 50%, #0B1324 100%)" }}>
-        <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
-          <Head dark eyebrow={d.eyebrow} h={d.heading} accent={d.headingAccent} sub={d.subtitle} />
+    <section id="cjenovnik" data-dark className="relative scroll-mt-24 overflow-hidden"
+             style={{ background: "linear-gradient(180deg, #0B1324 0%, #0F172A 50%, #0B1324 100%)" }}>
+      <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
+        <Head dark eyebrow={d.eyebrow} h={d.heading} accent={d.headingAccent} sub={tab === "apps" ? d.subtitle : d.mktSubtitle} />
 
-          <div className="mt-14 grid gap-5 lg:grid-cols-3 lg:items-stretch">
-            {d.apps.map((plan, i) => (
-              <AppCard key={plan.name} plan={plan} icon={APP_ICONS[i]} featured={i === 1} d={d} />
-            ))}
+        <div className="mt-10 flex justify-center">
+          <div role="tablist" aria-label={d.tabsLabel} className="inline-flex rounded-2xl border border-white/10 bg-white/[0.04] p-1.5">
+            {tabs.map((t) => {
+              const on = tab === t.id;
+              return (
+                <button key={t.id} type="button" role="tab" aria-selected={on} onClick={() => setTab(t.id)}
+                        className="relative rounded-xl px-4 py-2.5 text-left sm:px-6">
+                  {on && (
+                    <motion.span layoutId="price-tab" className="absolute inset-0 rounded-xl bg-white"
+                                 transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 400, damping: 34 }} />
+                  )}
+                  <span className="relative flex items-center gap-2">
+                    <span className={`text-[14.5px] font-semibold transition-colors ${on ? "text-[#0F172A]" : "text-white"}`}>{t.label}</span>
+                    {t.gift && (
+                      <span className={`hidden rounded-md px-1.5 py-0.5 text-[10.5px] font-semibold sm:inline ${on ? "bg-[#DCFCE7] text-[#15803D]" : "bg-[#16A34A]/20 text-[#4ADE80]"}`}>{t.gift}</span>
+                    )}
+                  </span>
+                  <span className={`relative block text-[12px] transition-colors ${on ? "text-[#64748B]" : "text-[#94A3B8]"}`}>{t.sub}</span>
+                </button>
+              );
+            })}
           </div>
-          <p className="mx-auto mt-6 max-w-2xl text-center text-[13px] leading-relaxed text-[#94A3B8]">{d.appNote}</p>
-
-          <div id="odrzavanje" className="mx-auto mt-16 max-w-5xl scroll-mt-24">
-            <p className="text-center text-[13px] font-semibold uppercase tracking-[0.14em] text-[#8FB3D9]">{d.afterHeading}</p>
-            <h3 className="mt-3 text-center text-[26px] font-semibold tracking-[-0.02em] text-white sm:text-[32px]">
-              {d.afterTitle} <span className="text-[#4ADE80]">{d.afterAccent}</span>
-            </h3>
-            <p className="mx-auto mt-3 max-w-xl text-center text-[14.5px] leading-relaxed text-[#94A3B8]">{d.afterSub}</p>
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
-              {d.afterBoxes.map((b, i) => {
-                const Icon = AFTER_ICONS[i];
-                return (
-                  <div key={b.label}
-                       className={`relative flex flex-col rounded-[20px] border p-6 ${b.free ? "border-[#4ADE80]/40 bg-[#16A34A]/[0.10]" : "border-white/[0.08] bg-white/[0.03]"}`}>
-                    {b.free && <span className="absolute right-4 top-4 rounded-full bg-[#16A34A] px-2.5 py-0.5 text-[11px] font-semibold text-white">{d.defaultTag}</span>}
-                    <span className={`grid h-10 w-10 place-items-center rounded-xl ${b.free ? "bg-[#16A34A] text-white" : "bg-white/[0.06] text-white"}`}><Icon size={18} /></span>
-                    <p className="mt-4 text-[14px] font-semibold text-white">{b.label}</p>
-                    <p className="mt-1 flex items-baseline gap-1.5">
-                      <span className={`text-[28px] font-semibold tracking-tight tabular-nums ${b.free ? "text-[#4ADE80]" : "text-white"}`}>{b.price}</span>
-                      <span className="text-[13px] text-[#94A3B8]">{b.per}</span>
-                      {b.alt && <span className="text-[12px] text-[#64748B]">· {b.alt}</span>}
-                    </p>
-                    <p className="mt-2 text-[13px] leading-relaxed text-[#94A3B8]">{b.sub}</p>
-                  </div>
-                );
-              })}
-            </div>
-            <p className="mt-5 text-center text-[13px] text-[#CBD5E1]"><Gift size={14} className="mr-1.5 inline -translate-y-px text-[#4ADE80]" />{d.afterGift}</p>
-            <p className="mt-2 text-center text-[12.5px] text-[#64748B]">{d.hostingNote}</p>
-          </div>
-
-          <a href="/rjesenja/rent-a-car"
-             className="group mx-auto mt-10 flex max-w-3xl flex-col gap-5 rounded-[20px] border border-white/[0.08] bg-white/[0.03] p-6 transition-colors hover:border-white/20 sm:flex-row sm:items-center">
-            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-[#0F3554] text-white"><Car size={22} /></span>
-            <span className="flex-1">
-              <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8FB3D9]">{d.rcBanner.eyebrow}</span>
-              <span className="mt-1 block text-[17px] font-semibold text-white">{d.rcBanner.title}</span>
-              <span className="mt-1 block text-[13.5px] leading-relaxed text-[#94A3B8]">{d.rcBanner.desc}</span>
-            </span>
-            <span className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-white px-5 py-3 text-[14px] font-semibold text-[#0F172A] transition-colors group-hover:bg-[#E2E8F0]">
-              {d.rcBanner.cta} <ArrowRight size={15} />
-            </span>
-          </a>
         </div>
-      </section>
 
-      <section id="marketing" className="relative bg-white scroll-mt-24">
-        <div className="mx-auto max-w-6xl px-6 lg:px-8">
-          <Head eyebrow={d.mktEyebrow} h={d.mktHeading} sub={d.mktSubtitle} />
-          <div className="mt-12 grid gap-6 lg:grid-cols-3 lg:items-stretch">
-            {d.mkt.map((plan, i) => (
-              <PlanCard
-                key={plan.name}
-                icon={MKT_ICONS[i]}
-                name={plan.name}
-                tag={plan.tag}
-                price={plan.price}
-                per={d.perMonth}
-                alt={plan.alt}
-                note={plan.note}
-                features={plan.features}
-                cta={d.mktCta}
-                href="#kontakt"
-                badge={i === 1 ? d.popular : undefined}
-                variant={i === 1 ? "outline" : "plain"}
-              />
-            ))}
-          </div>
-          <p className="mx-auto mt-6 max-w-2xl text-center text-[13px] leading-relaxed text-[#64748B]">{d.mktNote}</p>
-        </div>
-      </section>
-    </>
+        <AnimatePresence mode="wait" initial={false}>
+          {tab === "apps" ? (
+            <motion.div key="apps" {...swap}>
+              <div className="mt-12 grid gap-5 lg:grid-cols-3 lg:items-stretch">
+                {d.apps.map((plan, i) => (
+                  <AppCard key={plan.name} plan={plan} icon={APP_ICONS[i]} featured={i === 1} d={d} />
+                ))}
+              </div>
+              <p className="mx-auto mt-6 max-w-2xl text-center text-[13px] leading-relaxed text-[#94A3B8]">{d.appNote}</p>
+
+              <div id="odrzavanje" className="mx-auto mt-16 max-w-5xl scroll-mt-24">
+                <p className="text-center text-[13px] font-semibold uppercase tracking-[0.14em] text-[#8FB3D9]">{d.afterHeading}</p>
+                <h3 className="mt-3 text-center text-[26px] font-semibold tracking-[-0.02em] text-white sm:text-[32px]">
+                  {d.afterTitle} <span className="text-[#4ADE80]">{d.afterAccent}</span>
+                </h3>
+                <p className="mx-auto mt-3 max-w-xl text-center text-[14.5px] leading-relaxed text-[#94A3B8]">{d.afterSub}</p>
+                <div className="mt-8 grid gap-4 md:grid-cols-3">
+                  {d.afterBoxes.map((b, i) => {
+                    const Icon = AFTER_ICONS[i];
+                    return (
+                      <div key={b.label}
+                           className={`relative flex flex-col rounded-[20px] border p-6 ${b.free ? "border-[#4ADE80]/40 bg-[#16A34A]/[0.10]" : "border-white/[0.08] bg-white/[0.03]"}`}>
+                        {b.free && <span className="absolute right-4 top-4 rounded-full bg-[#16A34A] px-2.5 py-0.5 text-[11px] font-semibold text-white">{d.defaultTag}</span>}
+                        <span className={`grid h-10 w-10 place-items-center rounded-xl ${b.free ? "bg-[#16A34A] text-white" : "bg-white/[0.06] text-white"}`}><Icon size={18} /></span>
+                        <p className="mt-4 text-[14px] font-semibold text-white">{b.label}</p>
+                        <p className="mt-1 flex items-baseline gap-1.5">
+                          <span className={`text-[28px] font-semibold tracking-tight tabular-nums ${b.free ? "text-[#4ADE80]" : "text-white"}`}>{b.price}</span>
+                          <span className="text-[13px] text-[#94A3B8]">{b.per}</span>
+                          {b.alt && <span className="text-[12px] text-[#64748B]">· {b.alt}</span>}
+                        </p>
+                        <p className="mt-2 text-[13px] leading-relaxed text-[#94A3B8]">{b.sub}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="mt-5 text-center text-[13px] text-[#CBD5E1]"><Gift size={14} className="mr-1.5 inline -translate-y-px text-[#4ADE80]" />{d.afterGift}</p>
+                <p className="mt-2 text-center text-[12.5px] text-[#64748B]">{d.hostingNote}</p>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div key="mkt" {...swap}>
+              <div className="mt-12 grid gap-5 lg:grid-cols-3 lg:items-stretch">
+                {d.mkt.map((plan, i) => (
+                  <MktCard key={plan.name} plan={plan} icon={MKT_ICONS[i]} featured={i === 1} d={d} />
+                ))}
+              </div>
+              <p className="mx-auto mt-6 max-w-2xl text-center text-[13px] leading-relaxed text-[#94A3B8]">{d.mktNote}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <a href="/rjesenja/rent-a-car"
+           className="group mx-auto mt-12 flex max-w-3xl flex-col gap-5 rounded-[20px] border border-white/[0.08] bg-white/[0.03] p-6 transition-colors hover:border-white/20 sm:flex-row sm:items-center">
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-[#0F3554] text-white"><Car size={22} /></span>
+          <span className="flex-1">
+            <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8FB3D9]">{d.rcBanner.eyebrow}</span>
+            <span className="mt-1 block text-[17px] font-semibold text-white">{d.rcBanner.title}</span>
+            <span className="mt-1 block text-[13.5px] leading-relaxed text-[#94A3B8]">{d.rcBanner.desc}</span>
+          </span>
+          <span className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-white px-5 py-3 text-[14px] font-semibold text-[#0F172A] transition-colors group-hover:bg-[#E2E8F0]">
+            {d.rcBanner.cta} <ArrowRight size={15} />
+          </span>
+        </a>
+      </div>
+    </section>
   );
 }

@@ -149,19 +149,6 @@ export function Contact() {
               )}
             </div>
 
-            <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">{d.stepsTitle}</p>
-            <ol className="mt-4 space-y-4">
-              {d.steps.map((s, i) => (
-                <li key={s.t} className="flex gap-3.5">
-                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/10 text-[12px] font-semibold text-white">{i + 1}</span>
-                  <span>
-                    <span className="block text-[14px] font-semibold text-white">{s.t}</span>
-                    <span className="block text-[13px] leading-relaxed text-[#94A3B8]">{s.d}</span>
-                  </span>
-                </li>
-              ))}
-            </ol>
-
             <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">{d.orReach}</p>
             <ul className="mt-3 divide-y divide-white/10">
               {TEAM.map((m, i) => (

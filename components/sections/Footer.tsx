@@ -23,6 +23,7 @@ const T = {
     contactHeading: "Kontakt",
     roles: ["Development", "Marketing"],
     nav: [
+      { label: "Usluge", href: "/#usluge" },
       { label: "O nama", href: "/#o-nama" },
       { label: "Rezultati", href: "/#rezultati" },
       { label: "Portfolio", href: "/portfolio" },
@@ -32,7 +33,7 @@ const T = {
     ],
     solutions: [
       { label: "Sistem za rent a car", href: "/rjesenja/rent-a-car" },
-      { label: "Sistem u pokretu", href: "/#rent-a-car" },
+      { label: "Sistem u pokretu", href: "/rjesenja/rent-a-car#kako-radi" },
       { label: "Maximum Rent a Car, primjer", href: "/maximum" },
       { label: "Platforma za nekretnine", href: "/#saas" },
     ],
@@ -49,6 +50,7 @@ const T = {
     contactHeading: "Contact",
     roles: ["Development", "Marketing"],
     nav: [
+      { label: "Services", href: "/#usluge" },
       { label: "About", href: "/#o-nama" },
       { label: "Results", href: "/#rezultati" },
       { label: "Portfolio", href: "/portfolio" },
@@ -58,7 +60,7 @@ const T = {
     ],
     solutions: [
       { label: "Car rental system", href: "/rjesenja/rent-a-car" },
-      { label: "The system in action", href: "/#rent-a-car" },
+      { label: "The system in action", href: "/rjesenja/rent-a-car#kako-radi" },
       { label: "Maximum Rent a Car, case study", href: "/maximum" },
       { label: "Real estate platform", href: "/#saas" },
     ],
