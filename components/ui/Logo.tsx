@@ -4,17 +4,13 @@ const DEV = "M7191.919999999999 23Q7053.919999999999 23 6950.919999999999 -45.5Q
 
 const MOST = "M5 62 L5 19.5 L4.2 19.5 L12.5 16.6 L20.8 19.5 L20 19.5 L20 31.9 L22.8 30.8 L25.2 30.8 L28.8 32.5 L28 32.5 L28 40.5 Q40 36.4 50 35 Q60 36.4 72 40.5 L72 31 L71.2 31 L74.6 29.2 L82.9 29.2 L86.3 31 L85.5 31 L85.5 45 L95 45 L95 62 L71 62 L71 56 A21 17.5 0 0 0 50 38.5 A21 17.5 0 0 0 29 56 L29 62 Z M6 21.4 Q12.5 22.9 19 21.4 L19 22.2 Q12.5 23.7 6 22.2 Z M11.2 29.2 L11.2 26.3 A1.3 1.3 0 0 1 13.8 26.3 L13.8 29.2 Z M11.2 35.7 L11.2 32.8 A1.3 1.3 0 0 1 13.8 32.8 L13.8 35.7 Z M22.7 37.8 L22.7 35.5 A1.3 1.3 0 0 1 25.3 35.5 L25.3 37.8 Z M74.8 36.6 L74.8 33.4 L77.4 33.4 L77.4 36.6 Z M80.1 36.6 L80.1 33.4 L82.7 33.4 L82.7 36.6 Z";
 
-export function Znak({ variant = "light", className = "h-9 w-9" }: { variant?: "light" | "dark"; className?: string }) {
-  const dark = variant === "dark";
+export function Znak({ variant = "light", className = "h-7 w-auto" }: { variant?: "light" | "dark"; className?: string }) {
+  const ink = variant === "dark" ? "#FFFFFF" : "#0F172A";
   return (
-    <svg viewBox="0 0 100 100" className={className} aria-hidden="true">
-      {!dark && <circle cx="50" cy="50" r="50" fill="#0F172A" />}
-      <circle cx="50" cy="50" r="44" fill="none" stroke="#FFFFFF" strokeWidth="2.6" />
-      <g transform="translate(50 47) scale(0.66) translate(-49.6 -39.3)">
-        <path fill="#FFFFFF" fillRule="evenodd" d={MOST} />
-      </g>
-      <rect x="20" y="64.4" width="50.5" height="2.4" rx="1.2" fill="#FFFFFF" />
-      <rect x="72.5" y="64.4" width="7.5" height="2.4" rx="1.2" fill="#DC2626" />
+    <svg viewBox="2 13 96 56" className={className} aria-hidden="true">
+      <path fill={ink} fillRule="evenodd" d={MOST} />
+      <rect x="5" y="64.6" width="77" height="2.4" rx="1.2" fill={ink} />
+      <rect x="84" y="64.6" width="11" height="2.4" rx="1.2" fill="#DC2626" />
     </svg>
   );
 }
@@ -23,7 +19,7 @@ export function Logo({
   variant = "light",
   className = "h-[22px] w-auto",
   mark = false,
-  markClassName = "h-9 w-9",
+  markClassName = "h-7 w-auto",
 }: {
   variant?: "light" | "dark";
   className?: string;

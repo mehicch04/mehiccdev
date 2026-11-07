@@ -6,9 +6,9 @@ import { SectionRail } from "@/components/ui/SectionRail";
 const ITEMS = {
   bs: [
     { id: "usluge",        label: "Usluge" },
+    { id: "proces",        label: "Proces" },
     { id: "portfolio",     label: "Portfolio" },
     { id: "rezultati",     label: "Rezultati" },
-    { id: "proces",        label: "Proces" },
     { id: "cjenovnik",     label: "Cjenovnik" },
     { id: "vrijednost",    label: "Vrijednost" },
     { id: "saas",          label: "Flagship" },
@@ -18,9 +18,9 @@ const ITEMS = {
   ],
   en: [
     { id: "usluge",        label: "Services" },
+    { id: "proces",        label: "Process" },
     { id: "portfolio",     label: "Portfolio" },
     { id: "rezultati",     label: "Results" },
-    { id: "proces",        label: "Process" },
     { id: "cjenovnik",     label: "Pricing" },
     { id: "vrijednost",    label: "Value" },
     { id: "saas",          label: "Flagship" },

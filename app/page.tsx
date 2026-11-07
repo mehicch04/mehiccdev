@@ -7,7 +7,7 @@ import { Portfolio }  from "@/components/sections/Portfolio";
 import { Results }    from "@/components/sections/Results";
 import { Process }    from "@/components/sections/Process";
 import { Pricing }    from "@/components/sections/Pricing";
-import { Value }      from "@/components/sections/Value";
+import { Savings }    from "@/components/sections/Savings";
 import { SaasTeaser } from "@/components/sections/SaasTeaser";
 import { About }      from "@/components/sections/About";
 import { Faq }        from "@/components/sections/Faq";
@@ -22,11 +22,11 @@ export default function HomePage() {
       <Hero />
       <Clients />
       <Services />
+      <Process />
       <Portfolio />
       <Results />
-      <Process />
       <Pricing />
-      <Value />
+      <Savings />
       <SaasTeaser />
       <About />
       <Faq />

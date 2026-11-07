@@ -258,8 +258,8 @@ html[data-intro] .intro-root {
 .intro-name { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
 .intro-name .intro-dec { margin-top: 0; }
 .intro-mark {
-  width: clamp(40px, 8vw, 68px);
-  height: clamp(40px, 8vw, 68px);
+  width: auto;
+  height: clamp(34px, 6.8vw, 60px);
   flex-shrink: 0;
   opacity: 0;
   transform: scale(0.7);
@@ -344,7 +344,7 @@ html[data-intro] .intro-root.out { pointer-events: none; }
   .race-score:hover { transform: none; }
 }
 
-#usluge, #o-nama, #vrijednost, #isplati, #razlika, #pitanja {
+#usluge, #o-nama, #isplati, #razlika, #pitanja {
   background: linear-gradient(180deg, #FFFFFF 0, #F4F7FB 140px, #F4F7FB calc(100% - 140px), #FFFFFF 100%);
 }
 #kontakt, #upit {

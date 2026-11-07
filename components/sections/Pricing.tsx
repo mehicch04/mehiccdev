@@ -367,23 +367,21 @@ export function Pricing() {
         <Head dark eyebrow={d.eyebrow} h={d.heading} accent={d.headingAccent} sub={tab === "apps" ? d.subtitle : d.mktSubtitle} />
 
         <div className="mt-10 flex justify-center">
-          <div role="tablist" aria-label={d.tabsLabel} className="inline-flex rounded-2xl border border-white/10 bg-white/[0.04] p-1.5">
+          <div role="tablist" aria-label={d.tabsLabel} className="grid grid-cols-2 gap-1 rounded-2xl border border-white/10 bg-white/[0.04] p-1.5">
             {tabs.map((t) => {
               const on = tab === t.id;
               return (
                 <button key={t.id} type="button" role="tab" aria-selected={on} onClick={() => setTab(t.id)}
-                        className="relative rounded-xl px-4 py-2.5 text-left sm:px-6">
+                        className="relative min-w-[150px] rounded-xl px-5 py-2.5 text-center sm:min-w-[190px]">
                   {on && (
                     <motion.span layoutId="price-tab" className="absolute inset-0 rounded-xl bg-white"
                                  transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 400, damping: 34 }} />
                   )}
-                  <span className="relative flex items-center gap-2">
-                    <span className={`text-[14.5px] font-semibold transition-colors ${on ? "text-[#0F172A]" : "text-white"}`}>{t.label}</span>
-                    {t.gift && (
-                      <span className={`hidden rounded-md px-1.5 py-0.5 text-[10.5px] font-semibold sm:inline ${on ? "bg-[#DCFCE7] text-[#15803D]" : "bg-[#16A34A]/20 text-[#4ADE80]"}`}>{t.gift}</span>
-                    )}
+                  <span className={`relative block text-[14.5px] font-semibold transition-colors ${on ? "text-[#0F172A]" : "text-white"}`}>{t.label}</span>
+                  <span className={`relative block text-[12px] transition-colors ${on ? "text-[#64748B]" : "text-[#94A3B8]"}`}>
+                    {t.sub}
+                    {t.gift && <span className={`font-semibold ${on ? "text-[#15803D]" : "text-[#4ADE80]"}`}> · {t.gift}</span>}
                   </span>
-                  <span className={`relative block text-[12px] transition-colors ${on ? "text-[#64748B]" : "text-[#94A3B8]"}`}>{t.sub}</span>
                 </button>
               );
             })}

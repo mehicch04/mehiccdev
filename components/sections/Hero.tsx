@@ -281,7 +281,7 @@ export function Hero() {
           onPointerLeave={onLeave}
           onPanEnd={onPanEnd}
           style={{ perspective: "1100px", touchAction: "pan-y" }}
-          className="relative h-[300px] sm:h-[440px] lg:h-[520px] overflow-hidden"
+          className="relative h-[320px] sm:h-[460px] lg:h-[540px] overflow-hidden"
         >
           <motion.div className="absolute inset-0" style={{ rotateX: tiltX, rotateY: tiltY, transformStyle: "preserve-3d" }}>
             {META.map((m, i) => {
@@ -298,8 +298,8 @@ export function Hero() {
                   initial={false}
                   animate={SLOTS[slot]}
                   transition={reduce ? { duration: 0 } : { duration: 0.9, ease: EASE }}
-                  className={`absolute left-1/2 top-2 block w-[31%] max-w-[290px] text-left ${side ? "cursor-pointer" : "cursor-default"}`}
-                  style={{ zIndex: slot === "center" ? 3 : 1, transformStyle: "preserve-3d" }}
+                  className={`absolute left-1/2 top-6 block w-[31%] max-w-[290px] text-left ${side ? "cursor-pointer" : "cursor-default"}`}
+                  style={{ zIndex: slot === "center" ? 3 : 1, transformStyle: "preserve-3d", transformOrigin: "50% 0%" }}
                 >
                   <span className="relative block">
                     <motion.span aria-hidden className="absolute inset-y-[1%] -right-[3%] left-[3%] rounded-[15.5%/7%] bg-[#C9CDD3]"
