@@ -305,13 +305,6 @@ export function Pricing() {
     <>
       <section id="cjenovnik" data-dark className="relative scroll-mt-24 overflow-hidden"
                style={{ background: "linear-gradient(180deg, #0B1324 0%, #0F172A 50%, #0B1324 100%)" }}>
-        <div aria-hidden className="pointer-events-none absolute inset-0"
-             style={{
-               backgroundImage: "linear-gradient(to right, rgba(255,255,255,0.014) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.014) 1px, transparent 1px)",
-               backgroundSize: "56px 56px",
-               maskImage: "linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
-               WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
-             }} />
         <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
           <Head dark eyebrow={d.eyebrow} h={d.heading} accent={d.headingAccent} sub={d.subtitle} />
 

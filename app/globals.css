@@ -353,84 +353,6 @@ html[data-intro] .intro-root.out { pointer-events: none; }
 #rezultati, #paketi {
   background: linear-gradient(180deg, #FFFFFF 0, #EAF0F7 160px, #EAF0F7 calc(100% - 160px), #FFFFFF 100%);
 }
-:is(#o-nama, #vrijednost, #isplati, #razlika, #pitanja, #kontakt, #upit, #rezultati, #paketi, #portfolio) { isolation: isolate; }
-:is(#o-nama, #vrijednost, #isplati, #razlika, #pitanja, #kontakt, #upit, #rezultati, #paketi, #portfolio)::before,
-:is(#o-nama, #vrijednost, #isplati, #razlika, #pitanja, #kontakt, #upit, #rezultati, #paketi, #portfolio)::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-}
-:is(#o-nama, #vrijednost, #isplati, #razlika, #pitanja, #kontakt, #upit)::before {
-  background-image: radial-gradient(circle, rgba(15, 53, 84, 0.1) 1px, transparent 1.4px);
-  background-size: 24px 24px;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 180px, #000 calc(100% - 180px), transparent 100%);
-          mask-image: linear-gradient(180deg, transparent 0, #000 180px, #000 calc(100% - 180px), transparent 100%);
-}
-:is(#rezultati, #paketi)::before {
-  background-image:
-    linear-gradient(to right, rgba(15, 53, 84, 0.07) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 53, 84, 0.07) 1px, transparent 1px);
-  background-size: 48px 48px;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 200px, #000 calc(100% - 200px), transparent 100%);
-          mask-image: linear-gradient(180deg, transparent 0, #000 200px, #000 calc(100% - 200px), transparent 100%);
-}
-:is(#o-nama, #vrijednost, #isplati, #razlika, #pitanja, #kontakt, #upit, #portfolio)::after {
-  background-image: radial-gradient(circle, rgba(15, 53, 84, 0.42) 1.1px, transparent 1.5px);
-  background-size: 24px 24px;
-}
-:is(#rezultati, #paketi)::after {
-  background-image:
-    linear-gradient(to right, rgba(15, 53, 84, 0.22) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 53, 84, 0.22) 1px, transparent 1px);
-  background-size: 48px 48px;
-}
-:is(#o-nama, #vrijednost, #isplati, #razlika, #pitanja, #kontakt, #upit, #rezultati, #paketi, #portfolio)::after {
-  opacity: 0;
-  transition: opacity 0.45s ease;
-  -webkit-mask-image: radial-gradient(280px circle at var(--mx, -999px) var(--my, -999px), #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 72%);
-          mask-image: radial-gradient(280px circle at var(--mx, -999px) var(--my, -999px), #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 72%);
-}
-:is(#o-nama, #vrijednost, #isplati, #razlika, #pitanja, #kontakt, #upit, #rezultati, #paketi, #portfolio).amb-on::after { opacity: 1; }
-
-.hero-spot,
-.hero-river {
-  position: absolute;
-  z-index: -1;
-  pointer-events: none;
-}
-.hero-spot {
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.45s ease;
-  background-image: radial-gradient(circle, rgba(15, 53, 84, 0.34) 1.1px, transparent 1.5px);
-  background-size: 24px 24px;
-  -webkit-mask-image: radial-gradient(300px circle at var(--mx, -999px) var(--my, -999px), #000 0%, rgba(0, 0, 0, 0.3) 45%, transparent 72%);
-          mask-image: radial-gradient(300px circle at var(--mx, -999px) var(--my, -999px), #000 0%, rgba(0, 0, 0, 0.3) 45%, transparent 72%);
-}
-.amb-on .hero-spot { opacity: 1; }
-.hero-river {
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 128px;
-  background-image:
-    repeating-linear-gradient(90deg, rgba(15, 53, 84, 0.13) 0 54px, transparent 54px 70px, rgba(15, 53, 84, 0.13) 70px 92px, transparent 92px 128px, rgba(15, 53, 84, 0.13) 128px 140px, transparent 140px 176px),
-    repeating-linear-gradient(90deg, rgba(15, 53, 84, 0.11) 0 30px, transparent 30px 44px, rgba(15, 53, 84, 0.11) 44px 110px, transparent 110px 150px, rgba(220, 38, 38, 0.6) 150px 162px, transparent 162px 200px, rgba(15, 53, 84, 0.11) 200px 260px, transparent 260px 290px, rgba(15, 53, 84, 0.11) 290px 340px, transparent 340px 380px, rgba(15, 53, 84, 0.11) 380px 430px, transparent 430px 476px),
-    repeating-linear-gradient(90deg, rgba(15, 53, 84, 0.09) 0 80px, transparent 80px 100px, rgba(15, 53, 84, 0.09) 100px 120px, transparent 120px 190px),
-    repeating-linear-gradient(90deg, rgba(15, 53, 84, 0.07) 0 40px, transparent 40px 66px, rgba(15, 53, 84, 0.07) 66px 140px, transparent 140px 230px);
-  background-size: 176px 3px, 476px 3px, 190px 2px, 230px 2px;
-  background-repeat: repeat-x;
-  background-position: 0 20px, 0 44px, 0 68px, 0 90px;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
-          mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
-  animation: hero-river 34s linear infinite;
-}
-@keyframes hero-river {
-  to { background-position: 176px 20px, -476px 44px, 380px 68px, -460px 90px; }
-}
-
 .horizon {
   --sky: #FFFFFF;
   position: relative;
@@ -444,19 +366,14 @@ html[data-intro] .intro-root.out { pointer-events: none; }
 @keyframes river-flow { to { transform: translateX(-1440px); } }
 @keyframes horizon-rise { from { transform: translateY(28px); } to { transform: translateY(0); } }
 @keyframes hills-rise { from { transform: translateY(14px); } to { transform: translateY(0); } }
-@keyframes pattern-drift { from { background-position: 0 36px; } to { background-position: 0 -36px; } }
 
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .horizon-land { animation: horizon-rise linear both; animation-timeline: view(); animation-range: entry 0% cover 45%; }
     .horizon-hills { animation: hills-rise linear both; animation-timeline: view(); animation-range: entry 0% cover 45%; }
-    :is(#o-nama, #vrijednost, #isplati, #razlika, #pitanja, #kontakt, #upit, #rezultati, #paketi)::before {
-      animation: pattern-drift linear both;
-      animation-timeline: view();
-    }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-river, .river-flow { animation: none; }
+  .river-flow { animation: none; }
 }

@@ -184,8 +184,6 @@ const SAME_ICONS = [Palette, Gauge, Smartphone, KeyRound];
 const CATS: Cat[] = ["all", "app", "web", "design", "product"];
 const GRID_BG = {
   backgroundColor: "#F4F7FB",
-  backgroundImage: "linear-gradient(to right, rgba(15,53,84,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,53,84,0.05) 1px, transparent 1px)",
-  backgroundSize: "28px 28px",
 };
 
 function StatusPill({ s, d, dark = false }: { s: Status; d: (typeof T)["bs"]; dark?: boolean }) {

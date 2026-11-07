@@ -69,22 +69,9 @@ export function Hero() {
 
   return (
     <section className="hero-light relative bg-white">
-      <div className="relative isolate overflow-hidden"
+      <div className="relative overflow-hidden"
            style={{ background: "linear-gradient(180deg, #D9E4F0 0%, #E7EEF6 34%, #F4F7FB 68%, #FFFFFF 100%)" }}>
-        <div aria-hidden className="hero-spot" />
-        <div aria-hidden className="hero-river" />
 
-        <div aria-hidden className="pointer-events-none absolute -left-[12%] top-0 h-[70%] w-[38%] -skew-x-[24deg] opacity-60"
-             style={{ background: "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 100%)" }} />
-        <div aria-hidden className="pointer-events-none absolute right-[-8%] top-0 h-[60%] w-[26%] -skew-x-[24deg] opacity-50"
-             style={{ background: "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%)" }} />
-        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.35]"
-             style={{
-               backgroundImage: "linear-gradient(to right, rgba(15,53,84,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,53,84,0.06) 1px, transparent 1px)",
-               backgroundSize: "56px 56px",
-               maskImage: "linear-gradient(to bottom, black 0%, transparent 60%)",
-               WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 60%)",
-             }} />
 
       <motion.div
         {...rise(0.35)}
