@@ -69,8 +69,10 @@ export function Hero() {
 
   return (
     <section className="hero-light relative bg-white">
-      <div className="relative overflow-hidden"
+      <div className="relative isolate overflow-hidden"
            style={{ background: "linear-gradient(180deg, #D9E4F0 0%, #E7EEF6 34%, #F4F7FB 68%, #FFFFFF 100%)" }}>
+        <div aria-hidden className="hero-spot" />
+        <div aria-hidden className="hero-river" />
 
         <div aria-hidden className="pointer-events-none absolute -left-[12%] top-0 h-[70%] w-[38%] -skew-x-[24deg] opacity-60"
              style={{ background: "linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 100%)" }} />

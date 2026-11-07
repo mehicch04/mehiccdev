@@ -3,6 +3,7 @@
 import { Mail, MapPin, Instagram, Linkedin, ArrowUp, ArrowUpRight } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import { Logo } from "@/components/ui/Logo";
+import { Horizon } from "@/components/ui/Horizon";
 import { EmailLink } from "@/components/ui/EmailLink";
 
 const INSTAGRAM = "https://www.instagram.com/mehiccdev";
@@ -77,6 +78,7 @@ export function Footer() {
 
   return (
     <footer className="relative overflow-hidden bg-[#0F172A]">
+      <Horizon />
       <div className="mx-auto max-w-6xl px-6 pt-16 pb-8 lg:px-8">
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1.2fr_1.3fr]">
           <div>
