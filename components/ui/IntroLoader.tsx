@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Znak } from "@/components/ui/Logo";
 
 const KEY = "mehiccdev-intro";
 const NAME = "mehiccdev";
@@ -107,6 +108,7 @@ export function IntroLoader() {
           paint(i, (p < 1 ? plain.slice(0, Math.round(plain.length * p)) : full) + cur);
         });
 
+        if (t > 1.9) el.classList.add("named");
         if (dec && t > 1.9 && t < 2.9) dec.innerHTML = decode(t, 2.05, 0.08);
         if (t >= 2.85) reveal();
         if (!out) raf = requestAnimationFrame(frame);
@@ -139,7 +141,10 @@ export function IntroLoader() {
             <div className="intro-ln" dangerouslySetInnerHTML={{ __html: "" }} />
             <div className="intro-ln" dangerouslySetInnerHTML={{ __html: "" }} />
             <div className="intro-ln" dangerouslySetInnerHTML={{ __html: "" }} />
-            <div className="intro-dec" dangerouslySetInnerHTML={{ __html: "" }} />
+            <div className="intro-name">
+              <Znak variant="dark" className="intro-mark" />
+              <div className="intro-dec" dangerouslySetInnerHTML={{ __html: "" }} />
+            </div>
           </div>
         </div>
       </div>

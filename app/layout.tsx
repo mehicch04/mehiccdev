@@ -53,6 +53,8 @@ const JSON_LD = {
   "@type": "ProfessionalService",
   name: "mehiccdev",
   url: "https://mehiccdev.com",
+  logo: "https://mehiccdev.com/brand/icon-512.png",
+  image: "https://mehiccdev.com/brand/icon-512.png",
   email: "bakir.mehic@mehiccdev.com",
   description:
     "Web studio iz Mostara. Gradimo web aplikacije za rezervacije i najam, sajtove i digitalni marketing.",

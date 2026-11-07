@@ -56,7 +56,7 @@ export function Navbar() {
                if (window.location.hash) history.replaceState(null, "", "/");
                window.scrollTo({ top: 0, behavior: "smooth" });
              }}>
-            <Logo className="h-[17px] w-auto" />
+            <Logo className="h-[17px] w-auto" mark />
           </a>
 
           <ul className="hidden lg:flex items-center gap-1">

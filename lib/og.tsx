@@ -10,20 +10,25 @@ const root = process.cwd();
 const asset = (p: string) => readFile(join(root, p));
 
 export async function renderOg({ eyebrow, h1, h2, sub, chips, phone }: Og) {
-  const [w800, w500, img] = await Promise.all([
+  const [w800, w500, img, mark] = await Promise.all([
     asset("assets/og/inter-800.ttf"),
     asset("assets/og/inter-500.ttf"),
     asset(`public/og/${phone}`),
+    asset("public/brand/mehiccdev-pecat-mali.svg"),
   ]);
   const src = `data:image/jpeg;base64,${img.toString("base64")}`;
+  const markSrc = `data:image/svg+xml;base64,${mark.toString("base64")}`;
 
   return new ImageResponse(
     (
       <div style={{ width: "100%", height: "100%", display: "flex", fontFamily: "Inter", background: "linear-gradient(180deg, #D9E4F0 0%, #E7EEF6 40%, #FFFFFF 100%)", position: "relative" }}>
         <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "64px 0 56px 72px", width: 780 }}>
-          <div style={{ display: "flex", fontSize: 34, fontWeight: 800, letterSpacing: -1.2 }}>
-            <span style={{ color: "#0F172A" }}>mehicc</span>
-            <span style={{ color: "#DC2626" }}>dev</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <img src={markSrc} alt="" width={56} height={56} />
+            <div style={{ display: "flex", fontSize: 34, fontWeight: 800, letterSpacing: -1.2 }}>
+              <span style={{ color: "#0F172A" }}>mehicc</span>
+              <span style={{ color: "#DC2626" }}>dev</span>
+            </div>
           </div>
           <div style={{ display: "flex", flexDirection: "column" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 20, fontWeight: 500, color: "#0F172A" }}>

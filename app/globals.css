@@ -255,6 +255,17 @@ html[data-intro] .intro-root {
 }
 .intro-dec .r { color: #DC2626; }
 .intro-dec .s { color: #16A34A; opacity: 0.8; }
+.intro-name { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
+.intro-name .intro-dec { margin-top: 0; }
+.intro-mark {
+  width: clamp(40px, 8vw, 68px);
+  height: clamp(40px, 8vw, 68px);
+  flex-shrink: 0;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.intro-root.named .intro-mark { opacity: 1; transform: none; }
 .intro-scan {
   position: absolute;
   left: 0;

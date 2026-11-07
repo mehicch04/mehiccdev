@@ -81,7 +81,7 @@ export function Footer() {
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1.2fr_1.3fr]">
           <div>
             <a href="/" className="inline-flex" aria-label="mehiccdev">
-              <Logo variant="dark" className="h-6 w-auto" />
+              <Logo variant="dark" className="h-6 w-auto" mark markClassName="h-11 w-11" />
             </a>
             <p className="mt-4 max-w-xs text-[13.5px] leading-relaxed text-[#94A3B8]">{d.tagline}</p>
             <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-[#16A34A]/40 bg-[#16A34A]/10 px-3 py-1 text-[12px] font-semibold text-[#4ADE80]">
