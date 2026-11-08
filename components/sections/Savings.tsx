@@ -16,6 +16,9 @@ type Content = {
   pairs: { b: string; a: string }[];
   bannerText: string; btn: string; included: string[];
   sup: number; coffee: number;
+  modeCost: string; modeEarn: string; bookingsLabel: string; valueLabel: string; paysIn: string; sample: string;
+  revMonth: string; firstYear: string; afterPrice: string; costLine: string; paid: string; mShort: string; roiNote: string;
+  valMin: number; valMax: number; valStep: number; valDefault: number;
 };
 
 const T: Record<Lang, Content> = {
@@ -48,6 +51,13 @@ const T: Record<Lang, Content> = {
     btn: "Zakaži besplatne konsultacije",
     included: ["Dizajn po mjeri", "Aplikacija je vaša", "Hosting i domena podešeni", "Izmjene bez developera"],
     sup: 100, coffee: 2,
+    modeCost: "Koliko košta", modeEarn: "Koliko donosi",
+    bookingsLabel: "Novih rezervacija mjesečno", valueLabel: "Prosječna vrijednost rezervacije",
+    paysIn: "Aplikacija se isplati za", sample: "Primjer računice",
+    revMonth: "Dodatni prihod mjesečno", firstYear: "Prva godina", afterPrice: "nakon cijene aplikacije",
+    costLine: "Cijena aplikacije", paid: "Isplaćeno", mShort: "mj.",
+    roiNote: "Računica ne uključuje vaše troškove poslovanja. Na konsultacijama je napravimo za vaš posao.",
+    valMin: 20, valMax: 500, valStep: 10, valDefault: 120,
   },
   en: {
     eyebrow: "Why it pays off",
@@ -78,6 +88,13 @@ const T: Record<Lang, Content> = {
     btn: "Book a free consultation",
     included: ["Design made for you", "The app is yours", "Hosting and domain set up", "Edits without a developer"],
     sup: 50, coffee: 2,
+    modeCost: "What it costs", modeEarn: "What it brings",
+    bookingsLabel: "New bookings per month", valueLabel: "Average booking value",
+    paysIn: "The app pays for itself in", sample: "Sample calculation",
+    revMonth: "Extra revenue per month", firstYear: "First year", afterPrice: "after the app price",
+    costLine: "App price", paid: "Paid off", mShort: "mo",
+    roiNote: "This does not include your business costs. We will run it for your business in a free consultation.",
+    valMin: 10, valMax: 250, valStep: 5, valDefault: 60,
   },
 };
 
@@ -94,6 +111,21 @@ const coffeeText = (n: number, l: Lang) => {
   return k === 1 ? "Kao jedna kafa dnevno" : k < 5 ? `Kao ${k} kafe dnevno` : `Kao ${k} kafa dnevno`;
 };
 
+const plural = (n: number, one: string, few: string, many: string) => {
+  const a = n % 10, b = n % 100;
+  if (a === 1 && b !== 11) return one;
+  if (a >= 2 && a <= 4 && (b < 12 || b > 14)) return few;
+  return many;
+};
+const payback = (days: number, l: Lang) => {
+  if (!isFinite(days)) return "—";
+  if (days <= 31) { const n = Math.max(1, Math.ceil(days)); return l === "bs" ? `${n} ${plural(n, "dan", "dana", "dana")}` : `${n} ${n === 1 ? "day" : "days"}`; }
+  if (days <= 112) { const n = Math.ceil(days / 7); return l === "bs" ? `${n} ${plural(n, "sedmicu", "sedmice", "sedmica")}` : `${n} weeks`; }
+  const n = Math.ceil(days / 30.4);
+  if (n > 24) return l === "bs" ? "više od 2 godine" : "over 2 years";
+  return l === "bs" ? `${n} ${plural(n, "mjesec", "mjeseca", "mjeseci")}` : `${n} months`;
+};
+
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function Savings() {
@@ -105,6 +137,10 @@ export function Savings() {
   const [plan, setPlan] = useState(0);
   const [years, setYears] = useState(3);
   const [support, setSupport] = useState(false);
+  const [mode, setMode] = useState<"cost" | "earn">("cost");
+  const [bookings, setBookings] = useState(10);
+  const [value, setValue] = useState(d.valDefault);
+  useEffect(() => { setValue(T[l].valDefault); }, [l]);
   const [after, setAfter] = useState(false);
   const touched = useRef(false);
   const flipRef = useRef<HTMLDivElement>(null);
@@ -131,6 +167,12 @@ export function Savings() {
   const totalText = useTransform(totalMv, (v) => money(Math.max(0, v), l));
 
   const pct = ((years - 1) / 4) * 100;
+  const rev = bookings * value;
+  const days = rev > 0 ? p.price / (rev / 30.4) : Infinity;
+  const scaleR = Math.max(rev * 12, p.price * 1.15);
+  const bPct = ((bookings - 1) / 59) * 100;
+  const vPct = ((value - d.valMin) / (d.valMax - d.valMin)) * 100;
+  const firstPaid = Array.from({ length: 12 }, (_, i) => rev * (i + 1)).findIndex((c) => c >= p.price);
 
   return (
     <section id="vrijednost" data-dark className="relative scroll-mt-24 overflow-hidden text-white"
@@ -144,7 +186,22 @@ export function Savings() {
           <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-[#B9CCE0]">{d.sub}</p>
         </div>
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+        <div className="mt-12 flex justify-center">
+          <div role="tablist" className="grid grid-cols-2 gap-1 rounded-2xl border border-white/10 bg-white/[0.04] p-1.5">
+            {(["cost", "earn"] as const).map((m) => {
+              const on = mode === m;
+              return (
+                <button key={m} type="button" role="tab" aria-selected={on} onClick={() => setMode(m)}
+                        className="relative min-w-[140px] rounded-xl px-5 py-2.5 text-[14.5px] font-semibold sm:min-w-[180px]">
+                  {on && <motion.span layoutId="savings-mode" className="absolute inset-0 rounded-xl bg-white" transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 400, damping: 34 }} />}
+                  <span className={`relative ${on ? "text-[#0F172A]" : "text-white"}`}>{m === "cost" ? d.modeCost : d.modeEarn}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
           <div className="flex flex-col gap-8 rounded-[24px] border border-white/10 bg-white/[0.04] p-6 sm:p-8">
             <div>
               <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#8FB3D9]">{d.planLabel}</p>
@@ -166,6 +223,34 @@ export function Savings() {
               </div>
             </div>
 
+            {mode === "earn" ? (
+              <>
+                <div>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <label htmlFor="roi-bookings" className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#8FB3D9]">{d.bookingsLabel}</label>
+                    <span className="text-[15px] font-semibold tabular-nums">{bookings}</span>
+                  </div>
+                  <div className="pt-5">
+                    <input id="roi-bookings" type="range" min={1} max={60} step={1} value={bookings} onChange={(e) => setBookings(Number(e.target.value))}
+                           className="race-scrub" style={{ background: `linear-gradient(90deg, #4ADE80 ${bPct}%, rgba(255,255,255,0.16) ${bPct}%)` }} />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <label htmlFor="roi-value" className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#8FB3D9]">{d.valueLabel}</label>
+                    <span className="whitespace-nowrap text-[15px] font-semibold tabular-nums">{money(value, l)}</span>
+                  </div>
+                  <div className="pt-5">
+                    <input id="roi-value" type="range" min={d.valMin} max={d.valMax} step={d.valStep} value={value} onChange={(e) => setValue(Number(e.target.value))}
+                           className="race-scrub" style={{ background: `linear-gradient(90deg, #4ADE80 ${vPct}%, rgba(255,255,255,0.16) ${vPct}%)` }} />
+                  </div>
+                </div>
+                <p className="rounded-2xl border border-white/10 bg-[#0B2740]/60 p-4 text-[13.5px] leading-relaxed text-[#B9CCE0]">
+                  {bookings} × {money(value, l)} = <span className="font-semibold text-white">{money(rev, l)}</span> {l === "bs" ? "mjesečno" : "a month"}
+                </p>
+              </>
+            ) : (
+            <>
             <div>
               <div className="flex items-baseline justify-between gap-3">
                 <label htmlFor="savings-years" className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#8FB3D9]">{d.yearsLabel}</label>
@@ -206,6 +291,8 @@ export function Savings() {
                 <span className="block text-[13px] text-[#B9CCE0]">{d.supportSub}{p.free > 0 && <span className="text-[#4ADE80]"> · {d.supportFree}</span>}</span>
               </span>
             </button>
+            </>
+            )}
 
             <ul className="mt-auto grid grid-cols-2 gap-x-4 gap-y-2.5 border-t border-white/10 pt-6">
               {d.included.map((c) => (
@@ -216,6 +303,47 @@ export function Savings() {
             </ul>
           </div>
 
+          {mode === "earn" ? (
+          <div className="flex flex-col rounded-[24px] bg-white p-6 text-[#0F172A] sm:p-8" style={{ boxShadow: "0 40px 80px -40px rgba(0,0,0,0.55)" }}>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#64748B]">{d.paysIn}</span>
+              <span className="rounded-full bg-[#F1F5F9] px-2.5 py-1 text-[12px] font-semibold text-[#475569]">{d.sample}</span>
+            </div>
+            <p className="mt-3 text-[46px] sm:text-[56px] font-semibold leading-none tracking-[-0.04em] text-[#15803D]">{payback(days, l)}</p>
+            <div className="mt-6 grid grid-cols-2 gap-2.5">
+              <div className="rounded-2xl bg-[#F4F7FB] p-4">
+                <p className="text-[12px] text-[#64748B]">{d.revMonth}</p>
+                <p className="mt-1 text-[18px] font-semibold tabular-nums sm:text-[22px]">{money(rev, l)}</p>
+              </div>
+              <div className="rounded-2xl bg-[#DCFCE7] p-4">
+                <p className="text-[12px] text-[#15803D]">{d.firstYear}, {d.afterPrice}</p>
+                <p className="mt-1 text-[18px] font-semibold tabular-nums text-[#15803D] sm:text-[22px]">{money(Math.max(0, rev * 12 - p.price), l)}</p>
+              </div>
+            </div>
+            <div className="relative mt-6 h-[150px] border-t border-[#F1F5F9] pt-5">
+              <div className="relative grid h-full grid-cols-12 items-end gap-1.5">
+                <div aria-hidden className="pointer-events-none absolute inset-x-0 z-10 border-t-2 border-dashed border-[#DC2626]" style={{ bottom: `calc(18px + (100% - 18px) * ${(p.price / scaleR).toFixed(4)})` }} />
+                {Array.from({ length: 12 }, (_, i) => {
+                  const cum = rev * (i + 1);
+                  const ok = cum >= p.price;
+                  return (
+                    <div key={i} className="flex h-full flex-col items-center justify-end gap-1">
+                      <motion.span className={`block w-full rounded-t-md ${ok ? "bg-[#16A34A]" : "bg-[#CBD5E1]"}`} initial={false}
+                        animate={{ height: `max(3px, calc((100% - 18px) * ${Math.min(1, cum / scaleR).toFixed(4)}))` }}
+                        transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 160, damping: 22 }} />
+                      <span className="text-[10px] tabular-nums text-[#94A3B8]">{i + 1}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-[12px] font-semibold">
+              <span className="inline-flex items-center gap-2 text-[#B91C1C]"><span className="w-5 border-t-2 border-dashed border-[#DC2626]" />{d.costLine} {money(p.price, l)}</span>
+              <span className="inline-flex items-center gap-2 text-[#15803D]"><span className="h-2.5 w-2.5 rounded-sm bg-[#16A34A]" />{firstPaid >= 0 ? (l === "bs" ? `${d.paid} u ${firstPaid + 1}. mjesecu` : `${d.paid} in month ${firstPaid + 1}`) : (l === "bs" ? "Isplata nakon 12 mjeseci" : "Pays off after 12 months")}</span>
+            </div>
+            <p className="mt-3 text-[12px] leading-relaxed text-[#64748B]">{d.roiNote}</p>
+          </div>
+          ) : (
           <div className="flex flex-col rounded-[24px] bg-white p-6 text-[#0F172A] sm:p-8" style={{ boxShadow: "0 40px 80px -40px rgba(0,0,0,0.55)" }}>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#64748B]">{d.perDay}</span>
@@ -264,6 +392,7 @@ export function Savings() {
               <motion.span className="text-[22px] font-semibold tracking-tight tabular-nums">{totalText}</motion.span>
             </div>
           </div>
+          )}
         </div>
 
         <div ref={flipRef} className="mt-20">
