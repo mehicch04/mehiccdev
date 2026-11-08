@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { ArrowUp } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import { WHATSAPP } from "@/lib/contact";
@@ -8,6 +9,7 @@ import { WHATSAPP } from "@/lib/contact";
 export function ScrollTopButton() {
   const { lang } = useLanguage();
   const [show, setShow] = useState(false);
+  const admin = usePathname()?.startsWith("/admin");
 
   useEffect(() => {
     const onScroll = () => setShow(window.scrollY > window.innerHeight);
@@ -15,6 +17,8 @@ export function ScrollTopButton() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  if (admin) return null;
 
   const toTop = () => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;

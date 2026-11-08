@@ -3,6 +3,7 @@ import { Resend } from "resend";
 import { rateLimit } from "@/lib/rateLimit";
 import { isBot } from "@/lib/spam";
 import { isE164 } from "@/lib/phone";
+import { ownerMail } from "@/lib/mails";
 
 export const runtime = "nodejs";
 
@@ -50,7 +51,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "email_not_configured" }, { status: 503 });
   }
 
-  const esc = (s: string) => s.replace(/</g, "&lt;");
 
   try {
     const resend = new Resend(apiKey);
@@ -58,16 +58,8 @@ export async function POST(req: Request) {
       from,
       to,
       replyTo: email,
-      subject: `Nova poruka sa sajta: ${subject || "bez teme"} (${name})`,
-      html: `
-        <h2 style="font-family:system-ui,sans-serif">Nova poruka sa mehiccdev.com</h2>
-        <table style="font-family:system-ui,sans-serif;font-size:14px">
-          <tr><td style="color:#71717A;padding:6px 14px 6px 0">Ime</td><td><strong>${esc(name)}</strong></td></tr>
-          <tr><td style="color:#71717A;padding:6px 14px 6px 0">Email</td><td><strong>${esc(email)}</strong></td></tr>
-          <tr><td style="color:#71717A;padding:6px 14px 6px 0">Telefon</td><td><strong>${esc(phone)}</strong> · <a href="https://wa.me/${phone.replace(/\D/g, "")}">WhatsApp</a></td></tr>
-          <tr><td style="color:#71717A;padding:6px 14px 6px 0">Tip projekta</td><td><strong>${esc(subject) || "nije naveden"}</strong></td></tr>
-        </table>
-        <p style="font-family:system-ui,sans-serif;font-size:14px;white-space:pre-wrap;margin-top:16px">${esc(message)}</p>`,
+      subject: `Novi upit: ${subject || "bez teme"}, ${name}`,
+      html: ownerMail({ tag: "Novi upit", title: subject || "Upit sa sajta", name, email, phone, note: message, noteLabel: "Poruka" }),
     });
   } catch (err) {
     console.error("[kontakt] Slanje nije uspjelo:", err, { name, email });

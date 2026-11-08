@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import { waLink } from "@/lib/contact";
 
 export function WhatsAppButton() {
   const { lang } = useLanguage();
   const [show, setShow] = useState(false);
+  const admin = usePathname()?.startsWith("/admin");
 
   useEffect(() => {
     const onScroll = () => setShow(window.scrollY > 500);
@@ -16,7 +18,7 @@ export function WhatsAppButton() {
   }, []);
 
   const href = waLink(lang);
-  if (!href) return null;
+  if (!href || admin) return null;
 
   const label = lang === "en" ? "Write to us on WhatsApp" : "Pišite nam na WhatsApp";
 

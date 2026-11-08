@@ -37,10 +37,11 @@ const T = {
     email: "Email",
     note: "Kratko o projektu (nije obavezno)",
     phone: "Broj telefona (WhatsApp)",
-    confirm: "Potvrdi rezervaciju",
+    confirm: "Pošalji zahtjev",
+    errTaken: "Ovaj termin je upravo zauzet. Izaberite drugi.",
     change: "Promijeni termin",
-    doneH: "Termin je rezervisan",
-    doneP: "Potvrdu i link za poziv šaljemo na vaš email.",
+    doneH: "Zahtjev je poslan",
+    doneP: "Na email vam stiže potvrda prijema, a link za poziv šaljemo čim odobrimo termin.",
     errInput: "Unesite ime, ispravan email i broj telefona.",
     errSend: "Slanje nije uspjelo.",
     wa: "Pišite nam na WhatsApp",
@@ -73,10 +74,11 @@ const T = {
     email: "Email",
     note: "About your project (optional)",
     phone: "Phone number (WhatsApp)",
-    confirm: "Confirm booking",
+    confirm: "Send request",
+    errTaken: "This time was just booked. Please pick another one.",
     change: "Change time",
-    doneH: "Your call is booked",
-    doneP: "We'll send the confirmation and call link to your email.",
+    doneH: "Request sent",
+    doneP: "You'll get an email confirming we received it, and the call link as soon as we approve the time.",
     errInput: "Enter your name, a valid email and your phone number.",
     errSend: "Sending failed.",
     wa: "Message us on WhatsApp",
@@ -119,6 +121,17 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
 
   const [today, setToday] = useState<Date | null>(null);
   useEffect(() => setToday(day0(new Date())), []);
+  const [real, setReal] = useState<Record<string, string[]>>({});
+  useEffect(() => {
+    fetch("/api/zakazi/slots", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : { slots: [] }))
+      .then((j: { slots: { d: string; t: string }[] }) => {
+        const m: Record<string, string[]> = {};
+        j.slots.forEach(({ d: k, t }) => { (m[k] ??= []).push(t); });
+        setReal(m);
+      })
+      .catch(() => {});
+  }, []);
 
   const first = useMemo(() => {
     if (!today) return null;
@@ -154,7 +167,11 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
     weeks.set(t, out);
     return out;
   };
-  const busy = (x: Date) => week(monday(x))[key(x)] ?? SLOTS;
+  const busy = (x: Date) => {
+    const base0 = week(monday(x))[key(x)] ?? SLOTS;
+    const r = real[key(x)];
+    return r ? SLOTS.filter((t) => base0.includes(t) || r.includes(t)) : base0;
+  };
   const status = (x: Date): Status => {
     if (!today || x <= today || !OPEN.includes(x.getDay())) return "off";
     const n = busy(x).length;
@@ -166,7 +183,7 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
     const x = new Date(first);
     for (let i = 0; i < 90 && (status(x) === "off" || status(x) === "full"); i++) x.setDate(x.getDate() + 1);
     return x;
-  }, [first]);
+  }, [first, real]);
 
   const [view, setView] = useState<Date | null>(null);
   const [sel, setSel] = useState<Date | null>(null);
@@ -175,11 +192,11 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
   const [form, setForm] = useState({ name: "", email: "", note: "", website: "", code: "387", phone: "" });
   const opened = useRef(0);
   useEffect(() => { if (step === "form") opened.current = Date.now(); }, [step]);
-  const [err, setErr] = useState<"" | "input" | "send">("");
+  const [err, setErr] = useState<"" | "input" | "send" | "taken">("");
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    if (!firstFree) return;
+    if (!firstFree || sel) return;
     setSel(firstFree);
     setView(new Date(firstFree.getFullYear(), firstFree.getMonth(), 1));
   }, [firstFree]);
@@ -203,7 +220,7 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
       if (status(x) !== "off") { f += SLOTS.length - busy(x).length; t += SLOTS.length; }
     }
     return [f, t];
-  }, [today, base]);
+  }, [today, base, real]);
 
   const ready = !!(today && view && sel);
   const thisWeek = !!today && monday(today).getTime() === base;
@@ -224,7 +241,15 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: form.name, email: form.email, note: form.note, website: form.website, phone, t: Date.now() - opened.current, date: key(sel), time: slot, label: `${when} ${d.at} ${slot}`, lang: l }),
       });
+      if (r.status === 409) {
+        setReal((m) => ({ ...m, [key(sel)]: [...(m[key(sel)] ?? []), slot] }));
+        setSlot(null);
+        setStep("pick");
+        setErr("taken");
+        return;
+      }
       if (!r.ok) throw new Error(String(r.status));
+      setReal((m) => ({ ...m, [key(sel)]: [...(m[key(sel)] ?? []), slot] }));
       setStep("done");
     } catch {
       setErr("send");
@@ -310,6 +335,7 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
                 <div className="flex items-center gap-2.5"><Num n={2} on /><p className="text-[14px] font-semibold text-[#0F172A]">{d.s2}</p></div>
                 <p className="mt-5 min-h-[24px] text-[16px] font-semibold text-[#0F172A]">{when}</p>
                 <p className="mt-0.5 text-[12.5px] text-[#64748B]">{d.tz}</p>
+                {err === "taken" && <p className="mt-2 text-[12.5px] font-medium text-[#DC2626]">{d.errTaken}</p>}
                 <div className="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-1">
                   {SLOTS.map((t) => {
                     if (!ready) return <span key={t} className="h-[48px] rounded-xl bg-[#F8FAFC]" />;

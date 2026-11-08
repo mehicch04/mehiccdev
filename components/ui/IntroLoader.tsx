@@ -13,7 +13,7 @@ const COPY = {
   en: { connect: "connecting to server", load: "loading pages" },
 };
 
-export const INTRO_SCRIPT = `try{if(!sessionStorage.getItem("${KEY}")&&!matchMedia("(prefers-reduced-motion: reduce)").matches){var d=document.documentElement;d.setAttribute("data-intro","");setTimeout(function(){d.removeAttribute("data-intro")},9000)}}catch(e){}`;
+export const INTRO_SCRIPT = `try{if(location.pathname.indexOf("/admin")!==0&&!sessionStorage.getItem("${KEY}")&&!matchMedia("(prefers-reduced-motion: reduce)").matches){var d=document.documentElement;d.setAttribute("data-intro","");setTimeout(function(){d.removeAttribute("data-intro")},9000)}}catch(e){}`;
 
 const clamp = (x: number) => Math.max(0, Math.min(1, x));
 
