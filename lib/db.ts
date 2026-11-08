@@ -6,6 +6,8 @@ export type Booking = {
   email: string;
   phone: string;
   note: string;
+  topic?: string;
+  site?: string;
   date: string;
   time: string;
   label: string;

@@ -112,7 +112,7 @@ export function clientMail(kind: Kind, b: Booking) {
 }
 
 export function ownerMail(o: {
-  tag: string; title: string; sub?: string; name: string; email: string; phone: string; note?: string; noteLabel: string; meta?: string; admin?: string;
+  tag: string; title: string; sub?: string; name: string; email: string; phone: string; note?: string; noteLabel: string; meta?: string; admin?: string; topic?: string; site?: string;
 }) {
   const wa = `https://wa.me/${o.phone.replace(/\D/g, "")}`;
   return `
@@ -127,6 +127,7 @@ export function ownerMail(o: {
         <p style="margin:0;font-size:16px;font-weight:600;color:#0F172A">${esc(o.name)}</p>
         <p style="margin:4px 0 0;font-size:14px;color:#475569">${esc(o.phone)} &nbsp;·&nbsp; <a href="mailto:${esc(o.email)}" style="color:#0F3554">${esc(o.email)}</a></p>
         ${o.meta ? `<p style="margin:4px 0 0;font-size:13px;color:#94A3B8">${esc(o.meta)}</p>` : ""}
+        ${o.topic || o.site ? `<p style="margin:12px 0 0;font-size:13.5px;color:#475569">${o.topic ? `<span style="display:inline-block;background:#EEF3F8;color:#0F3554;font-weight:600;padding:4px 9px;border-radius:8px;margin-right:8px">${esc(o.topic)}</span>` : ""}${o.site ? `<a href="${esc(o.site)}" style="color:#0F3554;font-weight:600">${esc(o.site.replace(/^https?:\/\//, ""))}</a>` : ""}</p>` : ""}
         ${o.note ? `<div style="margin-top:16px;background:#F8FAFC;border-radius:12px;padding:12px 14px"><p style="margin:0 0 4px;font-size:12px;color:#94A3B8;font-weight:600">${esc(o.noteLabel)}</p><p style="margin:0;font-size:14px;color:#0F172A;white-space:pre-wrap;line-height:1.5">${esc(o.note)}</p></div>` : ""}
         <div style="margin-top:18px">${o.admin ? btn(o.admin, "Otvori u admin panelu", "#0F172A") : btn(`mailto:${o.email}`, "Odgovori na email", "#0F172A")}${btn(wa, "WhatsApp", "#16A34A")}</div>
       </div>

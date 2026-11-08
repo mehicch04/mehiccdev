@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 const SLOTS = ["11:00", "12:00", "13:00", "14:00"];
 
 type Body = {
-  name?: string; email?: string; note?: string; website?: string; phone?: string; t?: number;
+  name?: string; email?: string; note?: string; website?: string; phone?: string; t?: number; topic?: string; site?: string;
   date?: string; time?: string; label?: string; lang?: string;
 };
 
@@ -44,6 +44,9 @@ export async function POST(req: Request) {
   const time  = (body.time ?? "").trim();
   const label = (body.label ?? `${date} ${time}`).trim().slice(0, 80);
   const lang  = body.lang === "en" ? "en" : "bs";
+  const topic = (body.topic ?? "").trim().slice(0, 40);
+  const raw   = (body.site ?? "").trim().replace(/\s+/g, "").slice(0, 200);
+  const site  = raw && /\.[a-z]{2,}/i.test(raw) ? (/^https?:\/\//i.test(raw) ? raw : `https://${raw}`) : "";
 
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   if (name.length < 2 || !emailOk || !isE164(phone) || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !SLOTS.includes(time)) {
@@ -68,7 +71,7 @@ export async function POST(req: Request) {
   }
 
   const now = Date.now();
-  const b: Booking = { id: newId(), name, email, phone, note, date, time, label, lang, status: "pending", createdAt: now, updatedAt: now };
+  const b: Booking = { id: newId(), name, email, phone, note, topic: topic || undefined, site: site || undefined, date, time, label, lang, status: "pending", createdAt: now, updatedAt: now };
 
   try {
     await saveBooking(b);
@@ -90,7 +93,7 @@ export async function POST(req: Request) {
       replyTo: email,
       subject: `Novi zahtjev: ${label}, ${name}`,
       html: ownerMail({
-        tag: "Novi zahtjev", title: label, sub: "Čeka tvoje odobrenje", name, email, phone, note, noteLabel: "O projektu",
+        tag: "Novi zahtjev", title: label, sub: "Čeka tvoje odobrenje", name, email, phone, note, topic, site, noteLabel: "O projektu",
         meta: lang === "en" ? "Klijent piše na engleskom" : undefined, admin: `${SITE}/admin?b=${b.id}`,
       }),
     }),

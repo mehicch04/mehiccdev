@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CalendarPlus, Check, ChevronLeft, ChevronRight, Clock, Inbox, Loader2, LogOut, Mail, MessageCircle, Phone, RefreshCw, Send, Video, X } from "lucide-react";
+import { CalendarPlus, Check, Globe, ChevronLeft, ChevronRight, Clock, Inbox, Loader2, LogOut, Mail, MessageCircle, Phone, RefreshCw, Send, Video, X } from "lucide-react";
 import { Znak } from "@/components/ui/Logo";
 import { googleCalendarUrl } from "@/lib/calendar";
 import type { Booking, Status } from "@/lib/db";
@@ -95,6 +95,13 @@ function Detail({ b, meetDefault, onSaved, onClose, toast }: { b: Booking; meetD
       <p className="mt-4 text-[22px] font-semibold tracking-[-0.02em] text-[#0F172A]">{b.name}</p>
       <p className="mt-1 text-[15px] font-semibold text-[#0F172A]">{longDay(b.date)} u {b.time}</p>
       <p className="text-[13px] text-[#64748B]">30 minuta, Google Meet{b.lang === "en" ? ", na engleskom" : ""}</p>
+
+      {(b.topic || b.site) && (
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          {b.topic && <span className="rounded-lg bg-[#EEF3F8] px-2.5 py-1 text-[12.5px] font-semibold text-[#0F3554]">{b.topic}</span>}
+          {b.site && <a href={b.site} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#0F3554] underline decoration-[#CBD5E1] underline-offset-4 hover:text-[#0F172A]"><Globe size={13} /> {b.site.replace(/^https?:\/\//, "")}</a>}
+        </div>
+      )}
 
       <div className="mt-5 flex gap-2">
         <a href={wa} target="_blank" rel="noopener noreferrer" className={`${contact} bg-[#16A34A] text-white hover:bg-[#15803D]`}><MessageCircle size={15} /> WhatsApp</a>

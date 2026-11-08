@@ -11,7 +11,7 @@ export function PhoneInput({ code, number, onCode, onNumber, placeholder, classN
       <label className="relative flex shrink-0 items-center border-r border-[#E2E8F0] bg-[#F8FAFC]">
         <select value={code} onChange={(e) => onCode(e.target.value)} aria-label="Pozivni broj"
           className="h-full cursor-pointer appearance-none bg-transparent py-3 pl-3.5 pr-8 text-[14px] font-semibold text-[#0F172A] outline-none">
-          {COUNTRIES.map((x) => <option key={x.c} value={x.d}>{x.f} +{x.d}</option>)}
+          {COUNTRIES.map((x) => <option key={x.c} value={x.d}>{x.c} +{x.d}</option>)}
         </select>
         <ChevronDown size={14} className="pointer-events-none absolute right-2.5 text-[#64748B]" />
       </label>

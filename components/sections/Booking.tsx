@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, CalendarDays, Check, ChevronLeft, ChevronRight, Clock, Loader2, Video } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, Loader2, Video } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import { waLink } from "@/lib/contact";
 import { toE164 } from "@/lib/phone";
@@ -36,7 +36,10 @@ const T = {
     name: "Ime i prezime",
     email: "Email",
     note: "Kratko o projektu (nije obavezno)",
-    phone: "Broj telefona (WhatsApp)",
+    phone: "Broj telefona",
+    site: "Vaš sajt, ako ga imate",
+    topicL: "Šta vam treba?",
+    topics: ["Novi sajt", "Web aplikacija", "Sistem za rezervacije", "Redizajn", "Marketing"],
     confirm: "Pošalji zahtjev",
     errTaken: "Ovaj termin je upravo zauzet. Izaberite drugi.",
     change: "Promijeni termin",
@@ -73,7 +76,10 @@ const T = {
     name: "Full name",
     email: "Email",
     note: "About your project (optional)",
-    phone: "Phone number (WhatsApp)",
+    phone: "Phone number",
+    site: "Your website, if you have one",
+    topicL: "What do you need?",
+    topics: ["New website", "Web app", "Booking system", "Redesign", "Marketing"],
     confirm: "Send request",
     errTaken: "This time was just booked. Please pick another one.",
     change: "Change time",
@@ -189,7 +195,7 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
   const [sel, setSel] = useState<Date | null>(null);
   const [slot, setSlot] = useState<string | null>(null);
   const [step, setStep] = useState<"pick" | "form" | "done">("pick");
-  const [form, setForm] = useState({ name: "", email: "", note: "", website: "", code: "387", phone: "" });
+  const [form, setForm] = useState({ name: "", email: "", note: "", website: "", code: "387", phone: "", topic: "", site: "" });
   const opened = useRef(0);
   useEffect(() => { if (step === "form") opened.current = Date.now(); }, [step]);
   const [err, setErr] = useState<"" | "input" | "send" | "taken">("");
@@ -239,7 +245,7 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
       const r = await fetch("/api/zakazi", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: form.name, email: form.email, note: form.note, website: form.website, phone, t: Date.now() - opened.current, date: key(sel), time: slot, label: `${when} ${d.at} ${slot}`, lang: l }),
+        body: JSON.stringify({ name: form.name, email: form.email, note: form.note, website: form.website, topic: form.topic, site: form.site, phone, t: Date.now() - opened.current, date: key(sel), time: slot, label: `${when} ${d.at} ${slot}`, lang: l }),
       });
       if (r.status === 409) {
         setReal((m) => ({ ...m, [key(sel)]: [...(m[key(sel)] ?? []), slot] }));
@@ -367,9 +373,18 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
                   <p className="text-[13px] text-[#64748B]">{d.at} {slot}, {d.dur}</p>
                 </div>
                 <div className="mt-4 space-y-2.5">
+                  <label className="relative block">
+                    <select value={form.topic} onChange={(e) => setForm({ ...form, topic: e.target.value })} aria-label={d.topicL}
+                      className={`${input} cursor-pointer appearance-none pr-10 ${form.topic ? "" : "text-[#94A3B8]"}`}>
+                      <option value="" disabled>{d.topicL}</option>
+                      {d.topics.map((x) => <option key={x} value={x} className="text-[#0F172A]">{x}</option>)}
+                    </select>
+                    <ChevronDown size={16} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#64748B]" />
+                  </label>
                   <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={d.name} autoComplete="name" className={input} />
                   <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder={d.email} type="email" autoComplete="email" className={input} />
                   <PhoneInput code={form.code} number={form.phone} onCode={(v) => setForm({ ...form, code: v })} onNumber={(v) => setForm({ ...form, phone: v })} placeholder={d.phone} />
+                  <input value={form.site} onChange={(e) => setForm({ ...form, site: e.target.value })} placeholder={d.site} inputMode="url" autoComplete="url" className={input} />
                   <input value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} placeholder={d.note} className={input} />
                   <input value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
                 </div>
@@ -379,8 +394,9 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
                     {err === "send" && wa && <> <a href={wa} target="_blank" rel="noopener noreferrer" className="font-semibold text-[#16A34A] underline underline-offset-2">{d.wa}</a></>}
                   </p>
                 )}
+                <span className="hidden lg:block lg:flex-1" />
                 <button type="button" disabled={sending} onClick={submit}
-                  className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-5 py-3.5 text-[14.5px] font-semibold text-white transition-colors hover:bg-[#B91C1C] disabled:opacity-70 lg:mt-auto">
+                  className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-5 py-3.5 text-[14.5px] font-semibold text-white transition-colors hover:bg-[#B91C1C] disabled:opacity-70">
                   {d.confirm} {sending ? <Loader2 size={16} className="animate-spin" /> : <ArrowRight size={16} />}
                 </button>
                 <button type="button" onClick={() => { setStep("pick"); setErr(""); }} className="mt-3 inline-flex items-center justify-center gap-1.5 text-[13px] font-semibold text-[#64748B] transition-colors hover:text-[#0F172A]">
