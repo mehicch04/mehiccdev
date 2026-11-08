@@ -39,7 +39,7 @@ const T: Record<"bs" | "en", Content> = {
         key: "web", title: "Sajtovi", lead: "Sajt koji se vidi i koji sami uređujete",
         desc: "Brzi sajtovi koji se vide na Googlu i rade savršeno na telefonu. Tekst, cijene i slike mijenjate sami, bez programera.",
         points: ["Prvo za telefon, brzo učitavanje", "Vidljivost na Googlu", "Tekst, cijene i slike mijenjate sami", "Dvojezično, BS i EN"],
-        link: "Otvorite sajt", alt: "OxyBaric Mostar, medicinski sajt",
+        link: "Pogledajte projekat", alt: "OxyBaric Mostar, medicinski sajt",
       },
       {
         key: "ux", title: "UI/UX dizajn", lead: "Dizajn prije prve linije koda",
@@ -79,7 +79,7 @@ const T: Record<"bs" | "en", Content> = {
         key: "web", title: "Websites", lead: "A site people find and you edit yourself",
         desc: "Fast websites that show up on Google and work perfectly on phones. You change text, prices and photos yourself, no developer needed.",
         points: ["Mobile first, fast loading", "Visibility on Google", "You edit text, prices and photos", "Bilingual, BS and EN"],
-        link: "Open the site", alt: "OxyBaric Mostar, medical website",
+        link: "See the project", alt: "OxyBaric Mostar, medical website",
       },
       {
         key: "ux", title: "UI/UX design", lead: "Design before the first line of code",
@@ -105,7 +105,7 @@ const T: Record<"bs" | "en", Content> = {
 };
 
 const ICONS: Record<Key, LucideIcon> = { app: LayoutDashboard, web: Globe, ux: PenTool, mkt: Megaphone };
-const HREFS: Record<Key, string> = { app: "/maximum", web: "https://oxybaricmostar.ba", ux: "/portfolio", mkt: "#cjenovnik" };
+const HREFS: Record<Key, string> = { app: "/maximum", web: "/portfolio", ux: "/portfolio", mkt: "#cjenovnik" };
 const TOAST_ICONS: LucideIcon[] = [CarFront, CalendarCheck, BellRing];
 const TILE_COLORS = [["#0F172A", "#FFFFFF"], ["#F4F7FB", "#0F172A"], ["#0F3554", "#FFFFFF"], ["#DC2626", "#FFFFFF"], ["#E9E2D6", "#0F172A"], ["#16A34A", "#FFFFFF"]];
 const BOX_POS = [{ x: "7%", y: "25%", w: "86%", h: "22%" }, { x: "7%", y: "52%", w: "86%", h: "9%" }];

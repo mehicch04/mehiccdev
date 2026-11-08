@@ -8,7 +8,7 @@ import { useLanguage } from "@/components/ui/LanguageProvider";
 
 const LIST = [
   { name: "Maximum Rent a Car", img: "/portfolio/maximum-poslije.webp", href: "/maximum", cat: { bs: "Web aplikacija", en: "Web app" } },
-  { name: "OxyBaric Mostar", img: "/portfolio/oxybaric.png", href: "https://oxybaricmostar.ba", cat: { bs: "Web sajt", en: "Website" } },
+  { name: "OxyBaric Mostar", img: "/portfolio/oxybaric.png", href: "/portfolio", cat: { bs: "Web sajt", en: "Website" } },
   { name: "Adnan Gosto", img: "/portfolio/gosto-coaching.webp", href: "/portfolio", cat: { bs: "Coaching platforma", en: "Coaching platform" } },
   { name: "Roobet Rewards", img: "/portfolio/roobet.png", href: "https://roobet.com/", cat: { bs: "UI/UX dizajn", en: "UI/UX design" } },
 ];

@@ -5,7 +5,6 @@ import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { MessageCircle, Plus } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
-import { Head } from "@/components/ui/kit";
 import { waLink } from "@/lib/contact";
 
 type Content = {
@@ -59,10 +58,13 @@ export function Faq() {
   const wa = waLink(lang);
 
   return (
-    <section id="cesta-pitanja" className="relative bg-white scroll-mt-24">
+    <section id="cesta-pitanja" data-dark className="relative scroll-mt-24 text-white" style={{ background: "#0F172A" }}>
       <div className="mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16 lg:px-8">
         <div className="lg:sticky lg:top-28 lg:self-start">
-          <Head align="left" label={d.label} h={d.h} accent={d.accent} />
+          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#8FB3D9]">{d.label}</p>
+          <h2 className="mt-4 text-[32px] leading-[1.12] sm:text-[44px] font-semibold tracking-[-0.03em]">
+            {d.h} <span className="text-[#8FB3D9]">{d.accent}</span>
+          </h2>
           <div className="mt-8 flex items-center gap-4 rounded-[20px] border border-[#E5E7EB] bg-white p-5" style={{ boxShadow: "0 1px 2px rgba(15,23,42,0.04)" }}>
             <span className="flex shrink-0 -space-x-3">
               {["/team/bakir.jpg", "/team/nedim.jpg"].map((src) => (
@@ -89,15 +91,15 @@ export function Faq() {
           </div>
         </div>
 
-        <ul className="border-t border-[#E5E7EB]">
+        <ul className="border-t border-white/10">
           {d.items.map((it, i) => {
             const on = open === i;
             return (
-              <li key={it.q} className="border-b border-[#E5E7EB]">
+              <li key={it.q} className="border-b border-white/10">
                 <button type="button" aria-expanded={on} onClick={() => setOpen(on ? null : i)}
                         className="group flex w-full items-center justify-between gap-6 py-5 text-left">
-                  <span className={`text-[16px] sm:text-[17px] font-semibold transition-colors ${on ? "text-[#0F172A]" : "text-[#334155] group-hover:text-[#0F172A]"}`}>{it.q}</span>
-                  <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border transition-all duration-300 ${on ? "rotate-45 border-[#0F172A] bg-[#0F172A] text-white" : "border-[#E5E7EB] text-[#64748B] group-hover:border-[#CBD5E1]"}`}>
+                  <span className={`text-[16px] sm:text-[17px] font-semibold transition-colors ${on ? "text-white" : "text-[#CBD5E1] group-hover:text-white"}`}>{it.q}</span>
+                  <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full border transition-all duration-300 ${on ? "rotate-45 border-white bg-white text-[#0F172A]" : "border-white/15 text-[#94A3B8] group-hover:border-white/30"}`}>
                     <Plus size={16} />
                   </span>
                 </button>
@@ -105,7 +107,7 @@ export function Faq() {
                   {on && (
                     <motion.div key="a" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
                                 transition={{ duration: reduce ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }} className="overflow-hidden">
-                      <p className="pb-6 pr-12 text-[15px] leading-[1.7] text-[#475569]">{it.a}</p>
+                      <p className="pb-6 pr-12 text-[15px] leading-[1.7] text-[#94A3B8]">{it.a}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>

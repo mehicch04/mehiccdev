@@ -22,13 +22,13 @@ export default function HomePage() {
       <Hero />
       <Clients />
       <Services />
-      <Process />
       <Portfolio />
       <Results />
+      <Process />
+      <About />
       <Pricing />
       <Savings />
       <SaasTeaser />
-      <About />
       <Faq />
       <Contact />
       <Footer />
