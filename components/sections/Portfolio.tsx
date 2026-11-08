@@ -5,6 +5,7 @@ import Image from "next/image";
 import { animate, motion, useInView, useReducedMotion } from "framer-motion";
 import { ArrowRight, ArrowUpRight, ChevronsLeftRight, Star } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
+import { Swipe } from "@/components/ui/Swipe";
 
 type Mini = { title: string; cat: string; desc: string; live: boolean };
 type Content = {
@@ -185,7 +186,8 @@ export function Portfolio() {
           </div>
         </motion.article>
 
-        <div className="mt-5 grid gap-5 md:grid-cols-3">
+        <div className="mt-5">
+        <Swipe bp="md" dark grid="md:grid-cols-3 md:gap-5" item="w-[84%] sm:w-[60%]">
           {d.minis.map((m, i) => {
             const meta = MINI_META[i];
             const ext = meta.href.startsWith("http");
@@ -216,6 +218,7 @@ export function Portfolio() {
               </motion.a>
             );
           })}
+        </Swipe>
         </div>
 
         <div className="mt-10 flex justify-center">

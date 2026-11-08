@@ -1,13 +1,13 @@
 "use client";
 
 import {
-  ArrowRight, Check, CircleCheck, Clock, Star, LayoutDashboard, Car, Crown, Rocket, TrendingUp,
+  ArrowRight, ArrowUpRight, Check, ChevronDown, CircleCheck, Minus, Star, LayoutDashboard, Car, Crown, Rocket, TrendingUp,
   CalendarClock, Wrench, ShieldCheck, Gift, type LucideIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useLanguage } from "@/components/ui/LanguageProvider";
-import { NoSubscription } from "@/components/ui/kit";
+import { Swipe } from "@/components/ui/Swipe";
 
 type AppPlan = { name: string; tag: string; price: string; alt?: string; kmNote?: string; oldPrice?: string; promoNote?: string; discountBadge?: string; ctaLabel?: string; monthly: string; from?: boolean; gift: string; features: string[] };
 type MktPlan = { alt?: string; name: string; tag: string; price: string; note: string; features: string[] };
@@ -23,7 +23,10 @@ type PricingData = {
   perMonth: string; from: string; popular: string;
   giftPre: string; giftPost: string; cta: string; appNote: string; apps: AppPlan[];
   mktEyebrow: string; mktHeading: string; mktSubtitle: string; mktCta: string; mktNote: string; mkt: MktPlan[];
+  shortSub: string; compareOpen: string; compareClose: string; compareHead: string; rcLink: string; once2: string;
+  compareApps: Row[]; compareMkt: Row[];
 };
+type Row = { l: string; v: (boolean | string)[] };
 
 const PRICING: Record<"bs" | "en", PricingData> = {
   bs: {
@@ -106,6 +109,35 @@ const PRICING: Record<"bs" | "en", PricingData> = {
           "Prioritetna podrška i dedikovani developer",
         ],
       },
+    ],
+    shortSub: "Aplikaciju plaćate jednom i ona je vaša. Marketing mjesečno, samo dok vam koristi.",
+    compareOpen: "Uporedite pakete",
+    compareClose: "Sakrij poređenje",
+    compareHead: "Šta dobijate",
+    rcLink: "Primjer: rent a car sistem",
+    once2: "jednokratno",
+    compareApps: [
+      { l: "Radi savršeno na telefonu i računaru", v: [true, true, true] },
+      { l: "Sami mijenjate tekst, slike i cijene", v: [true, true, true] },
+      { l: "Upiti klijenata stižu direktno vama", v: [true, true, true] },
+      { l: "Bez mjesečne pretplate", v: [true, true, true] },
+      { l: "Online rezervacije bez duplih termina", v: [false, true, true] },
+      { l: "WhatsApp obavijest za svaku rezervaciju", v: [false, true, true] },
+      { l: "Na dva jezika, za domaće i strane goste", v: [false, true, true] },
+      { l: "Besplatna podrška nakon predaje", v: [false, "2 mjeseca", "2 mjeseca"] },
+      { l: "Online plaćanje i depozit", v: [false, false, true] },
+      { l: "Lični developer i prioritetna podrška", v: [false, false, true] },
+    ],
+    compareMkt: [
+      { l: "Društvene mreže", v: ["1 mreža", "Instagram i Facebook", "Instagram i Facebook"] },
+      { l: "Objava mjesečno", v: ["8", "16", "do 30"] },
+      { l: "Stories i Reels", v: [false, true, true] },
+      { l: "Reklame koje dovode upite", v: [false, "1 kampanja", "više kampanja"] },
+      { l: "Plan objava za cijeli mjesec", v: [false, true, true] },
+      { l: "Snimanje Reels videa", v: [false, false, true] },
+      { l: "Odgovaramo na komentare i poruke", v: [false, false, true] },
+      { l: "Mjesečni izvještaj", v: ["osnovni", "detaljan", "detaljan"] },
+      { l: "Bez ugovorne obaveze", v: [true, true, true] },
     ],
     mktEyebrow: "Gratis prvi mjesec",
     mktHeading: "Marketing paketi",
@@ -209,6 +241,35 @@ const PRICING: Record<"bs" | "en", PricingData> = {
         ],
       },
     ],
+    shortSub: "You pay for the app once and it's yours. Marketing is monthly, only while it works for you.",
+    compareOpen: "Compare packages",
+    compareClose: "Hide comparison",
+    compareHead: "What you get",
+    rcLink: "Example: car rental system",
+    once2: "paid once",
+    compareApps: [
+      { l: "Works perfectly on phones and computers", v: [true, true, true] },
+      { l: "You edit text, photos and prices yourself", v: [true, true, true] },
+      { l: "Client inquiries come straight to you", v: [true, true, true] },
+      { l: "No monthly subscription", v: [true, true, true] },
+      { l: "Online bookings with no double booking", v: [false, true, true] },
+      { l: "WhatsApp alert for every booking", v: [false, true, true] },
+      { l: "Two languages, for local and foreign guests", v: [false, true, true] },
+      { l: "Free support after handover", v: [false, "2 months", "2 months"] },
+      { l: "Online payment and deposit", v: [false, false, true] },
+      { l: "Personal developer and priority support", v: [false, false, true] },
+    ],
+    compareMkt: [
+      { l: "Social networks", v: ["1 network", "Instagram and Facebook", "Instagram and Facebook"] },
+      { l: "Posts per month", v: ["8", "16", "up to 30"] },
+      { l: "Stories and Reels", v: [false, true, true] },
+      { l: "Ads that bring inquiries", v: [false, "1 campaign", "multiple campaigns"] },
+      { l: "A posting plan for the whole month", v: [false, true, true] },
+      { l: "Reels video production", v: [false, false, true] },
+      { l: "We reply to comments and messages", v: [false, false, true] },
+      { l: "Monthly report", v: ["basic", "detailed", "detailed"] },
+      { l: "No contract commitment", v: [true, true, true] },
+    ],
     mktEyebrow: "Free first month",
     mktHeading: "Marketing packages",
     mktSubtitle: "The first month is free with every app. After that, you continue only if you want to:",
@@ -248,98 +309,92 @@ function Head({ eyebrow, h, accent, sub, dark = false }: { eyebrow: string; h: s
   );
 }
 
-function AppCard({ plan, icon: Icon, featured, d }: { plan: AppPlan; icon: LucideIcon; featured: boolean; d: (typeof PRICING)["bs"] }) {
+type CardPlan = { name: string; tag: string; price: string; alt?: string; per?: string; note: string; features: string[]; cta: string };
+
+function PlanCard({ plan, icon: Icon, featured, d, link }: { plan: CardPlan; icon: LucideIcon; featured: boolean; d: PricingData; link?: boolean }) {
   return (
     <article
-      className={`relative flex flex-col rounded-[22px] border ${featured ? "border-white/15" : "border-white/[0.08] bg-white/[0.03]"}`}
-      style={featured ? { background: "linear-gradient(165deg, #1D4E78 0%, #0F3554 55%, #0C2B45 100%)", boxShadow: "0 30px 60px -30px rgba(0,0,0,0.6)" } : undefined}
+      className={`group relative flex flex-col rounded-[24px] border p-6 transition-[transform,border-color] duration-300 sm:p-7 lg:hover:-translate-y-1.5 ${featured ? "border-white/15" : "border-white/[0.08] bg-white/[0.03] hover:border-white/20"}`}
+      style={featured ? { background: "linear-gradient(165deg, #1D4E78 0%, #0F3554 60%, #0C2B45 100%)", boxShadow: "0 30px 60px -30px rgba(0,0,0,0.6)" } : undefined}
     >
-      {featured && (
-        <span className="absolute right-5 top-5 grid h-7 w-7 place-items-center rounded-full bg-[#16A34A] text-white"><Check size={15} strokeWidth={3} /></span>
-      )}
-      <div className="p-6 sm:p-7">
-        <div className="flex flex-wrap items-center gap-2.5 pr-10">
-          <span className={`grid h-9 w-9 place-items-center rounded-xl ${featured ? "bg-white/15" : "bg-white/[0.06]"} text-white`}><Icon size={17} /></span>
-          <h3 className="text-[19px] font-semibold text-white">{plan.name}</h3>
-          {featured && <span className="rounded-md bg-white/15 px-2 py-0.5 text-[11px] font-semibold text-white">{d.popular}</span>}
-        </div>
-        <p className={`mt-3 text-[14px] leading-relaxed ${featured ? "text-[#C7D7E8]" : "text-[#94A3B8]"}`}>{plan.tag}</p>
-        <p className="mt-6 flex flex-wrap items-baseline gap-x-2">
-          {plan.from && <span className={`text-[14px] ${featured ? "text-[#C7D7E8]" : "text-[#94A3B8]"}`}>{d.from}</span>}
-          <span className="text-[40px] leading-none font-semibold tracking-tight text-white tabular-nums">{plan.price}</span>
-          {plan.oldPrice && <span className="text-[15px] text-[#94A3B8] line-through">{plan.oldPrice}</span>}
-          {plan.discountBadge && <span className="rounded-md bg-[#16A34A]/25 px-2 py-0.5 text-[11px] font-semibold text-[#4ADE80]">{plan.discountBadge}</span>}
-        </p>
-        <p className={`mt-2 text-[12.5px] ${featured ? "text-[#C7D7E8]" : "text-[#94A3B8]"}`}>{[d.once, plan.alt].filter(Boolean).join(" · ")}</p>
-        {plan.promoNote && (
-          <p className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1.5 text-[12px] font-medium text-white"><Clock size={12} /> {plan.promoNote}</p>
-        )}
-        <NoSubscription title={d.freeTitle} sub={d.freeSub} dark />
+      <div className="flex items-center gap-2.5">
+        <span className={`grid h-9 w-9 place-items-center rounded-xl text-white ${featured ? "bg-white/15" : "bg-white/[0.06]"}`}><Icon size={17} /></span>
+        <h3 className="text-[19px] font-semibold text-white">{plan.name}</h3>
+        {featured && <span className="ml-auto rounded-md bg-[#DC2626] px-2 py-0.5 text-[11px] font-semibold text-white">{d.popular}</span>}
       </div>
-
-      <div className={`border-t px-6 py-6 sm:px-7 ${featured ? "border-white/15" : "border-white/[0.08]"}`}>
-        <ul className="space-y-3">
-          {plan.features.map((f) =>
-            isHeader(f) ? (
-              <li key={f} className={`pt-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${featured ? "text-[#8FB3D9]" : "text-[#64748B]"}`}>{f}</li>
-            ) : (
-              <li key={f} className={`flex items-start gap-2.5 text-[14px] leading-snug ${featured ? "text-white" : "text-[#CBD5E1]"}`}>
-                <CircleCheck size={16} className="mt-0.5 shrink-0 text-[#4ADE80]" />{f}
-              </li>
-            )
-          )}
-        </ul>
-      </div>
-
-      <div className="mt-auto px-6 pb-6 sm:px-7 sm:pb-7">
-        <a href="#kontakt"
-           className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-[14px] font-semibold transition-colors ${featured ? "bg-[#DC2626] text-white hover:bg-[#B91C1C]" : "bg-white text-[#0F172A] hover:bg-[#E2E8F0]"}`}>
-          {plan.ctaLabel ?? d.cta} <ArrowRight size={15} />
+      <p className={`mt-3 line-clamp-2 text-[14px] leading-relaxed ${featured ? "text-[#C7D7E8]" : "text-[#94A3B8]"}`}>{plan.tag}</p>
+      <p className="mt-6 flex flex-wrap items-baseline gap-x-2">
+        <span className="text-[13px] text-[#94A3B8]">{d.from}</span>
+        <span className="text-[40px] font-semibold leading-none tracking-tight text-white tabular-nums sm:text-[42px]">{plan.price}</span>
+        {plan.per && <span className="text-[15px] text-[#94A3B8]">{plan.per}</span>}
+      </p>
+      <p className={`mt-2 text-[12.5px] ${featured ? "text-[#C7D7E8]" : "text-[#94A3B8]"}`}>{[plan.note, plan.alt].filter(Boolean).join(" · ")}</p>
+      {link && (
+        <a href="/rjesenja/rent-a-car" className="mt-4 inline-flex w-fit items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-[12.5px] font-semibold text-white transition-colors hover:bg-white/20">
+          <Car size={14} /> {d.rcLink} <ArrowUpRight size={13} />
         </a>
-      </div>
+      )}
+      <ul className="mt-6 space-y-2.5 border-t border-white/10 pt-6">
+        {plan.features.filter((f) => !isHeader(f)).slice(0, 4).map((f) => (
+          <li key={f} className="flex items-start gap-2.5 text-[14px] leading-snug text-[#E2E8F0]"><CircleCheck size={16} className="mt-0.5 shrink-0 text-[#4ADE80]" />{f}</li>
+        ))}
+      </ul>
+      <a href="#kontakt"
+         className={`mt-auto inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-[14px] font-semibold transition-colors ${featured ? "bg-[#DC2626] text-white hover:bg-[#B91C1C]" : "bg-white text-[#0F172A] hover:bg-[#E2E8F0]"}`}
+         style={{ marginTop: 28 }}>
+        {plan.cta} <ArrowRight size={15} />
+      </a>
     </article>
   );
 }
 
-function MktCard({ plan, icon: Icon, featured, d }: { plan: MktPlan; icon: LucideIcon; featured: boolean; d: (typeof PRICING)["bs"] }) {
+function Compare({ rows, names, head }: { rows: Row[]; names: string[]; head: string }) {
   return (
-    <article
-      className={`relative flex flex-col rounded-[22px] border ${featured ? "border-white/15" : "border-white/[0.08] bg-white/[0.03]"}`}
-      style={featured ? { background: "linear-gradient(165deg, #1D4E78 0%, #0F3554 55%, #0C2B45 100%)", boxShadow: "0 30px 60px -30px rgba(0,0,0,0.6)" } : undefined}
-    >
-      <div className="p-6 sm:p-7">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <span className={`grid h-9 w-9 place-items-center rounded-xl ${featured ? "bg-white/15" : "bg-white/[0.06]"} text-white`}><Icon size={17} /></span>
-          <h3 className="text-[19px] font-semibold text-white">{plan.name}</h3>
-          {featured && <span className="rounded-md bg-white/15 px-2 py-0.5 text-[11px] font-semibold text-white">{d.popular}</span>}
-        </div>
-        <p className={`mt-3 text-[14px] leading-relaxed ${featured ? "text-[#C7D7E8]" : "text-[#94A3B8]"}`}>{plan.tag}</p>
-        <p className="mt-6 flex flex-wrap items-baseline gap-x-2">
-          <span className="text-[40px] leading-none font-semibold tracking-tight text-white tabular-nums">{plan.price}</span>
-          <span className={`text-[15px] ${featured ? "text-[#C7D7E8]" : "text-[#94A3B8]"}`}>{d.perMonth}</span>
-        </p>
-        <p className={`mt-2 text-[12.5px] ${featured ? "text-[#C7D7E8]" : "text-[#94A3B8]"}`}>{[plan.alt, plan.note].filter(Boolean).join(" · ")}</p>
+    <div className="mt-8 overflow-x-auto rounded-[24px] border border-white/[0.08] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <table className="w-full min-w-[560px] text-left text-[14px]">
+        <thead>
+          <tr className="border-b border-white/10 bg-white/[0.03]">
+            <th className="px-5 py-4 font-semibold text-[#94A3B8]">{head}</th>
+            {names.map((n, i) => <th key={n} className={`px-4 py-4 text-center font-semibold ${i === 1 ? "bg-white/[0.04] text-white" : "text-[#CBD5E1]"}`}>{n}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.l} className="border-b border-white/[0.06] last:border-0">
+              <td className="px-5 py-3.5 text-[#E2E8F0]">{r.l}</td>
+              {r.v.map((v, i) => (
+                <td key={i} className={`px-4 py-3.5 text-center ${i === 1 ? "bg-white/[0.04]" : ""}`}>
+                  {v === true ? <Check size={17} strokeWidth={2.5} className="mx-auto text-[#4ADE80]" />
+                    : v === false ? <Minus size={16} className="mx-auto text-[#334155]" />
+                    : <span className="text-[13px] font-medium text-white">{v}</span>}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function CompareBlock({ open, setOpen, d, rows, names, reduce }: { open: boolean; setOpen: (v: boolean) => void; d: PricingData; rows: Row[]; names: string[]; reduce: boolean }) {
+  return (
+    <>
+      <div className="mt-8 flex justify-center">
+        <button type="button" aria-expanded={open} onClick={() => setOpen(!open)}
+          className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-[14px] font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/[0.04]">
+          {open ? d.compareClose : d.compareOpen} <ChevronDown size={16} className={`transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
+        </button>
       </div>
-      <div className={`border-t px-6 py-6 sm:px-7 ${featured ? "border-white/15" : "border-white/[0.08]"}`}>
-        <ul className="space-y-3">
-          {plan.features.map((f) =>
-            isHeader(f) ? (
-              <li key={f} className={`pt-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${featured ? "text-[#8FB3D9]" : "text-[#64748B]"}`}>{f}</li>
-            ) : (
-              <li key={f} className={`flex items-start gap-2.5 text-[14px] leading-snug ${featured ? "text-white" : "text-[#CBD5E1]"}`}>
-                <CircleCheck size={16} className="mt-0.5 shrink-0 text-[#4ADE80]" />{f}
-              </li>
-            )
-          )}
-        </ul>
-      </div>
-      <div className="mt-auto px-6 pb-6 sm:px-7 sm:pb-7">
-        <a href="#kontakt"
-           className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-[14px] font-semibold transition-colors ${featured ? "bg-[#DC2626] text-white hover:bg-[#B91C1C]" : "bg-white text-[#0F172A] hover:bg-[#E2E8F0]"}`}>
-          {d.mktCta} <ArrowRight size={15} />
-        </a>
-      </div>
-    </article>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div key="cmp" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: reduce ? 0 : 0.4, ease: [0.22, 1, 0.36, 1] }} className="overflow-hidden">
+            <Compare rows={rows} names={names} head={d.compareHead} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -348,6 +403,7 @@ export function Pricing() {
   const d = PRICING[(lang as "bs" | "en")] ?? PRICING.bs;
   const reduce = useReducedMotion() ?? false;
   const [tab, setTab] = useState<"apps" | "mkt">("apps");
+  const [open, setOpen] = useState(false);
   const AFTER_ICONS: LucideIcon[] = [ShieldCheck, CalendarClock, Wrench];
   const tabs = [
     { id: "apps" as const, label: d.tabApps, sub: d.tabAppsSub },
@@ -364,14 +420,14 @@ export function Pricing() {
     <section id="cjenovnik" data-dark className="relative scroll-mt-24 overflow-hidden"
              style={{ background: "linear-gradient(180deg, #0B1324 0%, #0F172A 50%, #0B1324 100%)" }}>
       <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
-        <Head dark eyebrow={d.eyebrow} h={d.heading} accent={d.headingAccent} sub={tab === "apps" ? d.subtitle : d.mktSubtitle} />
+        <Head dark eyebrow={d.eyebrow} h={d.heading} accent={d.headingAccent} sub={d.shortSub} />
 
         <div className="mt-10 flex justify-center">
           <div role="tablist" aria-label={d.tabsLabel} className="grid grid-cols-2 gap-1 rounded-2xl border border-white/10 bg-white/[0.04] p-1.5">
             {tabs.map((t) => {
               const on = tab === t.id;
               return (
-                <button key={t.id} type="button" role="tab" aria-selected={on} onClick={() => setTab(t.id)}
+                <button key={t.id} type="button" role="tab" aria-selected={on} onClick={() => { setTab(t.id); setOpen(false); }}
                         className="relative min-w-[150px] rounded-xl px-5 py-2.5 text-center sm:min-w-[190px]">
                   {on && (
                     <motion.span layoutId="price-tab" className="absolute inset-0 rounded-xl bg-white"
@@ -391,11 +447,15 @@ export function Pricing() {
         <AnimatePresence mode="wait" initial={false}>
           {tab === "apps" ? (
             <motion.div key="apps" {...swap}>
-              <div className="mt-12 grid gap-5 lg:grid-cols-3 lg:items-stretch">
-                {d.apps.map((plan, i) => (
-                  <AppCard key={plan.name} plan={plan} icon={APP_ICONS[i]} featured={i === 1} d={d} />
-                ))}
+              <div className="mt-12">
+                <Swipe bp="lg" dark grid="lg:grid-cols-3 lg:items-stretch lg:gap-5" item="w-[86%] sm:w-[58%]">
+                  {d.apps.map((plan, i) => (
+                    <PlanCard key={plan.name} icon={APP_ICONS[i]} featured={i === 1} d={d} link={i === 1}
+                      plan={{ name: plan.name, tag: plan.tag, price: plan.price, alt: plan.alt, note: d.once2, features: plan.features, cta: plan.ctaLabel ?? d.cta }} />
+                  ))}
+                </Swipe>
               </div>
+              <CompareBlock open={open} setOpen={setOpen} d={d} rows={d.compareApps} names={d.apps.map((x) => x.name)} reduce={reduce} />
               <p className="mx-auto mt-6 max-w-2xl text-center text-[13px] leading-relaxed text-[#94A3B8]">{d.appNote}</p>
 
               <div id="odrzavanje" className="mx-auto mt-16 max-w-5xl scroll-mt-24">
@@ -404,12 +464,13 @@ export function Pricing() {
                   {d.afterTitle} <span className="text-[#4ADE80]">{d.afterAccent}</span>
                 </h3>
                 <p className="mx-auto mt-3 max-w-xl text-center text-[14.5px] leading-relaxed text-[#94A3B8]">{d.afterSub}</p>
-                <div className="mt-8 grid gap-4 md:grid-cols-3">
+                <div className="mt-8">
+                <Swipe bp="md" dark grid="md:grid-cols-3 md:gap-4" item="w-[82%] sm:w-[60%]">
                   {d.afterBoxes.map((b, i) => {
                     const Icon = AFTER_ICONS[i];
                     return (
                       <div key={b.label}
-                           className={`relative flex flex-col rounded-[20px] border p-6 ${b.free ? "border-[#4ADE80]/40 bg-[#16A34A]/[0.10]" : "border-white/[0.08] bg-white/[0.03]"}`}>
+                           className={`relative flex h-full flex-col rounded-[20px] border p-6 transition-transform duration-300 md:hover:-translate-y-1 ${b.free ? "border-[#4ADE80]/40 bg-[#16A34A]/[0.10]" : "border-white/[0.08] bg-white/[0.03]"}`}>
                         {b.free && <span className="absolute right-4 top-4 rounded-full bg-[#16A34A] px-2.5 py-0.5 text-[11px] font-semibold text-white">{d.defaultTag}</span>}
                         <span className={`grid h-10 w-10 place-items-center rounded-xl ${b.free ? "bg-[#16A34A] text-white" : "bg-white/[0.06] text-white"}`}><Icon size={18} /></span>
                         <p className="mt-4 text-[14px] font-semibold text-white">{b.label}</p>
@@ -422,6 +483,7 @@ export function Pricing() {
                       </div>
                     );
                   })}
+                </Swipe>
                 </div>
                 <p className="mt-5 text-center text-[13px] text-[#CBD5E1]"><Gift size={14} className="mr-1.5 inline -translate-y-px text-[#4ADE80]" />{d.afterGift}</p>
                 <p className="mt-2 text-center text-[12.5px] text-[#64748B]">{d.hostingNote}</p>
@@ -429,11 +491,15 @@ export function Pricing() {
             </motion.div>
           ) : (
             <motion.div key="mkt" {...swap}>
-              <div className="mt-12 grid gap-5 lg:grid-cols-3 lg:items-stretch">
-                {d.mkt.map((plan, i) => (
-                  <MktCard key={plan.name} plan={plan} icon={MKT_ICONS[i]} featured={i === 1} d={d} />
-                ))}
+              <div className="mt-12">
+                <Swipe bp="lg" dark grid="lg:grid-cols-3 lg:items-stretch lg:gap-5" item="w-[86%] sm:w-[58%]">
+                  {d.mkt.map((plan, i) => (
+                    <PlanCard key={plan.name} icon={MKT_ICONS[i]} featured={i === 1} d={d}
+                      plan={{ name: plan.name, tag: plan.tag, price: plan.price, alt: plan.alt, per: d.perMonth, note: plan.note, features: plan.features, cta: d.mktCta }} />
+                  ))}
+                </Swipe>
               </div>
+              <CompareBlock open={open} setOpen={setOpen} d={d} rows={d.compareMkt} names={d.mkt.map((x) => x.name)} reduce={reduce} />
               <p className="mx-auto mt-6 max-w-2xl text-center text-[13px] leading-relaxed text-[#94A3B8]">{d.mktNote}</p>
             </motion.div>
           )}

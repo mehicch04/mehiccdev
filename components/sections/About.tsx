@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Code2, Megaphone, ArrowUpRight, Linkedin, FileText, type LucideIcon } from "lucide-react";
+import { Swipe } from "@/components/ui/Swipe";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import { Head, Fade } from "@/components/ui/kit";
 
@@ -69,7 +70,8 @@ export function About() {
     <section id="o-nama" className="relative bg-white scroll-mt-24">
       <div className="mx-auto max-w-6xl px-6 lg:px-8">
         <Head label={d.label} h={d.heading1} accent={d.headingAccent} sub={d.subtitle} />
-        <div className="mx-auto mt-14 grid max-w-5xl gap-8 lg:grid-cols-2">
+        <div className="mx-auto mt-14 max-w-5xl">
+        <Swipe bp="lg" grid="lg:grid-cols-2 lg:gap-8" item="w-[88%] sm:w-[66%]">
           {d.members.map((m, i) => {
             const p = PEOPLE[i];
             const Icon = p.icon;
@@ -115,6 +117,7 @@ export function About() {
               </Fade>
             );
           })}
+        </Swipe>
         </div>
       </div>
     </section>

@@ -82,8 +82,8 @@ export function Footer() {
     <footer className="relative overflow-hidden bg-[#0F172A]">
       <Horizon />
       <div className="mx-auto max-w-6xl px-6 pt-16 pb-8 lg:px-8">
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1.2fr_1.3fr]">
-          <div>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:gap-12 lg:grid-cols-[1.4fr_1fr_1.2fr_1.3fr]">
+          <div className="col-span-2 sm:col-span-1">
             <a href="/" className="inline-flex" aria-label="mehiccdev">
               <Logo variant="dark" className="h-6 w-auto" mark markClassName="h-10 w-auto" />
             </a>
@@ -112,7 +112,7 @@ export function Footer() {
             </ul>
           </nav>
 
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <p className={head}>{d.contactHeading}</p>
             <ul className="flex flex-col gap-5">
               {TEAM.map((m, i) => (

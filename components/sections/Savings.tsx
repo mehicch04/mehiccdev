@@ -287,9 +287,9 @@ export function Savings() {
             </div>
           </div>
 
-          <div className="mx-auto mt-8 grid max-w-4xl gap-3 sm:grid-cols-2" style={{ perspective: "900px" }}>
+          <div className="mx-auto mt-8 grid max-w-4xl grid-cols-2 gap-2.5 sm:gap-3" style={{ perspective: "900px" }}>
             {d.pairs.map((pr, i) => (
-              <div key={pr.a} className="relative h-[68px]">
+              <div key={pr.a} className="relative h-[92px] sm:h-[68px]">
                 <AnimatePresence initial={false} mode="popLayout">
                   <motion.div
                     key={after ? "a" : "b"}
@@ -298,12 +298,12 @@ export function Savings() {
                     exit={reduce ? { opacity: 0 } : { rotateX: 90, opacity: 0 }}
                     transition={{ duration: reduce ? 0 : 0.45, delay: reduce ? 0 : i * 0.08, ease: EASE }}
                     style={{ transformOrigin: "50% 50%", backfaceVisibility: "hidden" }}
-                    className={`absolute inset-0 flex items-center gap-3 rounded-2xl px-5 ${after ? "bg-white text-[#0F172A]" : "border border-white/10 bg-white/[0.04] text-[#B9CCE0]"}`}
+                    className={`absolute inset-0 flex flex-col items-start justify-center gap-2 rounded-2xl px-3.5 sm:flex-row sm:items-center sm:gap-3 sm:px-5 ${after ? "bg-white text-[#0F172A]" : "border border-white/10 bg-white/[0.04] text-[#B9CCE0]"}`}
                   >
                     <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${after ? "bg-[#16A34A] text-white" : "bg-[#DC2626]/15 text-[#F87171]"}`}>
                       {after ? <Check size={16} strokeWidth={3} /> : <X size={16} strokeWidth={3} />}
                     </span>
-                    <span className={`text-[15px] ${after ? "font-semibold" : "line-through decoration-white/30"}`}>{after ? pr.a : pr.b}</span>
+                    <span className={`text-[13px] leading-snug sm:text-[15px] ${after ? "font-semibold" : "line-through decoration-white/30"}`}>{after ? pr.a : pr.b}</span>
                   </motion.div>
                 </AnimatePresence>
               </div>

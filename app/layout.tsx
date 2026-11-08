@@ -3,7 +3,6 @@ import Script from "next/script";
 import { ThemeProvider }    from "@/components/ui/ThemeProvider";
 import { LanguageProvider } from "@/components/ui/LanguageProvider";
 import "@fontsource-variable/inter";
-import { WhatsAppButton } from "@/components/ui/WhatsAppButton";
 import { ScrollTopButton } from "@/components/ui/ScrollTopButton";
 import { IntroLoader, INTRO_SCRIPT } from "@/components/ui/IntroLoader";
 import "./globals.css";
@@ -77,7 +76,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" enableSystem={false}>
           <LanguageProvider>
             {children}
-            <WhatsAppButton />
             <ScrollTopButton />
           </LanguageProvider>
         </ThemeProvider>
