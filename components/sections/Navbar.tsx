@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowUpRight, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -8,9 +9,11 @@ import { Logo } from "@/components/ui/Logo";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 
 const LABELS = {
-  bs: { services: "Usluge", portfolio: "Portfolio", about: "O nama", saas: "Flagship", pricing: "Cjenovnik", contact: "Kontakt", solutions: "Rješenja", portfolioAll: "Sve reference" },
-  en: { services: "Services", portfolio: "Portfolio", about: "About", saas: "Flagship", pricing: "Pricing", contact: "Contact", solutions: "Solutions", portfolioAll: "All references" },
+  bs: { services: "Usluge", portfolio: "Portfolio", about: "O nama", saas: "Flagship", pricing: "Cjenovnik", contact: "Kontakt", book: "Zakaži poziv", solutions: "Rješenja", portfolioAll: "Sve reference" },
+  en: { services: "Services", portfolio: "Portfolio", about: "About", saas: "Flagship", pricing: "Pricing", contact: "Contact", book: "Book a call", solutions: "Solutions", portfolioAll: "All references" },
 };
+
+const BOOKING_PAGES = ["/", "/rjesenja/rent-a-car", "/maximum", "/portfolio", "/zakazi"];
 
 const SOLUTIONS = [
   {
@@ -28,6 +31,8 @@ export function Navbar() {
   const [solAccOpen, setSolAccOpen] = useState(false);
   const { lang, setLang }           = useLanguage();
   const L = LABELS[(lang as "bs" | "en")] ?? LABELS.bs;
+  const pathname = usePathname();
+  const bookHref = BOOKING_PAGES.includes(pathname ?? "") ? "#zakazi" : "/zakazi";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -152,14 +157,14 @@ export function Navbar() {
             </div>
 
             <a
-              href="/#kontakt"
+              href={bookHref}
               className="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl
                          bg-gradient-to-r from-brand-600 to-brand-500 text-white text-sm font-bold
                          shadow-lg shadow-brand-600/25
                          transition-all duration-200 hover:shadow-xl hover:shadow-brand-600/40
                          hover:-translate-y-0.5"
             >
-              {L.contact}
+              {L.book}
               <ArrowUpRight size={14} />
             </a>
 
@@ -232,13 +237,13 @@ export function Navbar() {
                 </a>
               ))}
               <a
-                href="/#kontakt"
+                href={bookHref}
                 onClick={() => setMobileOpen(false)}
                 className="mt-4 inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-xl
                            bg-gradient-to-r from-brand-600 to-brand-500 text-white font-bold
                            shadow-lg shadow-brand-600/25 transition-all"
               >
-                {L.contact} <ArrowUpRight size={15} />
+                {L.book} <ArrowUpRight size={15} />
               </a>
             </nav>
           </motion.div>

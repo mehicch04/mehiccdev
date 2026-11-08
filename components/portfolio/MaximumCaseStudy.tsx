@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { ArrowRight, ArrowUpRight, Star, Moon, Sun, Play, ClipboardCheck, CarFront, FileText, Languages, Gauge, ShieldCheck, type LucideIcon } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
+import { Booking } from "@/components/sections/Booking";
 import { Backdrop, Head, Fade, BrowserFrame, PhoneMockup, Lightbox, SOFT, preloadImage, type ZoomState } from "@/components/ui/kit";
 
 const T = {
@@ -68,7 +69,7 @@ const T = {
       { k: "speed", t: "Brzina kao funkcija", d: "Stranica se otvara ispod tri sekunde na mobilnoj mreži, jer gost koji čeka odlazi kod konkurencije." },
       { k: "secure", t: "Provjere na serveru", d: "Ista pravila važe u pregledniku i na serveru, pa se dupla rezervacija ne može provući ni zaobilaznim putem." },
     ],
-    ctaContact: "Pošaljite upit",
+    ctaContact: "Zakažite poziv",
     watch: "Pogledajte sistem u pokretu",
     watchMeta: "1 min",
     close: "Zatvori",
@@ -134,7 +135,7 @@ const T = {
       { k: "speed", t: "Speed as a feature", d: "The page opens in under three seconds on mobile data, because a guest who waits goes to a competitor." },
       { k: "secure", t: "Server-side checks", d: "The same rules apply in the browser and on the server, so a double booking cannot slip through a back door either." },
     ],
-    ctaContact: "Send an inquiry",
+    ctaContact: "Book a call",
     watch: "Watch the system in action",
     watchMeta: "1 min",
     close: "Close",
@@ -366,7 +367,7 @@ function Cta({ d }: { d: Copy }) {
             <p className="mt-2 max-w-md text-[15px] leading-relaxed text-[#94A3B8]">{d.ctaSub}</p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <a href="/#kontakt" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-5 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#B91C1C]">
+            <a href="#zakazi" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-5 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#B91C1C]">
               {d.ctaContact} <ArrowRight size={15} />
             </a>
             <a href="/rjesenja/rent-a-car#paketi" className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-[14px] font-semibold text-[#0F172A] transition-colors hover:bg-[#F1F5F9]">
@@ -390,6 +391,7 @@ export function MaximumCaseStudy() {
       <Admin d={d} onZoom={setZoom} />
       <Modules d={d} />
       <Cta d={d} />
+      <Booking />
       <Lightbox zoom={zoom} onClose={() => setZoom(null)} closeLabel={d.close} />
     </main>
   );

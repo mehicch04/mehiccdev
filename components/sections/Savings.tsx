@@ -442,7 +442,7 @@ export function Savings() {
 
         <div className="mt-16 flex flex-col items-center justify-between gap-5 border-t border-white/10 pt-10 sm:flex-row">
           <p className="text-center text-[17px] font-medium text-[#DCE7F2] sm:text-left">{d.bannerText}</p>
-          <a href="#kontakt"
+          <a href="#zakazi"
              className="group inline-flex shrink-0 items-center gap-2 rounded-xl bg-white px-5 py-3 text-[14px] font-semibold text-[#0F172A] transition-colors hover:bg-[#E2E8F0]">
             {d.btn} <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
           </a>

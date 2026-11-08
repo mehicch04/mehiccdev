@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { ArrowRight, ArrowUpRight, Gauge, KeyRound, Palette, Plus, Smartphone, Star, ZoomIn } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
+import { Booking } from "@/components/sections/Booking";
 import { Backdrop, Fade, BrowserFrame, PhoneMockup, Lightbox, preloadImage, SOFT, FLOAT, type ZoomState } from "@/components/ui/kit";
 
 type Cat = "all" | "app" | "web" | "design" | "product";
@@ -362,7 +363,7 @@ export function PortfolioPage() {
               </h1>
               <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-[#475569]">{d.sub}</p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <a href="/#kontakt" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-[#B91C1C]">
+                <a href="#zakazi" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-[#B91C1C]">
                   {d.ctaPrimary} <ArrowRight size={16} />
                 </a>
                 <a href="#projekti" className="inline-flex items-center justify-center rounded-xl border border-[#E5E7EB] bg-white px-6 py-3.5 text-[15px] font-semibold text-[#0F172A] transition-colors hover:bg-[#F9FAFB]">
@@ -476,13 +477,14 @@ export function PortfolioPage() {
               </p>
               <p className="mt-2 text-[14px] text-[#94A3B8]">{d.bannerSub}</p>
             </div>
-            <a href="/#kontakt" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-5 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#B91C1C]">
+            <a href="#zakazi" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-5 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#B91C1C]">
               {d.bannerBtn} <ArrowRight size={15} />
             </a>
           </div>
         </div>
       </section>
 
+      <Booking />
       <Lightbox zoom={zoom} onClose={closeZoom} closeLabel={d.close} />
     </main>
   );

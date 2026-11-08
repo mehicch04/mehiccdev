@@ -11,6 +11,7 @@ import { Savings }    from "@/components/sections/Savings";
 import { SaasTeaser } from "@/components/sections/SaasTeaser";
 import { About }      from "@/components/sections/About";
 import { Faq }        from "@/components/sections/Faq";
+import { Booking }    from "@/components/sections/Booking";
 import { Contact }    from "@/components/sections/Contact";
 import { Footer }     from "@/components/sections/Footer";
 
@@ -30,6 +31,7 @@ export default function HomePage() {
       <Savings />
       <SaasTeaser />
       <Faq />
+      <Booking />
       <Contact />
       <Footer />
     </main>

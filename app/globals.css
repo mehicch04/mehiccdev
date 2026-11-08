@@ -344,7 +344,7 @@ html[data-intro] .intro-root.out { pointer-events: none; }
   .race-score:hover { transform: none; }
 }
 
-#usluge, #o-nama, #isplati, #razlika, #pitanja {
+#usluge, #o-nama, #isplati, #razlika, #pitanja, #zakazi {
   background: linear-gradient(180deg, #FFFFFF 0, #F4F7FB 140px, #F4F7FB calc(100% - 140px), #FFFFFF 100%);
 }
 #kontakt, #upit {

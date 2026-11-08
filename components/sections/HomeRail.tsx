@@ -14,6 +14,7 @@ const ITEMS = {
     { id: "vrijednost",    label: "Vrijednost" },
     { id: "saas",          label: "Flagship" },
     { id: "cesta-pitanja", label: "Pitanja" },
+    { id: "zakazi",        label: "Termin" },
     { id: "kontakt",       label: "Kontakt" },
   ],
   en: [
@@ -26,6 +27,7 @@ const ITEMS = {
     { id: "vrijednost",    label: "Value" },
     { id: "saas",          label: "Flagship" },
     { id: "cesta-pitanja", label: "FAQ" },
+    { id: "zakazi",        label: "Book a call" },
     { id: "kontakt",       label: "Contact" },
   ],
 } as const;

@@ -256,7 +256,7 @@ export function Hero() {
             <path d="M96 44 L106 52 L95 59" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <a
-            href="#kontakt"
+            href="#zakazi"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-6 py-3.5
                        text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-[#B91C1C]
                        focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#DC2626]"
