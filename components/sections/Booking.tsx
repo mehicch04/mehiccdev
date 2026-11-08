@@ -83,7 +83,7 @@ const T = {
 
 const OPEN = [1, 3, 5, 6];
 const SLOTS = ["11:00", "12:00", "13:00", "14:00"];
-const RANGE: [number, number][] = [[0.62, 0.9], [0.4, 0.65], [0.25, 0.45], [0.2, 0.4]];
+const RANGE: [number, number][] = [[0.62, 0.9], [0.4, 0.65], [0.2, 0.4], [0.05, 0.2]];
 const WEEK = 604800000;
 
 const day0 = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -129,8 +129,8 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
     const t = m.getTime();
     const hit = weeks.get(t);
     if (hit) return hit;
-    const w = Math.max(0, Math.min(3, Math.round((t - base) / WEEK)));
-    const [lo, hi] = RANGE[w];
+    const w = Math.max(0, Math.round((t - base) / WEEK));
+    const [lo, hi] = RANGE[w] ?? [0, 0];
     const f = lo + rand(hash(`w${key(m)}`)) * (hi - lo);
     const out: Record<string, string[]> = {};
     const days: string[] = [];
@@ -139,7 +139,7 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
       if (!OPEN.includes(x.getDay())) continue;
       const k = key(x);
       let busy = SLOTS.filter((_, j) => rand(hash(`${k}|${j}`)) < f);
-      if (!busy.length) busy = [SLOTS[Math.floor(rand(hash(`${k}|min`)) * SLOTS.length)]];
+      if (!busy.length && w <= 1) busy = [SLOTS[Math.floor(rand(hash(`${k}|min`)) * SLOTS.length)]];
       out[k] = busy;
       if (today && x > today) days.push(k);
     }
