@@ -1,18 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { ArrowRight, ArrowUpRight, Globe, LayoutDashboard, Megaphone, PenTool, Pencil, type LucideIcon } from "lucide-react";
+import {
+  ArrowRight, ArrowUpRight, BellRing, CalendarCheck, CarFront, Check, CircleCheck,
+  Globe, LayoutDashboard, Megaphone, PenTool, type LucideIcon,
+} from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
-import { Head, FLOAT } from "@/components/ui/kit";
 
-type Item = { title: string; desc: string; tags: string[]; price?: string; link: string; caption: string };
+type Key = "app" | "web" | "ux" | "mkt";
+type Item = { key: Key; title: string; lead: string; desc: string; points: string[]; price?: string; link: string; alt: string };
 type Content = {
-  label: string; h: string; accent: string; sub: string;
+  label: string; h: string; accent: string; sub: string; tabs: string;
   items: Item[];
-  report: { title: string; sample: string; month: string; kpis: [string, string][]; chart: string; weeks: string[]; foot: string; lead: string };
-  editChip: string;
+  toasts: [string, string, string][];
+  editLabel: string; saved: string; lines: string[];
+  boxes: [string, string];
+  tiles: string[]; feedName: string; feedSub: string;
+  report: { title: string; sub: string; kpis: [string, string][]; chart: string };
 };
 
 const T: Record<"bs" | "en", Content> = {
@@ -21,278 +27,391 @@ const T: Record<"bs" | "en", Content> = {
     h: "Sve što vam treba online,",
     accent: "iz jedne ruke",
     sub: "Ne morate posebno tražiti dizajnera, programera i nekoga za mreže. Radimo sve četiri stvari, i one rade zajedno.",
+    tabs: "Usluge",
     items: [
       {
-        title: "Web aplikacije",
-        desc: "Aplikacija koja vodi vaš posao: rezervacije, evidencija klijenata ili interni alat za tim. Plaćate jednom i ona je vaša.",
-        tags: ["Rezervacije i termini", "Admin panel", "Obavijesti na WhatsApp"],
-        price: "od 1.000 KM", link: "Pogledajte primjer", caption: "Admin panel, Maximum Rent a Car",
+        key: "app", title: "Web aplikacije", lead: "Aplikacija koja vodi vaš posao",
+        desc: "Rezervacije, evidencija klijenata ili interni alat za tim. Sve na jednom mjestu, plaćate jednom i aplikacija je vaša.",
+        points: ["Rezervacije, termini i upiti na jednom mjestu", "Admin panel za vas i vaš tim", "Obavijesti na email i WhatsApp", "Plaćate jednom, bez pretplate"],
+        price: "od 1.000 KM", link: "Pogledajte primjer", alt: "Admin panel, Maximum Rent a Car",
       },
       {
-        title: "Sajtovi",
+        key: "web", title: "Sajtovi", lead: "Sajt koji se vidi i koji sami uređujete",
         desc: "Brzi sajtovi koji se vide na Googlu i rade savršeno na telefonu. Tekst, cijene i slike mijenjate sami, bez programera.",
-        tags: ["Prvo za telefon", "Google vidljivost", "Dvojezično"],
-        link: "Otvorite sajt", caption: "OxyBaric Mostar, medicinski sajt",
+        points: ["Prvo za telefon, brzo učitavanje", "Vidljivost na Googlu", "Tekst, cijene i slike mijenjate sami", "Dvojezično, BS i EN"],
+        link: "Otvorite sajt", alt: "OxyBaric Mostar, medicinski sajt",
       },
       {
-        title: "UI/UX dizajn",
-        desc: "Dizajn ekrana i toka korisnika prije nego što se napiše ijedna linija koda, da proizvod bude jasan i lak za korištenje.",
-        tags: ["Prototip", "Dizajn sistem", "Mobilni ekrani"],
-        link: "Pogledajte radove", caption: "Roobet Rewards, sistem nagrada",
+        key: "ux", title: "UI/UX dizajn", lead: "Dizajn prije prve linije koda",
+        desc: "Ekrani i tok korisnika osmišljeni unaprijed, da proizvod bude jasan i lak za korištenje od prvog dana.",
+        points: ["Mapa toka korisnika", "Klikabilni prototip prije koda", "Dizajn sistem: boje, slova, komponente", "Ekrani za mobitel i desktop"],
+        link: "Pogledajte radove", alt: "Roobet Rewards, sistem nagrada",
       },
       {
-        title: "Marketing",
-        desc: "Društvene mreže i reklame koje se mogu pratiti. Znate šta je objavljeno, ko je to vidio i koliko je upita stiglo.",
-        tags: ["Instagram i Facebook", "Meta i Google reklame", "Mjesečni izvještaj"],
-        price: "od 60 KM mj.", link: "Pogledajte pakete", caption: "Primjer mjesečnog izvještaja, paket Rast",
+        key: "mkt", title: "Marketing", lead: "Objave i reklame koje se mogu pratiti",
+        desc: "Društvene mreže i reklame sa jasnim izvještajem. Znate šta je objavljeno, ko je to vidio i koliko je upita stiglo.",
+        points: ["Instagram i Facebook objave", "Meta i Google reklame", "Mjesečni izvještaj koji se razumije", "Bez ugovorne obaveze"],
+        price: "od 60 KM mj.", link: "Pogledajte pakete", alt: "Primjer mjesečnog izvještaja",
       },
     ],
-    report: {
-      title: "Mjesečni izvještaj", sample: "Primjer", month: "Oktobar",
-      kpis: [["16", "objava"], ["4", "reelsa"], ["1", "kampanja"]],
-      chart: "Upiti po sedmicama", weeks: ["1. sed.", "2. sed.", "3. sed.", "4. sed."],
-      foot: "Budžet za reklame ide direktno Meti i Googleu, vi ga kontrolišete.",
-      lead: "Vodi Nedim Kupusija",
-    },
-    editChip: "Tekst i slike mijenjate sami",
+    toasts: [["Nova rezervacija", "VW Golf 8 · 10. do 13. jula", "Potvrđeno"], ["Termin zakazan", "Konsultacija · utorak 18:00", "Novo"], ["WhatsApp poslan", "Klijent je dobio potvrdu", "Isporučeno"]],
+    editLabel: "Uredi naslov", saved: "Sačuvano",
+    lines: ["Nove cijene od 1. decembra", "Radno vrijeme: 08 do 20h", "Akcija za vikend paket"],
+    boxes: ["Baner · 358 × 176", "Dugme · 358 × 48"],
+    tiles: ["Kako radimo", "Novi projekat", "Prije i poslije", "Savjet sedmice", "Iza kulisa", "Rezultat"],
+    feedName: "mehiccdev", feedSub: "plan objava",
+    report: { title: "Mjesečni izvještaj", sub: "Oktobar · primjer", kpis: [["16", "objava"], ["4", "reelsa"], ["1", "kampanja"]], chart: "Upiti po sedmicama" },
   },
   en: {
     label: "Services",
     h: "Everything you need online,",
     accent: "from one team",
     sub: "No need to hunt for a designer, a developer and someone for social media. We do all four, and they work together.",
+    tabs: "Services",
     items: [
       {
-        title: "Web apps",
-        desc: "An app that runs your business: bookings, client records or an internal tool for your team. You pay once and it's yours.",
-        tags: ["Bookings and appointments", "Admin panel", "WhatsApp alerts"],
-        price: "from €500", link: "See an example", caption: "Admin panel, Maximum Rent a Car",
+        key: "app", title: "Web apps", lead: "An app that runs your business",
+        desc: "Bookings, client records or an internal tool for your team. All in one place, you pay once and the app is yours.",
+        points: ["Bookings, appointments and inquiries in one place", "Admin panel for you and your team", "Email and WhatsApp alerts", "Pay once, no subscription"],
+        price: "from €500", link: "See an example", alt: "Admin panel, Maximum Rent a Car",
       },
       {
-        title: "Websites",
+        key: "web", title: "Websites", lead: "A site people find and you edit yourself",
         desc: "Fast websites that show up on Google and work perfectly on phones. You change text, prices and photos yourself, no developer needed.",
-        tags: ["Mobile first", "Google visibility", "Bilingual"],
-        link: "Open the site", caption: "OxyBaric Mostar, medical website",
+        points: ["Mobile first, fast loading", "Visibility on Google", "You edit text, prices and photos", "Bilingual, BS and EN"],
+        link: "Open the site", alt: "OxyBaric Mostar, medical website",
       },
       {
-        title: "UI/UX design",
-        desc: "Screens and user flows designed before a single line of code is written, so the product is clear and easy to use.",
-        tags: ["Prototype", "Design system", "Mobile screens"],
-        link: "See the work", caption: "Roobet Rewards, rewards system",
+        key: "ux", title: "UI/UX design", lead: "Design before the first line of code",
+        desc: "Screens and user flows planned upfront, so the product is clear and easy to use from day one.",
+        points: ["User flow map", "Clickable prototype before code", "Design system: colors, type, components", "Screens for mobile and desktop"],
+        link: "See the work", alt: "Roobet Rewards, rewards system",
       },
       {
-        title: "Marketing",
-        desc: "Social media and ads you can actually track. You know what was posted, who saw it and how many inquiries came in.",
-        tags: ["Instagram and Facebook", "Meta and Google ads", "Monthly report"],
-        price: "from €30 a month", link: "See the packages", caption: "Sample monthly report, Growth package",
+        key: "mkt", title: "Marketing", lead: "Posts and ads you can actually track",
+        desc: "Social media and ads with a clear report. You know what was posted, who saw it and how many inquiries came in.",
+        points: ["Instagram and Facebook posts", "Meta and Google ads", "A monthly report that makes sense", "No contract commitment"],
+        price: "from €30 a month", link: "See the packages", alt: "Sample monthly report",
       },
     ],
-    report: {
-      title: "Monthly report", sample: "Sample", month: "October",
-      kpis: [["16", "posts"], ["4", "reels"], ["1", "campaign"]],
-      chart: "Inquiries per week", weeks: ["Week 1", "Week 2", "Week 3", "Week 4"],
-      foot: "The ad budget goes straight to Meta and Google, and you stay in control of it.",
-      lead: "Run by Nedim Kupusija",
-    },
-    editChip: "You edit text and photos yourself",
+    toasts: [["New booking", "VW Golf 8 · July 10 to 13", "Confirmed"], ["Appointment booked", "Consultation · Tuesday 6 PM", "New"], ["WhatsApp sent", "The client got a confirmation", "Delivered"]],
+    editLabel: "Edit headline", saved: "Saved",
+    lines: ["New prices from December 1", "Opening hours: 8 AM to 8 PM", "Weekend package offer"],
+    boxes: ["Banner · 358 × 176", "Button · 358 × 48"],
+    tiles: ["How we work", "New project", "Before and after", "Tip of the week", "Behind the scenes", "Results"],
+    feedName: "mehiccdev", feedSub: "post plan",
+    report: { title: "Monthly report", sub: "October · sample", kpis: [["16", "posts"], ["4", "reels"], ["1", "campaign"]], chart: "Inquiries per week" },
   },
 };
 
-const ICONS: LucideIcon[] = [LayoutDashboard, Globe, PenTool, Megaphone];
-const HREFS = ["/maximum", "https://oxybaricmostar.ba", "/portfolio", "#cjenovnik"];
+const ICONS: Record<Key, LucideIcon> = { app: LayoutDashboard, web: Globe, ux: PenTool, mkt: Megaphone };
+const HREFS: Record<Key, string> = { app: "/maximum", web: "https://oxybaricmostar.ba", ux: "/portfolio", mkt: "#cjenovnik" };
+const TOAST_ICONS: LucideIcon[] = [CarFront, CalendarCheck, BellRing];
+const TILE_COLORS = [["#0F172A", "#FFFFFF"], ["#F4F7FB", "#0F172A"], ["#0F3554", "#FFFFFF"], ["#DC2626", "#FFFFFF"], ["#E9E2D6", "#0F172A"], ["#16A34A", "#FFFFFF"]];
+const BOX_POS = [{ x: "7%", y: "25%", w: "86%", h: "22%" }, { x: "7%", y: "52%", w: "86%", h: "9%" }];
 const BARS = [34, 47, 43, 66];
+const SWATCHES = ["#0F172A", "#0F3554", "#DC2626", "#16A34A", "#FFFFFF"];
+const BRIDGE = "M5 62 L5 19.5 L12.5 16.6 L20 19.5 L20 31.9 L28 32.5 L28 40.5 Q50 34 72 40.5 L72 31 L85.5 31 L85.5 45 L95 45 L95 62 L71 62 L71 56 A21 17.5 0 0 0 29 56 L29 62 Z";
+const CYCLE = 6500;
 const EASE = [0.22, 1, 0.36, 1] as const;
+const SHADOW = "0 1px 2px rgba(15,23,42,0.06), 0 30px 60px -30px rgba(15,23,42,0.55)";
 
-function Browser({ url, src, alt }: { url: string; src: string; alt: string }) {
+function useCalm() {
+  const pref = useReducedMotion() ?? false;
+  const [calm, setCalm] = useState(false);
+  useEffect(() => setCalm(pref), [pref]);
+  return calm;
+}
+
+function Browser({ url, src, alt, dark = false }: { url: string; src: string; alt: string; dark?: boolean }) {
   return (
-    <span className="block overflow-hidden rounded-xl border border-[#E5E7EB] bg-white" style={{ boxShadow: FLOAT }}>
-      <span className="flex items-center gap-1.5 border-b border-[#F1F5F9] px-3 py-2">
-        <span className="h-2 w-2 rounded-full bg-[#E2E8F0]" /><span className="h-2 w-2 rounded-full bg-[#E2E8F0]" /><span className="h-2 w-2 rounded-full bg-[#E2E8F0]" />
-        <span className="ml-2 min-w-0 truncate text-[10.5px] text-[#94A3B8]">{url}</span>
-      </span>
-      <span className="relative block aspect-[16/10]">
-        <Image src={src} alt={alt} fill sizes="(max-width: 1024px) 100vw, 620px" quality={85} className="object-cover object-top" />
-      </span>
-    </span>
+    <div className={`overflow-hidden rounded-xl border ${dark ? "border-white/10 bg-[#0B1220]" : "border-[#E5E7EB] bg-white"}`} style={{ boxShadow: SHADOW }}>
+      <div className={`flex items-center gap-1.5 border-b px-3 py-2 ${dark ? "border-white/10" : "border-[#F1F5F9]"}`}>
+        {[0, 1, 2].map((i) => <span key={i} className={`h-2 w-2 rounded-full ${dark ? "bg-white/15" : "bg-[#E2E8F0]"}`} />)}
+        <span className={`ml-2 min-w-0 truncate text-[10.5px] ${dark ? "text-[#64748B]" : "text-[#94A3B8]"}`}>{url}</span>
+      </div>
+      <div className="relative aspect-[16/10]">
+        <Image src={src} alt={alt} fill sizes="(max-width: 1024px) 90vw, 640px" quality={85} className="object-cover object-top" />
+      </div>
+    </div>
   );
 }
 
 function Phone({ src, alt }: { src: string; alt: string }) {
   return (
-    <span className="absolute bottom-0 right-[5%] block w-[25%]" style={{ containerType: "inline-size" }}>
-      <span className="block bg-black" style={{ borderRadius: "15cqw", padding: "2.6cqw", boxShadow: "0 18px 40px -18px rgba(15,23,42,0.45)" }}>
-        <span className="relative block aspect-[1179/2556] overflow-hidden bg-white" style={{ borderRadius: "12cqw" }}>
-          <Image src={src} alt={alt} fill sizes="160px" quality={85} className="object-cover object-top" />
-        </span>
-      </span>
-    </span>
+    <div style={{ containerType: "inline-size" }}>
+      <div className="bg-black" style={{ borderRadius: "15cqw", padding: "2.6cqw", boxShadow: "0 24px 50px -20px rgba(0,0,0,0.6)" }}>
+        <div className="relative aspect-[1179/2556] overflow-hidden bg-white" style={{ borderRadius: "12cqw" }}>
+          <Image src={src} alt={alt} fill sizes="200px" quality={85} className="object-cover object-top" />
+        </div>
+      </div>
+    </div>
   );
 }
 
-function Report({ r }: { r: Content["report"] }) {
+function LiveToast({ d }: { d: Content }) {
+  const calm = useCalm();
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (calm) return;
+    const id = window.setInterval(() => setI((v) => (v + 1) % d.toasts.length), 3200);
+    return () => window.clearInterval(id);
+  }, [calm, d.toasts.length]);
+  const [title, detail, tag] = d.toasts[i];
+  const Icon = TOAST_ICONS[i];
   return (
-    <span className="block rounded-xl border border-[#E5E7EB] bg-white p-5 sm:p-6" style={{ boxShadow: FLOAT }}>
-      <span className="flex items-center justify-between gap-3">
-        <span className="flex items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#0F172A] text-white"><Megaphone size={16} /></span>
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div key={i}
+        initial={{ opacity: 0, y: 14, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -10, scale: 0.98 }}
+        transition={{ duration: 0.35, ease: EASE }}
+        className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#16213A] px-3.5 py-3 text-white" style={{ boxShadow: SHADOW }}>
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#16A34A] text-white"><Icon size={17} /></span>
+        <span className="min-w-0">
+          <span className="block text-[13px] font-semibold">{title}</span>
+          <span className="block truncate text-[11.5px] text-[#94A3B8]">{detail}</span>
+        </span>
+        <span className="ml-auto hidden shrink-0 rounded-md bg-[#16A34A]/15 px-2 py-0.5 text-[10.5px] font-semibold text-[#4ADE80] sm:inline">{tag}</span>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+function TypingEditor({ d }: { d: Content }) {
+  const calm = useCalm();
+  const [li, setLi] = useState(0);
+  const [n, setN] = useState(0);
+  const full = d.lines[li];
+  const done = n >= full.length;
+  useEffect(() => {
+    if (calm) { setN(full.length); return; }
+    const id = window.setTimeout(() => {
+      if (!done) setN((v) => v + 1);
+      else { setLi((v) => (v + 1) % d.lines.length); setN(0); }
+    }, done ? 2200 : 55);
+    return () => window.clearTimeout(id);
+  }, [n, done, calm, full.length, d.lines.length]);
+  return (
+    <div className="rounded-2xl border border-[#E5E7EB] bg-white p-3.5 text-[#0F172A]" style={{ boxShadow: SHADOW }}>
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#94A3B8]">{d.editLabel}</span>
+        <span className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10.5px] font-semibold transition-all duration-300 ${done ? "bg-[#DCFCE7] text-[#15803D] opacity-100" : "bg-[#F1F5F9] text-[#64748B] opacity-40"}`}>
+          <Check size={11} strokeWidth={3} /> {d.saved}
+        </span>
+      </div>
+      <div className="mt-2 rounded-lg border border-[#0F3554] bg-[#F8FAFC] px-2.5 py-2 text-[13px] font-semibold">
+        {full.slice(0, n)}<span className="ml-px inline-block h-[14px] w-[1.5px] translate-y-[2px] animate-pulse bg-[#0F3554]" />
+      </div>
+    </div>
+  );
+}
+
+function DesignOverlay({ d }: { d: Content }) {
+  const calm = useCalm();
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (calm) return;
+    const id = window.setInterval(() => setI((v) => (v + 1) % BOX_POS.length), 2600);
+    return () => window.clearInterval(id);
+  }, [calm]);
+  const b = BOX_POS[i];
+  return (
+    <motion.div aria-hidden className="pointer-events-none absolute border-[1.5px] border-[#38BDF8]"
+      initial={false} animate={{ left: b.x, top: b.y, width: b.w, height: b.h }} transition={{ duration: calm ? 0 : 0.7, ease: EASE }}>
+      {["-left-[4px] -top-[4px]", "-right-[4px] -top-[4px]", "-left-[4px] -bottom-[4px]", "-right-[4px] -bottom-[4px]"].map((c) => (
+        <span key={c} className={`absolute h-[7px] w-[7px] border-[1.5px] border-[#38BDF8] bg-white ${c}`} />
+      ))}
+      <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-[#38BDF8] px-1.5 py-0.5 text-[9.5px] font-semibold text-[#0B1220]">{d.boxes[i]}</span>
+    </motion.div>
+  );
+}
+
+function Swatches() {
+  return (
+    <div className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#0B1220]/90 p-2">
+      {SWATCHES.map((c) => <span key={c} className="h-6 w-6 rounded-md ring-1 ring-white/15" style={{ background: c }} />)}
+      <span className="ml-1 pr-1 text-[10.5px] font-semibold text-[#94A3B8]">Aa Inter</span>
+    </div>
+  );
+}
+
+function Feed({ d }: { d: Content }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-[#0B1220] p-3">
+      <div className="mb-2.5 flex items-center gap-2 px-1">
+        <span className="grid h-7 w-7 place-items-center rounded-full bg-white">
+          <svg viewBox="2 13 96 56" className="h-2.5 w-auto" aria-hidden><path fill="#0F172A" d={BRIDGE} /></svg>
+        </span>
+        <span className="text-[12px] font-semibold text-white">{d.feedName}</span>
+        <span className="ml-auto text-[10.5px] text-[#64748B]">{d.feedSub}</span>
+      </div>
+      <div className="grid grid-cols-3 gap-1.5">
+        {d.tiles.map((t, i) => (
+          <motion.div key={t} className="relative aspect-square overflow-hidden rounded-lg p-2.5"
+            style={{ background: TILE_COLORS[i][0], color: TILE_COLORS[i][1] }}
+            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.1 + i * 0.06, ease: EASE }}>
+            <svg viewBox="2 13 96 56" className="h-3 w-auto opacity-80" aria-hidden><path fill="currentColor" d={BRIDGE} /></svg>
+            <span className="absolute bottom-2 left-2.5 right-2 text-[11px] font-semibold leading-tight">{t}</span>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Report({ d }: { d: Content }) {
+  const r = d.report;
+  return (
+    <div className="rounded-2xl border border-[#E5E7EB] bg-white p-4 text-[#0F172A]" style={{ boxShadow: SHADOW }}>
+      <div className="flex items-center justify-between gap-2">
+        <span className="flex items-center gap-2">
+          <span className="grid h-8 w-8 place-items-center rounded-lg bg-[#0F172A] text-white"><Megaphone size={14} /></span>
           <span>
-            <span className="block text-[14px] font-semibold text-[#0F172A]">{r.title}</span>
-            <span className="block text-[12px] text-[#64748B]">{r.month}</span>
+            <span className="block text-[13px] font-semibold">{r.title}</span>
+            <span className="block text-[11px] text-[#64748B]">{r.sub}</span>
           </span>
         </span>
-        <span className="rounded-full border border-[#E5E7EB] bg-[#F8FAFC] px-2.5 py-1 text-[11px] font-semibold text-[#475569]">{r.sample}</span>
-      </span>
-      <span className="mt-5 grid grid-cols-3 gap-2.5">
+        <span className="relative h-7 w-7 overflow-hidden rounded-full ring-2 ring-white"><Image src="/team/nedim.jpg" alt="" fill sizes="28px" className="object-cover" /></span>
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-1.5">
         {r.kpis.map(([v, k]) => (
-          <span key={k} className="rounded-xl bg-[#F4F7FB] px-3 py-3">
-            <span className="block text-[24px] font-semibold leading-none tracking-tight text-[#0F172A] tabular-nums">{v}</span>
-            <span className="mt-1.5 block text-[12px] text-[#64748B]">{k}</span>
+          <span key={k} className="rounded-lg bg-[#F4F7FB] px-2.5 py-2">
+            <span className="block text-[18px] font-semibold leading-none tabular-nums">{v}</span>
+            <span className="mt-1 block text-[10.5px] text-[#64748B]">{k}</span>
           </span>
         ))}
-      </span>
-      <span className="mt-5 block rounded-xl border border-[#F1F5F9] p-4">
-        <span className="block text-[12px] font-semibold text-[#475569]">{r.chart}</span>
-        <span className="mt-4 flex h-[110px] items-end gap-3">
+      </div>
+      <div className="mt-3">
+        <span className="text-[10.5px] font-semibold text-[#475569]">{r.chart}</span>
+        <div className="mt-2 flex h-[72px] items-end gap-2">
           {BARS.map((h, i) => (
-            <span key={i} className="flex flex-1 flex-col items-center gap-2">
-              <motion.span
-                className={`block w-full rounded-t-md ${i === BARS.length - 1 ? "bg-[#0F3554]" : "bg-[#CBD5E1]"}`}
-                initial={{ height: 0 }} animate={{ height: h }}
-                transition={{ duration: 0.7, delay: 0.1 + i * 0.08, ease: EASE }}
-              />
-              <span className="text-[10.5px] text-[#94A3B8]">{r.weeks[i]}</span>
-            </span>
+            <motion.span key={i} className={`block flex-1 rounded-t-md ${i === BARS.length - 1 ? "bg-[#0F3554]" : "bg-[#CBD5E1]"}`}
+              initial={{ height: 0 }} animate={{ height: h }} transition={{ duration: 0.7, delay: 0.15 + i * 0.08, ease: EASE }} />
           ))}
-        </span>
-      </span>
-      <span className="mt-4 flex items-center justify-between gap-3">
-        <span className="text-[12px] leading-snug text-[#64748B]">{r.foot}</span>
-        <span className="flex shrink-0 items-center gap-2">
-          <span className="relative h-7 w-7 overflow-hidden rounded-full ring-2 ring-white"><Image src="/team/nedim.jpg" alt="" fill sizes="28px" className="object-cover" /></span>
-          <span className="hidden text-[11.5px] font-medium text-[#475569] sm:block">{r.lead}</span>
-        </span>
-      </span>
-    </span>
+        </div>
+      </div>
+    </div>
   );
 }
 
-function Preview({ i, d }: { i: number; d: Content }) {
-  const cap = d.items[i].caption;
-  if (i === 3) return <Report r={d.report} />;
+function Stage({ k, d }: { k: Key; d: Content }) {
+  const alt = d.items.find((x) => x.key === k)?.alt ?? "";
+  const rise = (delay: number, y = 30) => ({
+    initial: { opacity: 0, y }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -12 },
+    transition: { duration: 0.55, delay, ease: EASE },
+  });
+  if (k === "app") return (
+    <div className="relative h-full">
+      <motion.div {...rise(0)} className="absolute left-0 right-[-10%] top-10"><Browser dark url="maximum-rent.vercel.app/admin" src="/portfolio/maximum-admin-desktop-tamna.webp" alt={alt} /></motion.div>
+      <motion.div {...rise(0.12, 60)} className="absolute right-4 top-28 w-[24%]"><Phone src="/portfolio/maximum-admin-mob-tamna.webp" alt={alt} /></motion.div>
+      <motion.div {...rise(0.25, 16)} className="absolute left-6 top-0 w-[300px] max-w-[78%]"><LiveToast d={d} /></motion.div>
+    </div>
+  );
+  if (k === "web") return (
+    <div className="relative h-full">
+      <motion.div {...rise(0)} className="absolute left-0 right-[-10%] top-10"><Browser url="oxybaricmostar.ba" src="/portfolio/oxybaric.png" alt={alt} /></motion.div>
+      <motion.div {...rise(0.25, 16)} className="absolute left-6 top-0 w-[270px] max-w-[78%]"><TypingEditor d={d} /></motion.div>
+    </div>
+  );
+  if (k === "ux") return (
+    <div className="relative h-full">
+      <motion.div {...rise(0)} className="absolute left-0 right-[22%] top-10 opacity-90"><Browser dark url="roobet.com/rewards" src="/portfolio/roobet.png" alt={alt} /></motion.div>
+      <motion.div {...rise(0.12, 60)} className="absolute right-4 top-4 w-[30%]">
+        <div className="relative"><Phone src="/portfolio/roobet-mob.webp" alt={alt} /><DesignOverlay d={d} /></div>
+      </motion.div>
+      <motion.div {...rise(0.25, 16)} className="absolute bottom-6 left-6"><Swatches /></motion.div>
+    </div>
+  );
   return (
-    <span className="relative block pb-[9%]">
-      {i === 0 && <Browser url="maximum-rent.vercel.app/admin" src="/portfolio/maximum-admin-desktop-svijetla.webp" alt={cap} />}
-      {i === 1 && <Browser url="oxybaricmostar.ba" src="/portfolio/oxybaric.png" alt={cap} />}
-      {i === 2 && <Browser url="roobet.com/rewards" src="/portfolio/roobet.png" alt={cap} />}
-      {i === 0 && <Phone src="/portfolio/maximum-admin-mob-svijetla.webp" alt={cap} />}
-      {i === 2 && <Phone src="/portfolio/roobet-mob.webp" alt={cap} />}
-      {i === 1 && (
-        <span className="absolute bottom-0 right-[5%] inline-flex items-center gap-2 rounded-xl border border-[#E5E7EB] bg-white px-3.5 py-2.5 text-[12.5px] font-semibold text-[#0F172A]"
-              style={{ boxShadow: FLOAT }}>
-          <span className="grid h-6 w-6 place-items-center rounded-lg bg-[#16A34A] text-white"><Pencil size={12} /></span>
-          {d.editChip}
-        </span>
-      )}
-    </span>
+    <div className="relative grid h-full grid-cols-1 items-start gap-4 pt-4 sm:grid-cols-2">
+      <motion.div {...rise(0)} className="hidden sm:block"><Feed d={d} /></motion.div>
+      <motion.div {...rise(0.12, 40)}><Report d={d} /></motion.div>
+    </div>
   );
 }
 
 export function Services() {
   const { lang } = useLanguage();
   const d = T[(lang as "bs" | "en")] ?? T.bs;
-  const reduce = useReducedMotion() ?? false;
-  const [active, setActive] = useState(0);
+  const calm = useCalm();
+  const [a, setA] = useState(0);
+  const [hold, setHold] = useState(false);
+  const [touched, setTouched] = useState(false);
+  const auto = !calm && !hold && !touched;
 
-  const fade = {
-    initial: { opacity: 0, y: 14, scale: 0.985 },
-    animate: { opacity: 1, y: 0, scale: 1 },
-    exit: { opacity: 0, y: -10, scale: 0.985 },
-    transition: { duration: reduce ? 0 : 0.4, ease: EASE },
-  };
+  useEffect(() => {
+    if (!auto) return;
+    const id = window.setTimeout(() => { if (!document.hidden) setA((v) => (v + 1) % d.items.length); }, CYCLE);
+    return () => window.clearTimeout(id);
+  }, [auto, a, d.items.length]);
+
+  const s = d.items[a];
+  const href = HREFS[s.key];
+  const ext = href.startsWith("http");
 
   return (
-    <section id="usluge" className="relative bg-white scroll-mt-24">
+    <section id="usluge" className="relative scroll-mt-24">
       <div className="mx-auto max-w-6xl px-6 lg:px-8">
-        <Head label={d.label} h={d.h} accent={d.accent} sub={d.sub} />
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">{d.label}</p>
+          <h2 className="mt-4 text-[34px] leading-[1.1] sm:text-[48px] font-semibold tracking-[-0.03em] text-[#0F172A]" style={{ textWrap: "balance" }}>
+            {d.h} <span className="text-[#0F3554]">{d.accent}</span>
+          </h2>
+          <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-[#475569]">{d.sub}</p>
+        </div>
 
-        <div className="mt-14 grid items-start gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
-          <ul className="border-t border-[#E5E7EB]">
-            {d.items.map((it, i) => {
-              const on = i === active;
-              const Icon = ICONS[i];
-              const href = HREFS[i];
-              const external = href.startsWith("http");
-              return (
-                <li key={it.title} className="border-b border-[#E5E7EB]">
-                  <button
-                    type="button"
-                    aria-expanded={on}
-                    onClick={() => setActive(i)}
-                    className="group flex w-full items-center gap-4 py-5 text-left"
-                  >
-                    <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl transition-colors duration-300 ${on ? "bg-[#0F172A] text-white" : "bg-[#EEF3F8] text-[#0F3554]"}`}>
-                      <Icon size={19} />
-                    </span>
-                    <span className={`flex-1 text-[22px] sm:text-[26px] font-semibold tracking-[-0.02em] transition-colors duration-300 ${on ? "text-[#0F172A]" : "text-[#94A3B8] group-hover:text-[#475569]"}`}>
-                      {it.title}
-                    </span>
-                    <span className="text-[12px] font-semibold tabular-nums text-[#94A3B8]">0{i + 1}</span>
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {on && (
-                      <motion.div
-                        key="body"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: reduce ? 0 : 0.35, ease: EASE }}
-                        className="overflow-hidden"
-                      >
-                        <div className="pb-6 sm:pl-[60px]">
-                          <p className="text-[15px] leading-[1.7] text-[#475569]">{it.desc}</p>
-                          <ul className="mt-4 flex flex-wrap gap-1.5">
-                            {it.tags.map((t) => (
-                              <li key={t} className="rounded-lg border border-[#E5E7EB] bg-[#F8FAFC] px-2.5 py-1.5 text-[12.5px] font-medium text-[#334155]">{t}</li>
-                            ))}
-                          </ul>
-                          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
-                            {it.price && <span className="text-[14px] font-semibold text-[#0F172A]">{it.price}</span>}
-                            <a href={href} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                               className="group/l inline-flex items-center gap-1.5 text-[14px] font-semibold text-[#0F3554] underline decoration-[#CBD5E1] underline-offset-4 hover:decoration-[#0F3554]">
-                              {it.link}
-                              {external ? <ArrowUpRight size={14} /> : <ArrowRight size={14} className="transition-transform group-hover/l:translate-x-0.5" />}
-                            </a>
-                          </div>
-                          <div className="mt-6 lg:hidden">
-                            <Preview i={i} d={d} />
-                            <p className="mt-3 text-[12.5px] text-[#64748B]">{it.caption}</p>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </li>
-              );
-            })}
-          </ul>
+        <div role="tablist" aria-label={d.tabs} className="mt-14 grid grid-cols-2 gap-2 lg:grid-cols-4"
+             onPointerEnter={(e) => { if (e.pointerType === "mouse") setHold(true); }} onPointerLeave={() => setHold(false)}>
+          {d.items.map((x, i) => {
+            const on = i === a;
+            const Icon = ICONS[x.key];
+            return (
+              <button key={x.key} type="button" role="tab" aria-selected={on} onClick={() => { setA(i); setTouched(true); }}
+                className={`relative overflow-hidden rounded-2xl border p-4 text-left transition-colors duration-300 sm:p-5 ${on ? "border-[#0F172A] bg-[#0F172A] text-white" : "border-[#E2E8F0] bg-white text-[#0F172A] hover:border-[#CBD5E1]"}`}>
+                <span className="flex items-center justify-between">
+                  <span className={`grid h-10 w-10 place-items-center rounded-xl transition-colors ${on ? "bg-white/10" : "bg-[#EEF3F8] text-[#0F3554]"}`}><Icon size={18} /></span>
+                  <span className={`text-[12px] font-semibold tabular-nums ${on ? "text-[#64748B]" : "text-[#94A3B8]"}`}>0{i + 1}</span>
+                </span>
+                <span className="mt-4 block text-[17px] sm:text-[18px] font-semibold tracking-[-0.01em]">{x.title}</span>
+                <span className={`mt-1 hidden text-[13px] leading-snug sm:block ${on ? "text-[#94A3B8]" : "text-[#64748B]"}`}>{x.lead}</span>
+                {on && auto && <span key={`p${a}`} aria-hidden className="hero-progress absolute bottom-0 left-0 h-[3px] bg-[#DC2626]" style={{ animationDuration: `${CYCLE}ms` }} />}
+              </button>
+            );
+          })}
+        </div>
 
-          <div className="sticky top-28 hidden lg:block">
-            <div className="relative rounded-[24px] border border-[#E5E7EB] bg-white p-8" style={{ boxShadow: "0 1px 2px rgba(15,23,42,0.04)" }}>
+        <div className="relative mt-4 overflow-hidden rounded-[32px] bg-[#0F172A] text-white">
+          <div className="grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+            <div className="relative z-10 p-7 sm:p-10 lg:p-12">
               <AnimatePresence mode="wait" initial={false}>
-                <motion.div key={active} {...fade}>
-                  <Preview i={active} d={d} />
+                <motion.div key={s.key} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 16 }} transition={{ duration: calm ? 0 : 0.35, ease: EASE }}>
+                  <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#8FB3D9]">0{a + 1} · {s.title}</p>
+                  <h3 className="mt-4 text-[26px] leading-[1.15] sm:text-[30px] font-semibold tracking-[-0.02em]">{s.lead}</h3>
+                  <p className="mt-4 text-[15.5px] leading-relaxed text-[#94A3B8]">{s.desc}</p>
+                  <ul className="mt-7 space-y-3">
+                    {s.points.map((pt, i) => (
+                      <motion.li key={pt} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: calm ? 0 : 0.35, delay: calm ? 0 : 0.1 + i * 0.06, ease: EASE }}
+                        className="flex items-start gap-2.5 text-[15px] text-[#E2E8F0]">
+                        <CircleCheck size={18} className="mt-0.5 shrink-0 text-[#4ADE80]" /> {pt}
+                      </motion.li>
+                    ))}
+                  </ul>
+                  <div className="mt-9 flex flex-wrap items-center gap-4">
+                    <a href={href} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                       className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-[14px] font-semibold text-[#0F172A] transition-colors hover:bg-[#E2E8F0]">
+                      {s.link} {ext ? <ArrowUpRight size={15} /> : <ArrowRight size={15} />}
+                    </a>
+                    {s.price && <span className="text-[15px] font-semibold">{s.price}</span>}
+                  </div>
                 </motion.div>
               </AnimatePresence>
-              <div className="mt-5 flex items-center justify-between gap-4">
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.p key={active} {...fade} className="text-[13px] text-[#64748B]">{d.items[active].caption}</motion.p>
-                </AnimatePresence>
-                <div className="flex items-center gap-1.5" aria-hidden>
-                  {d.items.map((it, i) => (
-                    <span key={it.title} className={`h-1.5 rounded-full transition-all duration-300 ${i === active ? "w-6 bg-[#0F172A]" : "w-1.5 bg-[#CBD5E1]"}`} />
-                  ))}
-                </div>
-              </div>
+            </div>
+            <div className="relative h-[340px] overflow-hidden sm:h-[460px] lg:h-auto lg:min-h-[540px]">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div key={s.key} className="absolute inset-0 px-7 pt-2 sm:px-10 lg:pl-0 lg:pr-10 lg:pt-12" exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
+                  <Stage k={s.key} d={d} />
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </div>
