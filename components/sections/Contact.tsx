@@ -110,7 +110,7 @@ const T: Record<"bs" | "en", Content> = {
   },
 };
 
-export function Contact() {
+export function Contact({ bare = false }: { bare?: boolean }) {
   const { lang } = useLanguage();
   const d = T[(lang as "bs" | "en")] ?? T.bs;
   const wa = waLink(lang);
@@ -145,9 +145,9 @@ export function Contact() {
   return (
     <section id="kontakt" className="relative bg-white scroll-mt-24">
       <div className="mx-auto max-w-6xl px-6 lg:px-8">
-        <Head label={d.label} h={d.heading1} accent={d.headingAccent} sub={d.subtitle} />
+        {!bare && <Head label={d.label} h={d.heading1} accent={d.headingAccent} sub={d.subtitle} />}
 
-        <div className="mt-12 grid gap-6 lg:grid-cols-[1fr_1.35fr]">
+        <div className={`${bare ? "" : "mt-12 "}grid gap-6 lg:grid-cols-[1fr_1.35fr]`}>
           <Fade className="flex flex-col rounded-[24px] bg-[#0F172A] p-7 sm:p-8">
             <p className="text-[19px] font-semibold text-white">{d.directTitle}</p>
             <p className="mt-1.5 text-[14px] leading-relaxed text-[#94A3B8]">{d.directSub}</p>

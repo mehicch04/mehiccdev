@@ -5,7 +5,7 @@ import Image from "next/image";
 import { animate, motion, useInView, useReducedMotion } from "framer-motion";
 import { ArrowRight, ArrowUpRight, ChevronsLeftRight, Star } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
-import { Swipe } from "@/components/ui/Swipe";
+import { SpeedProof } from "@/components/sections/Results";
 
 type Mini = { title: string; cat: string; desc: string; live: boolean };
 type Content = {
@@ -73,11 +73,6 @@ const T: Record<"bs" | "en", Content> = {
   },
 };
 
-const MINI_META = [
-  { img: "/portfolio/oxybaric.png", href: "/portfolio" },
-  { img: "/portfolio/roobet.png", href: "https://roobet.com/" },
-  { img: "/portfolio/gosto-coaching.webp", href: "/portfolio" },
-];
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 function Compare({ d }: { d: Content }) {
@@ -186,39 +181,8 @@ export function Portfolio() {
           </div>
         </motion.article>
 
-        <div className="mt-5">
-        <Swipe bp="md" dark grid="md:grid-cols-3 md:gap-5" item="w-[84%] sm:w-[60%]">
-          {d.minis.map((m, i) => {
-            const meta = MINI_META[i];
-            const ext = meta.href.startsWith("http");
-            return (
-              <motion.a
-                key={m.title}
-                href={meta.href}
-                {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.6, delay: i * 0.08, ease: EASE }}
-                className="group flex flex-col overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#111C2E] transition-colors duration-300 hover:border-white/20"
-              >
-                <span className="relative block aspect-[16/10] overflow-hidden">
-                  <Image src={meta.img} alt={m.title} fill sizes="(max-width: 768px) 100vw, 380px"
-                         className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.06]" />
-                  <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-[#0F172A]/85 px-2.5 py-1 text-[11px] font-semibold text-white">
-                    <span className={`h-1.5 w-1.5 rounded-full ${m.live ? "bg-[#4ADE80]" : "bg-[#F59E0B]"}`} /> {m.live ? d.livePill : d.buildPill}
-                  </span>
-                  <span className="absolute bottom-3 right-3 inline-flex translate-y-2 items-center gap-1 rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-[#0F172A] opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                    {d.open} {ext ? <ArrowUpRight size={13} /> : <ArrowRight size={13} />}
-                  </span>
-                </span>
-                <span className="flex flex-1 flex-col p-5">
-                  <span className="text-[12px] font-medium text-[#8FB3D9]">{m.cat}</span>
-                  <span className="mt-1 text-[17px] font-semibold">{m.title}</span>
-                  <span className="mt-1.5 text-[13.5px] leading-relaxed text-[#94A3B8]">{m.desc}</span>
-                </span>
-              </motion.a>
-            );
-          })}
-        </Swipe>
+        <div className="mt-20 border-t border-white/[0.08] pt-16">
+          <SpeedProof />
         </div>
 
         <div className="mt-10 flex justify-center">

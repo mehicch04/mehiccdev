@@ -9,20 +9,19 @@ import { useLanguage } from "@/components/ui/LanguageProvider";
 type Lang = "bs" | "en";
 type Content = {
   label: string; h: string; accent: string; sub: string;
-  gauges: [number, string][]; verify: string; cta: string; cta2: string;
+  gauges: [number, string][]; verify: string; cta: string;
   card: string; replay: string; ours: string; old: string; loaded: string; loading: string; marker: string; note: string; badge: string;
 };
 
 const T: Record<Lang, Content> = {
   bs: {
-    label: "Rezultati",
+    label: "Brzina",
     h: "Svaka sekunda",
     accent: "košta kupca",
     sub: "Stari sajt Maximum Rent a Car se na telefonu otvarao 21,6 sekundi. Novi se otvara za 3,2. Više od polovine ljudi ne čeka duže od 3 sekunde.",
     gauges: [[100, "Performanse"], [100, "SEO"], [90, "Na telefonu"]],
     verify: "Google PageSpeed, provjerite sami",
     cta: "Besplatno provjerimo vaš sajt",
-    cta2: "Pogledajte projekat",
     card: "Učitavanje na telefonu",
     replay: "Ponovo",
     ours: "Naša aplikacija",
@@ -34,14 +33,13 @@ const T: Record<Lang, Content> = {
     badge: "6,7× brže",
   },
   en: {
-    label: "Results",
+    label: "Speed",
     h: "Every second",
     accent: "costs you a customer",
     sub: "Maximum Rent a Car's old site took 21.6 seconds to open on a phone. The new one opens in 3.2. More than half of people won't wait longer than 3 seconds.",
     gauges: [[100, "Performance"], [100, "SEO"], [90, "On mobile"]],
     verify: "Google PageSpeed, check it yourself",
     cta: "Get a free check of your site",
-    cta2: "See the project",
     card: "Loading on a phone",
     replay: "Replay",
     ours: "Our app",
@@ -63,14 +61,14 @@ const fmt = (n: number, l: Lang) => n.toFixed(1).replace(".", l === "bs" ? "," :
 
 function Gauge({ v, l }: { v: number; l: string }) {
   return (
-    <span className="flex flex-col items-start gap-1.5 rounded-2xl border border-[#E2E8F0] bg-white p-2.5 sm:flex-row sm:items-center sm:gap-2.5 sm:py-2 sm:pl-2 sm:pr-3.5">
+    <span className="flex flex-col items-start gap-1.5 rounded-2xl border border-white/10 bg-white/[0.04] p-2.5 sm:flex-row sm:items-center sm:gap-2.5 sm:py-2 sm:pl-2 sm:pr-3.5">
       <svg viewBox="0 0 36 36" className="h-9 w-9 -rotate-90 sm:h-10 sm:w-10" aria-hidden>
-        <circle cx="18" cy="18" r={R} fill="none" stroke="#DCFCE7" strokeWidth="3.5" />
-        <circle cx="18" cy="18" r={R} fill="none" stroke="#16A34A" strokeWidth="3.5" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - v / 100)} />
+        <circle cx="18" cy="18" r={R} fill="none" stroke="rgba(74,222,128,0.18)" strokeWidth="3.5" />
+        <circle cx="18" cy="18" r={R} fill="none" stroke="#4ADE80" strokeWidth="3.5" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - v / 100)} />
       </svg>
       <span className="leading-tight">
-        <span className="block text-[17px] font-semibold tabular-nums text-[#0F172A]">{v}</span>
-        <span className="block text-[11px] text-[#64748B] sm:text-[11.5px]">{l}</span>
+        <span className="block text-[17px] font-semibold tabular-nums text-white">{v}</span>
+        <span className="block text-[11px] text-[#94A3B8] sm:text-[11.5px]">{l}</span>
       </span>
     </span>
   );
@@ -108,7 +106,7 @@ function Row({ label, thumb, end, t, l, d, good, marker }: { label: string; thum
   );
 }
 
-export function Results() {
+export function SpeedProof() {
   const { lang } = useLanguage();
   const l: Lang = lang === "en" ? "en" : "bs";
   const d = T[l];
@@ -137,32 +135,28 @@ export function Results() {
   const marker = (3 / OLD) * 100;
 
   return (
-    <section id="rezultati" className="relative scroll-mt-24">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-16 lg:px-8">
+    <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-14">
         <div>
-          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">{d.label}</p>
-          <h2 className="mt-4 text-[34px] leading-[1.08] sm:text-[48px] font-semibold tracking-[-0.03em] text-[#0F172A]" style={{ textWrap: "balance" }}>
-            {d.h} <span className="text-[#DC2626]">{d.accent}</span>
-          </h2>
-          <p className="mt-5 max-w-lg text-[16px] leading-relaxed text-[#475569]">{d.sub}</p>
-          <div className="mt-7 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-2.5">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#8FB3D9]">{d.label}</p>
+          <h3 className="mt-3 text-[28px] leading-[1.1] sm:text-[36px] font-semibold tracking-[-0.03em] text-white" style={{ textWrap: "balance" }}>
+            {d.h} <span className="text-[#F87171]">{d.accent}</span>
+          </h3>
+          <p className="mt-4 max-w-lg text-[15.5px] leading-relaxed text-[#94A3B8]">{d.sub}</p>
+          <div className="mt-6 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-2.5">
             {d.gauges.map(([v, g]) => <Gauge key={g} v={v} l={g} />)}
           </div>
           <a href="https://pagespeed.web.dev" target="_blank" rel="noopener noreferrer"
-             className="mt-3 inline-flex items-center gap-1 text-[12.5px] text-[#64748B] underline decoration-[#CBD5E1] underline-offset-4 hover:text-[#0F172A]">
+             className="mt-3 inline-flex items-center gap-1 text-[12.5px] text-[#94A3B8] underline decoration-white/20 underline-offset-4 hover:text-white">
             {d.verify} <ArrowUpRight size={12} />
           </a>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <a href="#kontakt" className="inline-flex items-center gap-2 rounded-xl bg-[#DC2626] px-5 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#B91C1C]">
+          <div className="mt-7">
+            <a href="#zakazi" className="inline-flex items-center gap-2 rounded-xl bg-[#DC2626] px-5 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#B91C1C]">
               {d.cta} <ArrowRight size={15} />
-            </a>
-            <a href="/maximum" className="inline-flex items-center gap-1.5 rounded-xl border border-[#CBD5E1] bg-white px-5 py-3 text-[14px] font-semibold text-[#0F172A] transition-colors hover:border-[#0F172A]">
-              {d.cta2} <ArrowRight size={15} />
             </a>
           </div>
         </div>
 
-        <div ref={ref} className="rounded-[28px] bg-[#0F172A] p-6 text-white sm:p-8" style={{ boxShadow: "0 40px 80px -40px rgba(15,23,42,0.6)" }}>
+        <div ref={ref} className="rounded-[28px] border border-white/[0.08] bg-[#111C2E] p-6 text-white sm:p-8">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-[13px] font-semibold text-[#8FB3D9]">{d.card}</p>
@@ -186,7 +180,6 @@ export function Results() {
             <span className="text-[#64748B]">{d.note}</span>
           </div>
         </div>
-      </div>
-    </section>
+    </div>
   );
 }

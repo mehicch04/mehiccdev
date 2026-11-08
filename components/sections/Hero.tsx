@@ -22,7 +22,7 @@ type Content = {
 const T: Record<"bs" | "en", Content> = {
   bs: {
     chipTag: "Dostupni",
-    chipText: "Web aplikacije · Sajtovi · Dizajn · Marketing",
+    chipText: "za nove projekte",
     h1a: "Vašem biznisu ne treba sajt.",
     h1b: "Treba mu sistem.",
     sub: "Web aplikacije koje vode vaš posao, sajtovi koje sami uređujete i marketing koji dovodi upite. Sve iz jedne ruke, iz Mostara za cijeli region.",
@@ -52,7 +52,7 @@ const T: Record<"bs" | "en", Content> = {
   },
   en: {
     chipTag: "Available",
-    chipText: "Web apps · Websites · Design · Marketing",
+    chipText: "for new projects",
     h1a: "Your business doesn't need a website.",
     h1b: "It needs a system.",
     sub: "Web apps that run your business, websites you can edit yourself, and marketing that brings inquiries. All from one team, from Mostar for the whole region.",

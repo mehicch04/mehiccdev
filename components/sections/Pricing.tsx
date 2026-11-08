@@ -23,7 +23,7 @@ type PricingData = {
   perMonth: string; from: string; popular: string;
   giftPre: string; giftPost: string; cta: string; appNote: string; apps: AppPlan[];
   mktEyebrow: string; mktHeading: string; mktSubtitle: string; mktCta: string; mktNote: string; mkt: MktPlan[];
-  shortSub: string; compareOpen: string; compareClose: string; compareHead: string; rcLink: string; once2: string;
+  shortSub: string; fullLink: string; compareOpen: string; compareClose: string; compareHead: string; rcLink: string; once2: string;
   compareApps: Row[]; compareMkt: Row[];
 };
 type Row = { l: string; v: (boolean | string)[] };
@@ -111,6 +111,7 @@ const PRICING: Record<"bs" | "en", PricingData> = {
       },
     ],
     shortSub: "Aplikaciju plaćate jednom i ona je vaša. Marketing mjesečno, samo dok vam koristi.",
+    fullLink: "Uporedite pakete i održavanje",
     compareOpen: "Uporedite pakete",
     compareClose: "Sakrij poređenje",
     compareHead: "Šta dobijate",
@@ -242,6 +243,7 @@ const PRICING: Record<"bs" | "en", PricingData> = {
       },
     ],
     shortSub: "You pay for the app once and it's yours. Marketing is monthly, only while it works for you.",
+    fullLink: "Compare plans and maintenance",
     compareOpen: "Compare packages",
     compareClose: "Hide comparison",
     compareHead: "What you get",
@@ -339,7 +341,7 @@ function PlanCard({ plan, icon: Icon, featured, d, link }: { plan: CardPlan; ico
           <li key={f} className="flex items-start gap-2.5 text-[14px] leading-snug text-[#E2E8F0]"><CircleCheck size={16} className="mt-0.5 shrink-0 text-[#4ADE80]" />{f}</li>
         ))}
       </ul>
-      <a href="#kontakt"
+      <a href="#zakazi"
          className={`mt-auto inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-[14px] font-semibold transition-colors ${featured ? "bg-[#DC2626] text-white hover:bg-[#B91C1C]" : "bg-white text-[#0F172A] hover:bg-[#E2E8F0]"}`}
          style={{ marginTop: 28 }}>
         {plan.cta} <ArrowRight size={15} />
@@ -398,7 +400,7 @@ function CompareBlock({ open, setOpen, d, rows, names, reduce }: { open: boolean
   );
 }
 
-export function Pricing() {
+export function Pricing({ full = false, bare = false }: { full?: boolean; bare?: boolean }) {
   const { lang } = useLanguage();
   const d = PRICING[(lang as "bs" | "en")] ?? PRICING.bs;
   const reduce = useReducedMotion() ?? false;
@@ -420,9 +422,9 @@ export function Pricing() {
     <section id="cjenovnik" data-dark className="relative scroll-mt-24 overflow-hidden"
              style={{ background: "linear-gradient(180deg, #0B1324 0%, #0F172A 50%, #0B1324 100%)" }}>
       <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
-        <Head dark eyebrow={d.eyebrow} h={d.heading} accent={d.headingAccent} sub={d.shortSub} />
+        {!bare && <Head dark eyebrow={d.eyebrow} h={d.heading} accent={d.headingAccent} sub={d.shortSub} />}
 
-        <div className="mt-10 flex justify-center">
+        <div className={`${bare ? "" : "mt-10 "}flex justify-center`}>
           <div role="tablist" aria-label={d.tabsLabel} className="grid grid-cols-2 gap-1 rounded-2xl border border-white/10 bg-white/[0.04] p-1.5">
             {tabs.map((t) => {
               const on = tab === t.id;
@@ -455,9 +457,10 @@ export function Pricing() {
                   ))}
                 </Swipe>
               </div>
-              <CompareBlock open={open} setOpen={setOpen} d={d} rows={d.compareApps} names={d.apps.map((x) => x.name)} reduce={reduce} />
+              {full && <CompareBlock open={open} setOpen={setOpen} d={d} rows={d.compareApps} names={d.apps.map((x) => x.name)} reduce={reduce} />}
               <p className="mx-auto mt-6 max-w-2xl text-center text-[13px] leading-relaxed text-[#94A3B8]">{d.appNote}</p>
 
+              {full && (
               <div id="odrzavanje" className="mx-auto mt-16 max-w-5xl scroll-mt-24">
                 <p className="text-center text-[13px] font-semibold uppercase tracking-[0.14em] text-[#8FB3D9]">{d.afterHeading}</p>
                 <h3 className="mt-3 text-center text-[26px] font-semibold tracking-[-0.02em] text-white sm:text-[32px]">
@@ -488,6 +491,7 @@ export function Pricing() {
                 <p className="mt-5 text-center text-[13px] text-[#CBD5E1]"><Gift size={14} className="mr-1.5 inline -translate-y-px text-[#4ADE80]" />{d.afterGift}</p>
                 <p className="mt-2 text-center text-[12.5px] text-[#64748B]">{d.hostingNote}</p>
               </div>
+              )}
             </motion.div>
           ) : (
             <motion.div key="mkt" {...swap}>
@@ -499,12 +503,21 @@ export function Pricing() {
                   ))}
                 </Swipe>
               </div>
-              <CompareBlock open={open} setOpen={setOpen} d={d} rows={d.compareMkt} names={d.mkt.map((x) => x.name)} reduce={reduce} />
+              {full && <CompareBlock open={open} setOpen={setOpen} d={d} rows={d.compareMkt} names={d.mkt.map((x) => x.name)} reduce={reduce} />}
               <p className="mx-auto mt-6 max-w-2xl text-center text-[13px] leading-relaxed text-[#94A3B8]">{d.mktNote}</p>
             </motion.div>
           )}
         </AnimatePresence>
 
+        {!full && (
+          <div className="mt-10 flex justify-center">
+            <a href="/cjenovnik" className="group inline-flex items-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-[14px] font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/[0.04]">
+              {d.fullLink} <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+            </a>
+          </div>
+        )}
+
+        {full && (
         <a href="/rjesenja/rent-a-car"
            className="group mx-auto mt-12 flex max-w-3xl flex-col gap-5 rounded-[20px] border border-white/[0.08] bg-white/[0.03] p-6 transition-colors hover:border-white/20 sm:flex-row sm:items-center">
           <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-[#0F3554] text-white"><Car size={22} /></span>
@@ -517,6 +530,7 @@ export function Pricing() {
             {d.rcBanner.cta} <ArrowRight size={15} />
           </span>
         </a>
+        )}
       </div>
     </section>
   );

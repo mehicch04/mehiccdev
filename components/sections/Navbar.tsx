@@ -13,7 +13,7 @@ const LABELS = {
   en: { services: "Services", portfolio: "Portfolio", about: "About", saas: "Flagship", pricing: "Pricing", contact: "Contact", book: "Book a call", solutions: "Solutions", portfolioAll: "All references" },
 };
 
-const BOOKING_PAGES = ["/", "/rjesenja/rent-a-car", "/maximum", "/portfolio", "/zakazi"];
+const BOOKING_PAGES = ["/", "/rjesenja/rent-a-car", "/maximum", "/portfolio", "/zakazi", "/cjenovnik", "/o-nama"];
 
 const SOLUTIONS = [
   {
@@ -42,9 +42,9 @@ export function Navbar() {
 
   const NAV_LINKS = [
     { label: L.services,  href: "/#usluge"    },
-    { label: L.about,     href: "/#o-nama"    },
-    { label: L.pricing,   href: "/#cjenovnik" },
-    { label: L.saas,      href: "/#saas"      },
+    { label: L.about,     href: "/o-nama"     },
+    { label: L.pricing,   href: "/cjenovnik"  },
+    { label: L.saas,      href: "/flagship"   },
   ];
 
   return (

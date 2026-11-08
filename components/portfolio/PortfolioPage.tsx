@@ -269,7 +269,7 @@ function Actions({ p, d, dark = false }: { p: Project; d: (typeof T)["bs"]; dark
         </a>
       )}
       {!p.live && !p.caseHref && (
-        <a href="/#kontakt" className={`inline-flex items-center gap-1.5 rounded-xl border px-4 py-2.5 text-[13.5px] font-semibold transition-colors ${ghost}`}>
+        <a href="/kontakt" className={`inline-flex items-center gap-1.5 rounded-xl border px-4 py-2.5 text-[13.5px] font-semibold transition-colors ${ghost}`}>
           {d.similar} <ArrowRight size={14} />
         </a>
       )}
@@ -433,7 +433,7 @@ export function PortfolioPage() {
                   {p.featured ? <Featured p={p} d={d} lang={lang} onZoom={setZoom} /> : <Card p={p} d={d} lang={lang} onZoom={setZoom} />}
                 </motion.div>
               ))}
-              <motion.a key="next" layout href="/#kontakt"
+              <motion.a key="next" layout href="/kontakt"
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                         className={`group flex min-h-[260px] flex-col items-center justify-center rounded-[22px] border-2 border-dashed border-[#CBD5E1] bg-[#F8FAFC] p-8 text-center transition-colors hover:border-[#0F3554] hover:bg-[#EEF3F8] ${shown.filter((p) => !p.featured).length % 2 === 0 ? "lg:col-span-2" : ""}`}>

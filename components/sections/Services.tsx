@@ -112,7 +112,6 @@ const BOX_POS = [{ x: "7%", y: "25%", w: "86%", h: "22%" }, { x: "7%", y: "52%",
 const BARS = [34, 47, 43, 66];
 const SWATCHES = ["#0F172A", "#0F3554", "#DC2626", "#16A34A", "#FFFFFF"];
 const BRIDGE = "M5 62 L5 19.5 L12.5 16.6 L20 19.5 L20 31.9 L28 32.5 L28 40.5 Q50 34 72 40.5 L72 31 L85.5 31 L85.5 45 L95 45 L95 62 L71 62 L71 56 A21 17.5 0 0 0 29 56 L29 62 Z";
-const CYCLE = 6500;
 const EASE = [0.22, 1, 0.36, 1] as const;
 const SHADOW = "0 1px 2px rgba(15,23,42,0.06), 0 30px 60px -30px rgba(15,23,42,0.55)";
 
@@ -335,15 +334,6 @@ export function Services() {
   const d = T[(lang as "bs" | "en")] ?? T.bs;
   const calm = useCalm();
   const [a, setA] = useState(0);
-  const [hold, setHold] = useState(false);
-  const [touched, setTouched] = useState(false);
-  const auto = !calm && !hold && !touched;
-
-  useEffect(() => {
-    if (!auto) return;
-    const id = window.setTimeout(() => { if (!document.hidden) setA((v) => (v + 1) % d.items.length); }, CYCLE);
-    return () => window.clearTimeout(id);
-  }, [auto, a, d.items.length]);
 
   const s = d.items[a];
   const href = HREFS[s.key];
@@ -360,13 +350,12 @@ export function Services() {
           <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-[#475569]">{d.sub}</p>
         </div>
 
-        <div role="tablist" aria-label={d.tabs} className="mt-14 grid grid-cols-2 gap-2 lg:grid-cols-4"
-             onPointerEnter={(e) => { if (e.pointerType === "mouse") setHold(true); }} onPointerLeave={() => setHold(false)}>
+        <div role="tablist" aria-label={d.tabs} className="mt-14 grid grid-cols-2 gap-2 lg:grid-cols-4">
           {d.items.map((x, i) => {
             const on = i === a;
             const Icon = ICONS[x.key];
             return (
-              <button key={x.key} type="button" role="tab" aria-selected={on} onClick={() => { setA(i); setTouched(true); }}
+              <button key={x.key} type="button" role="tab" aria-selected={on} onClick={() => setA(i)}
                 className={`relative overflow-hidden rounded-2xl border p-4 text-left transition-colors duration-300 sm:p-5 ${on ? "border-[#0F172A] bg-[#0F172A] text-white" : "border-[#E2E8F0] bg-white text-[#0F172A] hover:border-[#CBD5E1]"}`}>
                 <span className="flex items-center justify-between">
                   <span className={`grid h-10 w-10 place-items-center rounded-xl transition-colors ${on ? "bg-white/10" : "bg-[#EEF3F8] text-[#0F3554]"}`}><Icon size={18} /></span>
@@ -374,7 +363,6 @@ export function Services() {
                 </span>
                 <span className="mt-4 block text-[17px] sm:text-[18px] font-semibold tracking-[-0.01em]">{x.title}</span>
                 <span className={`mt-1 hidden text-[13px] leading-snug sm:block ${on ? "text-[#94A3B8]" : "text-[#64748B]"}`}>{x.lead}</span>
-                {on && auto && <span key={`p${a}`} aria-hidden className="hero-progress absolute bottom-0 left-0 h-[3px] bg-[#DC2626]" style={{ animationDuration: `${CYCLE}ms` }} />}
               </button>
             );
           })}
@@ -401,7 +389,6 @@ export function Services() {
                        className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-[14px] font-semibold text-[#0F172A] transition-colors hover:bg-[#E2E8F0]">
                       {s.link} {ext ? <ArrowUpRight size={15} /> : <ArrowRight size={15} />}
                     </a>
-                    {s.price && <span className="text-[15px] font-semibold">{s.price}</span>}
                   </div>
                 </motion.div>
               </AnimatePresence>

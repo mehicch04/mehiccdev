@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, Loader2, Video } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, Clock, Loader2, Mail, MessageCircle, Video } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import { waLink } from "@/lib/contact";
 import { toE164 } from "@/lib/phone";
@@ -47,6 +47,8 @@ const T = {
     doneP: "Na email vam stiže potvrda prijema, a link za poziv šaljemo čim odobrimo termin.",
     errInput: "Unesite ime, ispravan email i broj telefona.",
     errSend: "Slanje nije uspjelo.",
+    alt: "Radije pišete?",
+    altForm: "Kontakt forma",
     wa: "Pišite nam na WhatsApp",
     prev: "Prethodni mjesec",
     next: "Sljedeći mjesec",
@@ -87,6 +89,8 @@ const T = {
     doneP: "You'll get an email confirming we received it, and the call link as soon as we approve the time.",
     errInput: "Enter your name, a valid email and your phone number.",
     errSend: "Sending failed.",
+    alt: "Prefer to write?",
+    altForm: "Contact form",
     wa: "Message us on WhatsApp",
     prev: "Previous month",
     next: "Next month",
@@ -414,6 +418,13 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
               </div>
             )}
           </div>
+        </div>
+
+        <div className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[14px]">
+          <span className="text-[#64748B]">{d.alt}</span>
+          {wa && <a href={wa} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 font-semibold text-[#15803D] hover:text-[#166534]"><MessageCircle size={15} /> WhatsApp</a>}
+          <a href="mailto:bakir.mehic@mehiccdev.com" className="inline-flex items-center gap-1.5 font-semibold text-[#0F172A] hover:text-[#0F3554]"><Mail size={15} /> Email</a>
+          <a href="/kontakt" className="group inline-flex items-center gap-1.5 font-semibold text-[#0F172A] hover:text-[#0F3554]">{d.altForm} <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" /></a>
         </div>
       </div>
     </section>
