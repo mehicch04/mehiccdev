@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ArrowRight, Check, Mail, MapPin, Phone, MessageCircle } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import { PHONE_DISPLAY, PHONE_DIAL, waLink } from "@/lib/contact";
 import { Head, Fade, SOFT } from "@/components/ui/kit";
 import { EmailLink } from "@/components/ui/EmailLink";
+import { PhoneInput } from "@/components/ui/PhoneInput";
+import { toE164 } from "@/lib/phone";
 
 const TEAM = [
   { name: "Bakir Mehić", email: "bakir.mehic@mehiccdev.com", photo: "/team/bakir.jpg" },
@@ -26,6 +28,7 @@ type Content = {
   location: string; response: string;
   nameLabel: string; namePlaceholder: string;
   emailLabel: string; emailPlaceholder: string;
+  phoneLabel: string; phonePlaceholder: string; errPhone: string;
   subjectLabel: string; subjectOptions: string[];
   messageLabel: string; messagePlaceholder: string;
   submit: string; submitting: string; success: string;
@@ -56,6 +59,9 @@ const T: Record<"bs" | "en", Content> = {
     namePlaceholder: "Vaše ime",
     emailLabel: "Email adresa",
     emailPlaceholder: "vasa@email.com",
+    phoneLabel: "Broj telefona (WhatsApp)",
+    phonePlaceholder: "62 123 456",
+    errPhone: "Unesite ispravan broj telefona.",
     subjectLabel: "Tip projekta",
     subjectOptions: ["Web sajt", "Web aplikacija", "Sistem za rezervacije", "Digitalni marketing", "Ostalo"],
     messageLabel: "Poruka",
@@ -89,6 +95,9 @@ const T: Record<"bs" | "en", Content> = {
     namePlaceholder: "Your name",
     emailLabel: "Email address",
     emailPlaceholder: "your@email.com",
+    phoneLabel: "Phone number (WhatsApp)",
+    phonePlaceholder: "62 123 456",
+    errPhone: "Enter a valid phone number.",
     subjectLabel: "Project type",
     subjectOptions: ["Website", "Web application", "Booking system", "Digital marketing", "Other"],
     messageLabel: "Message",
@@ -108,18 +117,24 @@ export function Contact() {
 
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [honey, setHoney] = useState("");
+  const [code, setCode] = useState("387");
+  const [phone, setPhone] = useState("");
+  const opened = useRef(0);
+  useEffect(() => { opened.current = Date.now(); }, []);
   const [state, setState] = useState<"idle" | "sending" | "done">("idle");
   const [error, setError] = useState("");
   const set = (k: keyof typeof form) => (v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const tel = toE164(code, phone);
+    if (!tel) { setError(d.errPhone); return; }
     setState("sending"); setError("");
     try {
       const res = await fetch("/api/kontakt", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, website: honey }),
+        body: JSON.stringify({ ...form, phone: tel, website: honey, t: Date.now() - opened.current }),
       });
       if (res.ok) { setState("done"); return; }
       setError(res.status === 429 ? d.errTooMany : d.errSend);
@@ -191,6 +206,11 @@ export function Contact() {
                     <input required type="email" name="email" autoComplete="email" value={form.email} onChange={(e) => set("email")(e.target.value)} placeholder={d.emailPlaceholder} className={`mt-2 ${field}`} />
                   </label>
                 </div>
+
+                <label className="block">
+                  <span className={lbl}>{d.phoneLabel}</span>
+                  <PhoneInput code={code} number={phone} onCode={setCode} onNumber={setPhone} placeholder={d.phonePlaceholder} className="mt-2 border-[#E5E7EB]" />
+                </label>
 
                 <div>
                   <p className={lbl}>{d.subjectLabel}</p>

@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, CalendarDays, Check, ChevronLeft, ChevronRight, Clock, Loader2, Video } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import { waLink } from "@/lib/contact";
+import { toE164 } from "@/lib/phone";
+import { PhoneInput } from "@/components/ui/PhoneInput";
 
 type Lang = "bs" | "en";
 
@@ -33,12 +35,13 @@ const T = {
     dur: "30 minuta",
     name: "Ime i prezime",
     email: "Email",
-    note: "O čemu želite razgovarati? (nije obavezno)",
+    note: "Kratko o projektu (nije obavezno)",
+    phone: "Broj telefona (WhatsApp)",
     confirm: "Potvrdi rezervaciju",
     change: "Promijeni termin",
     doneH: "Termin je rezervisan",
     doneP: "Potvrdu i link za poziv šaljemo na vaš email.",
-    errInput: "Unesite ime i ispravan email.",
+    errInput: "Unesite ime, ispravan email i broj telefona.",
     errSend: "Slanje nije uspjelo.",
     wa: "Pišite nam na WhatsApp",
     prev: "Prethodni mjesec",
@@ -68,12 +71,13 @@ const T = {
     dur: "30 minutes",
     name: "Full name",
     email: "Email",
-    note: "What would you like to talk about? (optional)",
+    note: "About your project (optional)",
+    phone: "Phone number (WhatsApp)",
     confirm: "Confirm booking",
     change: "Change time",
     doneH: "Your call is booked",
     doneP: "We'll send the confirmation and call link to your email.",
-    errInput: "Enter your name and a valid email.",
+    errInput: "Enter your name, a valid email and your phone number.",
     errSend: "Sending failed.",
     wa: "Message us on WhatsApp",
     prev: "Previous month",
@@ -168,7 +172,9 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
   const [sel, setSel] = useState<Date | null>(null);
   const [slot, setSlot] = useState<string | null>(null);
   const [step, setStep] = useState<"pick" | "form" | "done">("pick");
-  const [form, setForm] = useState({ name: "", email: "", note: "", website: "" });
+  const [form, setForm] = useState({ name: "", email: "", note: "", website: "", code: "387", phone: "" });
+  const opened = useRef(0);
+  useEffect(() => { if (step === "form") opened.current = Date.now(); }, [step]);
   const [err, setErr] = useState<"" | "input" | "send">("");
   const [sending, setSending] = useState(false);
 
@@ -208,14 +214,15 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
 
   const submit = async () => {
     if (!sel || !slot) return;
-    if (form.name.trim().length < 2 || !isEmail(form.email.trim())) { setErr("input"); return; }
+    const phone = toE164(form.code, form.phone);
+    if (form.name.trim().length < 2 || !isEmail(form.email.trim()) || !phone) { setErr("input"); return; }
     setErr("");
     setSending(true);
     try {
       const r = await fetch("/api/zakazi", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, date: key(sel), time: slot, label: `${when} ${d.at} ${slot}`, lang: l }),
+        body: JSON.stringify({ name: form.name, email: form.email, note: form.note, website: form.website, phone, t: Date.now() - opened.current, date: key(sel), time: slot, label: `${when} ${d.at} ${slot}`, lang: l }),
       });
       if (!r.ok) throw new Error(String(r.status));
       setStep("done");
@@ -336,6 +343,7 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
                 <div className="mt-4 space-y-2.5">
                   <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={d.name} autoComplete="name" className={input} />
                   <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder={d.email} type="email" autoComplete="email" className={input} />
+                  <PhoneInput code={form.code} number={form.phone} onCode={(v) => setForm({ ...form, code: v })} onNumber={(v) => setForm({ ...form, phone: v })} placeholder={d.phone} />
                   <input value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} placeholder={d.note} className={input} />
                   <input value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
                 </div>

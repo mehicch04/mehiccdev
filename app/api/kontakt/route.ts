@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { rateLimit } from "@/lib/rateLimit";
+import { isBot } from "@/lib/spam";
+import { isE164 } from "@/lib/phone";
 
 export const runtime = "nodejs";
 
 type Body = {
-  name?: string; email?: string; subject?: string; message?: string; website?: string;
+  name?: string; email?: string; subject?: string; message?: string; website?: string; phone?: string; t?: number;
 };
 
 export async function POST(req: Request) {
@@ -20,7 +22,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
 
-  if (body.website && body.website.length > 0) {
+  if (isBot({ website: body.website, t: body.t, name: body.name, text: body.message })) {
     return NextResponse.json({ ok: true });
   }
 
@@ -32,9 +34,10 @@ export async function POST(req: Request) {
   const email   = (body.email ?? "").trim();
   const subject = (body.subject ?? "").trim();
   const message = (body.message ?? "").trim();
+  const phone   = (body.phone ?? "").trim();
 
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  if (name.length < 2 || !emailOk || message.length < 5) {
+  if (name.length < 2 || !emailOk || !isE164(phone) || message.length < 5) {
     return NextResponse.json({ error: "validation" }, { status: 422 });
   }
 
@@ -61,6 +64,7 @@ export async function POST(req: Request) {
         <table style="font-family:system-ui,sans-serif;font-size:14px">
           <tr><td style="color:#71717A;padding:6px 14px 6px 0">Ime</td><td><strong>${esc(name)}</strong></td></tr>
           <tr><td style="color:#71717A;padding:6px 14px 6px 0">Email</td><td><strong>${esc(email)}</strong></td></tr>
+          <tr><td style="color:#71717A;padding:6px 14px 6px 0">Telefon</td><td><strong>${esc(phone)}</strong> · <a href="https://wa.me/${phone.replace(/\D/g, "")}">WhatsApp</a></td></tr>
           <tr><td style="color:#71717A;padding:6px 14px 6px 0">Tip projekta</td><td><strong>${esc(subject) || "nije naveden"}</strong></td></tr>
         </table>
         <p style="font-family:system-ui,sans-serif;font-size:14px;white-space:pre-wrap;margin-top:16px">${esc(message)}</p>`,
