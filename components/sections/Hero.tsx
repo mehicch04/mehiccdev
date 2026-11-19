@@ -1,11 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
-import Image from "next/image";
+import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Check, Globe, Instagram, Mail, MessageCircle, Mouse, Reply, Send, type LucideIcon } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
-import { GLINTS, SIL, STARS, TRAIL } from "@/components/sections/heroScene";
+import type { Projector, SceneApi } from "@/components/hero3d/Scene";
+import { POSTER, frameFor, pathAt, project, type Frame } from "@/components/hero3d/frame";
+
+const Scene = dynamic(() => import("@/components/hero3d/Scene"), { ssr: false });
 
 type Lang = "bs" | "en";
 type Src = "wa" | "ig" | "web" | "viber" | "mail";
@@ -97,34 +100,31 @@ const ITEMS: { src: Src; who: string; out: Out }[] = [
   { src: "mail", who: "Marko P.", out: "send" },
 ];
 
-const FRAMES = { m: { x: -262, y: -282, w: 560, h: 345 }, d: { x: -470, y: -340, w: 940, h: 403 } };
 const CYCLE = 19000;
 const START = 5200;
 const MIN = 60000;
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-const PATH: [number, number][] = (() => {
-  const p: [number, number][] = [[-171, -184], [-152, -198], [-12, -225.63]];
-  for (let k = 1; k <= 16; k++) {
-    const t = k / 16;
-    const u = 1 - t;
-    p.push([24 * t - 12, u * u * -225.63 + 2 * u * t * -228 + t * t * -225.63]);
-  }
-  p.push([152, -198], [171, -184]);
-  return p;
-})();
-const CUM = PATH.map((_, i) => i).reduce<number[]>((acc, i) => {
-  acc.push(i ? acc[i - 1] + Math.hypot(PATH[i][0] - PATH[i - 1][0], PATH[i][1] - PATH[i - 1][1]) : 0);
-  return acc;
-}, []);
-const LEN = CUM[CUM.length - 1];
+const FLIGHT = "mehiccdev-flight";
+const POSTER_FRAME: Frame = frameFor({ aspect: POSTER.w / POSTER.h, water: 0.775, top: 0.5, half: 0.62, compact: false });
 
-function pointAt(t: number): [number, number] {
-  const d = t * LEN;
-  let i = 1;
-  while (i < CUM.length - 1 && CUM[i] < d) i++;
-  const k = (d - CUM[i - 1]) / (CUM[i] - CUM[i - 1] || 1);
-  return [PATH[i - 1][0] + (PATH[i][0] - PATH[i - 1][0]) * k, PATH[i - 1][1] + (PATH[i][1] - PATH[i - 1][1]) * k];
+function webgl() {
+  try {
+    const c = document.createElement("canvas");
+    return !!(c.getContext("webgl2") || c.getContext("webgl"));
+  } catch {
+    return false;
+  }
+}
+
+function posterProjector(w: number, h: number): Projector {
+  const s = Math.max(w / POSTER.w, h / POSTER.h);
+  const ox = (w - POSTER.w * s) / 2;
+  const oy = (h - POSTER.h * s) / 2;
+  return (t) => {
+    const [x, y] = project(POSTER_FRAME, POSTER.w / POSTER.h, pathAt(t));
+    return [ox + ((x + 1) / 2) * POSTER.w * s, oy + ((1 - y) / 2) * POSTER.h * s];
+  };
 }
 
 let fmt: Intl.DateTimeFormat | null = null;
@@ -236,7 +236,8 @@ export function Hero() {
   const els = useRef<(HTMLButtonElement | null)[]>([]);
   const toks = useRef<Tok[]>(ITEMS.map(() => ({ t: 0, prev: -1, ok: false, tin: 0, tout: 0 })));
   const incRef = useRef(-1);
-  const geo = useRef({ s: 1, ox: 0, oy: 0 });
+  const proj = useRef<Projector>(() => null);
+  const api = useRef<SceneApi>({ onFrame: { current: null }, layout: { current: { top: 0, panels: false } } }).current;
   const paused = useRef(false);
   const visible = useRef(true);
   const acc = useRef(START);
@@ -257,6 +258,12 @@ export function Hero() {
   const [reduce, setReduce] = useState(false);
   const [fine, setFine] = useState(true);
   const pointer = useRef("mouse");
+  const [gl, setGl] = useState<boolean | null>(null);
+  const [fly, setFly] = useState(false);
+  const [start, setStart] = useState(false);
+  const [shown, setShown] = useState(false);
+  const [active, setActive] = useState(true);
+  const [compact, setCompact] = useState(false);
 
   const selRef = useRef(0);
   selRef.current = sel;
@@ -271,48 +278,75 @@ export function Hero() {
   }, []);
 
   useEffect(() => {
-    const html = document.documentElement;
-    if (!html.hasAttribute("data-most")) {
-      setLit(true);
-      return;
-    }
-    let raf = 0;
-    let id = 0;
-    let started = false;
-    const go = () => {
-      if (started) return;
-      started = true;
-      raf = requestAnimationFrame(() => {
-        id = window.setTimeout(() => {
-          html.removeAttribute("data-most");
-          setLit(true);
-        }, 90);
-      });
+    const rm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let seen = false;
+    try { seen = !!sessionStorage.getItem(FLIGHT); } catch {}
+    setFly(!rm && !seen);
+    setGl(webgl());
+    const mq = window.matchMedia("(max-width: 639px)");
+    const on = () => setCompact(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    api.onFrame.current = (p) => { proj.current = p; };
+    return () => {
+      mq.removeEventListener("change", on);
+      api.onFrame.current = null;
     };
+  }, [api]);
+
+  const reveal = useCallback(() => {
+    document.documentElement.removeAttribute("data-most");
+    setLit(true);
+  }, []);
+  const land = useCallback(() => {
+    try { sessionStorage.setItem(FLIGHT, "1"); } catch {}
+    setReady(true);
+  }, []);
+  const onShown = useCallback(() => setShown(true), []);
+
+  useEffect(() => {
+    const html = document.documentElement;
     const check = () => {
-      if (!html.hasAttribute("data-most")) {
-        mo.disconnect();
-        setLit(true);
-      } else if (!html.hasAttribute("data-intro")) {
-        mo.disconnect();
-        go();
-      }
+      if (html.hasAttribute("data-intro")) return;
+      mo.disconnect();
+      setStart(true);
     };
     const mo = new MutationObserver(check);
-    mo.observe(html, { attributes: true, attributeFilter: ["data-intro", "data-most"] });
+    mo.observe(html, { attributes: true, attributeFilter: ["data-intro"] });
     check();
-    return () => {
-      mo.disconnect();
-      cancelAnimationFrame(raf);
-      window.clearTimeout(id);
-    };
+    return () => mo.disconnect();
   }, []);
 
   useEffect(() => {
-    if (!lit) return;
-    const id = window.setTimeout(() => setReady(true), reduce ? 0 : 1500);
+    if (!start || gl === null) return;
+    if (!gl) {
+      reveal();
+      return;
+    }
+    if (shown) return;
+    const id = window.setTimeout(() => setGl(false), 2500);
     return () => window.clearTimeout(id);
-  }, [lit, reduce]);
+  }, [start, gl, shown, reveal]);
+
+  useEffect(() => {
+    if (!lit || gl !== false) return;
+    const id = window.setTimeout(() => setReady(true), reduce ? 0 : 1200);
+    return () => window.clearTimeout(id);
+  }, [lit, gl, reduce]);
+
+  useEffect(() => {
+    const sec = section.current;
+    if (!sec) return;
+    let seen = true;
+    const sync = () => setActive(seen && document.visibilityState === "visible");
+    const io = new IntersectionObserver(([e]) => { seen = e.isIntersecting; sync(); }, { threshold: 0 });
+    io.observe(sec);
+    document.addEventListener("visibilitychange", sync);
+    return () => {
+      io.disconnect();
+      document.removeEventListener("visibilitychange", sync);
+    };
+  }, []);
 
   useEffect(() => {
     const t0 = Date.now();
@@ -334,52 +368,51 @@ export function Hero() {
     const el = top.current;
     if (!sec || !el) return;
     const fit = () => {
+      const L = api.layout.current;
+      L.panels = window.matchMedia("(min-width: 1280px)").matches;
       if (!window.matchMedia("(min-width: 1024px)").matches) {
         sec.style.removeProperty("--tb");
+        L.top = (box.current?.clientHeight ?? 400) * 0.1;
         return;
       }
-      sec.style.setProperty("--tb", `${Math.round(el.offsetTop + el.offsetHeight + 28)}px`);
+      const tb = Math.round(el.offsetTop + el.offsetHeight + 28);
+      sec.style.setProperty("--tb", `${tb}px`);
+      L.top = tb - 14;
     };
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(el);
     ro.observe(sec);
     return () => ro.disconnect();
-  }, []);
+  }, [api]);
 
   const measure = useCallback(() => {
     const el = box.current;
     if (!el) return;
-    const cw = el.clientWidth;
-    const ch = el.clientHeight;
-    const f = window.matchMedia("(min-width: 640px)").matches ? FRAMES.d : FRAMES.m;
-    const s = Math.min(cw / f.w, ch / f.h);
-    geo.current = { s, ox: (cw - f.w * s) / 2 - f.x * s, oy: ch - f.h * s - f.y * s };
-  }, []);
+    if (gl === false) proj.current = posterProjector(el.clientWidth, el.clientHeight);
+  }, [gl]);
 
   const place = useCallback((i: number) => {
     const el = box.current;
     if (!el) return null;
-    const [x, y] = pointAt(toks.current[i].t);
-    const g = geo.current;
-    const px = g.ox + x * g.s;
-    const py = g.oy + y * g.s;
+    const p = proj.current(toks.current[i].t);
+    if (!p) return null;
+    const [px, py] = p;
     const w = 288;
     const lx = Math.max(12, Math.min(el.clientWidth - w - 12, px - w / 2));
     return { i, x: lx, y: py + 24, ax: px - lx };
   }, []);
 
   const draw = useCallback(() => {
-    const g = geo.current;
     const base = acc.current / CYCLE;
     let n = 0;
     toks.current.forEach((k, i) => {
       const t = reduce ? (i / ITEMS.length + 0.1) % 1 : (base + i / ITEMS.length) % 1;
       const el = els.current[i];
-      const [x, y] = pointAt(t);
+      const p = proj.current(t);
       if (el) {
-        el.style.transform = `translate3d(${(g.ox + x * g.s).toFixed(1)}px, ${(g.oy + y * g.s).toFixed(1)}px, 0)`;
-        el.style.opacity = String(t < 0.05 ? t / 0.05 : t > 0.95 ? (1 - t) / 0.05 : 1);
+        if (p) el.style.transform = `translate3d(${p[0].toFixed(1)}px, ${p[1].toFixed(1)}px, 0)`;
+        el.style.opacity = p ? String(t < 0.05 ? t / 0.05 : t > 0.95 ? (1 - t) / 0.05 : 1) : "0";
       }
       const ok = t >= 0.5;
       const stamp = Date.now();
@@ -434,8 +467,8 @@ export function Hero() {
     const loop = (t: number) => {
       const dt = Math.min(64, t - last);
       last = t;
-      if (!paused.current && visible.current && !reduce) {
-        acc.current += dt;
+      if (visible.current) {
+        if (!paused.current && !reduce) acc.current += dt;
         draw();
       }
       raf = requestAnimationFrame(loop);
@@ -513,7 +546,7 @@ export function Hero() {
 
   return (
     <section ref={section} data-hero aria-labelledby="hero-title"
-             className="most-hero hero-light relative isolate flex flex-col overflow-hidden bg-[#0B1733] text-white lg:block lg:h-[100svh] lg:min-h-[680px] lg:max-h-[1180px]">
+             className="most-hero hero-light relative isolate flex flex-col overflow-hidden bg-[#070D1F] text-white lg:block lg:h-[100svh] lg:min-h-[680px] lg:max-h-[1180px]">
       <div className="pointer-events-none absolute inset-x-0 top-[92px] z-10 hidden lg:block">
         <div className="most-in mx-auto max-w-7xl px-8 text-right text-[11px] uppercase leading-[1.9] tracking-[0.16em] text-[#64748B]" style={{ "--d": "0.5s" } as CSSProperties}>
           {d.meta} · <b className="font-semibold tracking-[0.08em] text-[#CBD5E1]">{d.year}</b>
@@ -560,28 +593,17 @@ export function Hero() {
       </div>
 
       <div ref={box} className="most-box order-2 mt-7 lg:mt-0">
-        <Image src="/hero/most-sumrak.svg" alt="" width={1520} height={463} priority unoptimized draggable={false} className="most-img select-none" />
-        <svg className="most-img" viewBox="-760 -400 1520 463" preserveAspectRatio="none" aria-hidden>
-          <defs>
-            <radialGradient id="most-glow" cx="0" cy="-40" r="250" gradientUnits="userSpaceOnUse">
-              <stop offset="0" stopColor="#F4B76A" stopOpacity="0.12" />
-              <stop offset="1" stopColor="#F4B76A" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-          <rect className="most-glow" x="-760" y="-280" width="1520" height="282" fill="url(#most-glow)" />
-          <g className="most-sil" fill="#0B1733">
-            {SIL.map((p) => <path key={p} d={p} />)}
-          </g>
-          {STARS.map(([x, y, r, dl]) => (
-            <circle key={`${x}${y}`} className="most-tw" cx={x} cy={y} r={r} fill="#E8EEF7" style={{ animationDelay: `${dl}s` }} />
-          ))}
-          {GLINTS.map(([x, y, w, dl]) => (
-            <path key={`${x}${y}`} className="most-gl" d={`M${x} ${y}h${w}`} stroke="#F2BD73" strokeWidth={1.6} strokeLinecap="round"
-                  vectorEffect="non-scaling-stroke" style={{ animationDelay: `${dl}s` }} />
-          ))}
-          <path className="most-trail" d={TRAIL} fill="none" stroke="#4ADE80" strokeWidth={1.6} strokeDasharray="1 6" strokeLinecap="round"
-                vectorEffect="non-scaling-stroke" opacity={0.75} />
-        </svg>
+        {gl === false && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src="/hero/most-3d.webp" alt="" width={POSTER.w} height={POSTER.h} draggable={false} className="most-poster select-none" />
+        )}
+        {gl && (
+          <div className={`most-canvas${shown ? " on" : ""}`} aria-hidden>
+            <Scene api={api} start={start} fly={fly} reduce={reduce} compact={compact} active={active}
+                   onShown={onShown} onReveal={reveal} onLand={land} />
+          </div>
+        )}
+        <span aria-hidden className="most-shade" />
 
         <motion.div className="pointer-events-none absolute inset-0 z-[2]" initial={false} animate={{ opacity: ready ? 1 : 0 }} transition={{ duration: 0.8 }}>
           {ITEMS.map((it, i) => {
