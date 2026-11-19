@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, useMotionValueEvent, type MotionValue } from "framer-motion";
 import {
   ArrowRight, ArrowUpRight, BellRing, CalendarCheck, CarFront, Check, CircleCheck,
   Globe, LayoutDashboard, Megaphone, PenTool, type LucideIcon,
@@ -10,7 +10,7 @@ import {
 import { useLanguage } from "@/components/ui/LanguageProvider";
 
 type Key = "app" | "web" | "ux" | "mkt";
-type Item = { key: Key; title: string; lead: string; desc: string; points: string[]; price?: string; link: string; alt: string };
+type Item = { key: Key; title: string; tag: string; lead: string; desc: string; points: string[]; price?: string; link: string; alt: string };
 type Content = {
   label: string; h: string; accent: string; sub: string; tabs: string;
   items: Item[];
@@ -30,25 +30,25 @@ const T: Record<"bs" | "en", Content> = {
     tabs: "Usluge",
     items: [
       {
-        key: "app", title: "Web aplikacije", lead: "Aplikacija koja vodi vaš posao",
+        key: "app", title: "Web aplikacije", tag: "Rezervacije, termini i admin panel", lead: "Aplikacija koja vodi vaš posao",
         desc: "Rezervacije, evidencija klijenata ili interni alat za tim. Sve na jednom mjestu, plaćate jednom i aplikacija je vaša.",
         points: ["Rezervacije, termini i upiti na jednom mjestu", "Admin panel za vas i vaš tim", "Obavijesti na email i WhatsApp", "Plaćate jednom, bez pretplate"],
         price: "od 1.000 KM", link: "Pogledajte primjer", alt: "Admin panel, Maximum Rent a Car",
       },
       {
-        key: "web", title: "Sajtovi", lead: "Sajt koji se vidi i koji sami uređujete",
+        key: "web", title: "Sajtovi", tag: "Brz sajt, prvo za telefon", lead: "Sajt koji se vidi i koji sami uređujete",
         desc: "Brzi sajtovi koji se vide na Googlu i rade savršeno na telefonu. Tekst, cijene i slike mijenjate sami, bez programera.",
         points: ["Prvo za telefon, brzo učitavanje", "Vidljivost na Googlu", "Tekst, cijene i slike mijenjate sami", "Dvojezično, BS i EN"],
         link: "Pogledajte projekat", alt: "OxyBaric Mostar, medicinski sajt",
       },
       {
-        key: "ux", title: "UI/UX dizajn", lead: "Dizajn prije prve linije koda",
+        key: "ux", title: "UI/UX dizajn", tag: "Prototip i dizajn sistem", lead: "Dizajn prije prve linije koda",
         desc: "Ekrani i tok korisnika osmišljeni unaprijed, da proizvod bude jasan i lak za korištenje od prvog dana.",
         points: ["Mapa toka korisnika", "Klikabilni prototip prije koda", "Dizajn sistem: boje, slova, komponente", "Ekrani za mobitel i desktop"],
         link: "Pogledajte radove", alt: "Roobet Rewards, sistem nagrada",
       },
       {
-        key: "mkt", title: "Marketing", lead: "Objave i reklame koje se mogu pratiti",
+        key: "mkt", title: "Marketing", tag: "Instagram, Facebook i reklame", lead: "Objave i reklame koje se mogu pratiti",
         desc: "Društvene mreže i reklame sa jasnim izvještajem. Znate šta je objavljeno, ko je to vidio i koliko je upita stiglo.",
         points: ["Instagram i Facebook objave", "Meta i Google reklame", "Mjesečni izvještaj koji se razumije", "Bez ugovorne obaveze"],
         price: "od 60 KM mj.", link: "Pogledajte pakete", alt: "Primjer mjesečnog izvještaja",
@@ -70,25 +70,25 @@ const T: Record<"bs" | "en", Content> = {
     tabs: "Services",
     items: [
       {
-        key: "app", title: "Web apps", lead: "An app that runs your business",
+        key: "app", title: "Web apps", tag: "Bookings, scheduling and an admin panel", lead: "An app that runs your business",
         desc: "Bookings, client records or an internal tool for your team. All in one place, you pay once and the app is yours.",
         points: ["Bookings, appointments and inquiries in one place", "Admin panel for you and your team", "Email and WhatsApp alerts", "Pay once, no subscription"],
         price: "from €500", link: "See an example", alt: "Admin panel, Maximum Rent a Car",
       },
       {
-        key: "web", title: "Websites", lead: "A site people find and you edit yourself",
+        key: "web", title: "Websites", tag: "Fast and built for phones first", lead: "A site people find and you edit yourself",
         desc: "Fast websites that show up on Google and work perfectly on phones. You change text, prices and photos yourself, no developer needed.",
         points: ["Mobile first, fast loading", "Visibility on Google", "You edit text, prices and photos", "Bilingual, BS and EN"],
         link: "See the project", alt: "OxyBaric Mostar, medical website",
       },
       {
-        key: "ux", title: "UI/UX design", lead: "Design before the first line of code",
+        key: "ux", title: "UI/UX design", tag: "Prototype and design system", lead: "Design before the first line of code",
         desc: "Screens and user flows planned upfront, so the product is clear and easy to use from day one.",
         points: ["User flow map", "Clickable prototype before code", "Design system: colors, type, components", "Screens for mobile and desktop"],
         link: "See the work", alt: "Roobet Rewards, rewards system",
       },
       {
-        key: "mkt", title: "Marketing", lead: "Posts and ads you can actually track",
+        key: "mkt", title: "Marketing", tag: "Instagram, Facebook and ads", lead: "Posts and ads you can actually track",
         desc: "Social media and ads with a clear report. You know what was posted, who saw it and how many inquiries came in.",
         points: ["Instagram and Facebook posts", "Meta and Google ads", "A monthly report that makes sense", "No contract commitment"],
         price: "from €30 a month", link: "See the packages", alt: "Sample monthly report",
@@ -167,7 +167,7 @@ function LiveToast({ d }: { d: Content }) {
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#16A34A] text-white"><Icon size={17} /></span>
         <span className="min-w-0">
           <span className="block text-[13px] font-semibold">{title}</span>
-          <span className="block truncate text-[11.5px] text-[#94A3B8]">{detail}</span>
+          <span className="block text-[11.5px] leading-snug text-[#94A3B8]">{detail}</span>
         </span>
         <span className="ml-auto hidden shrink-0 rounded-md bg-[#16A34A]/15 px-2 py-0.5 text-[10.5px] font-semibold text-[#4ADE80] sm:inline">{tag}</span>
       </motion.div>
@@ -329,76 +329,134 @@ function Stage({ k, d }: { k: Key; d: Content }) {
   );
 }
 
+function useWide() {
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const m = window.matchMedia("(min-width: 1024px)");
+    const on = () => setWide(m.matches);
+    on();
+    m.addEventListener("change", on);
+    return () => m.removeEventListener("change", on);
+  }, []);
+  return wide;
+}
+
+function Bar({ p, i, n }: { p: MotionValue<number>; i: number; n: number }) {
+  const w = useTransform(p, (v) => `${Math.min(1, Math.max(0, v * n - i)) * 100}%`);
+  return (
+    <span className="mt-4 block h-[3px] w-full max-w-[260px] overflow-hidden rounded-full bg-[#E2E8F0]">
+      <motion.span className="block h-full rounded-full bg-[#DC2626]" style={{ width: w }} />
+    </span>
+  );
+}
+
+function Panel({ s, i, n, d, calm }: { s: Item; i: number; n: number; d: Content; calm: boolean }) {
+  const href = HREFS[s.key];
+  const ext = href.startsWith("http");
+  return (
+    <div className="relative flex h-full flex-col overflow-hidden rounded-[32px] bg-[#0B1120] bg-[image:radial-gradient(700px_420px_at_100%_0%,rgba(15,53,84,0.75),transparent_65%),radial-gradient(500px_360px_at_0%_100%,rgba(220,38,38,0.10),transparent_65%)] text-white">
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div key={s.key} className="relative z-10 px-7 pt-7 sm:px-10 sm:pt-10"
+          initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: calm ? 0 : 0.4, ease: EASE }}>
+          <p className="text-[12.5px] font-semibold uppercase tracking-[0.16em] text-[#94A3B8]">
+            <span className="tabular-nums text-[#F87171]">0{i + 1}</span><span className="text-[#475569]"> / 0{n}</span> · {s.title}
+          </p>
+          <h3 className="mt-3 text-[26px] font-semibold leading-[1.12] tracking-[-0.025em] sm:text-[34px]" style={{ textWrap: "balance" }}>{s.lead}</h3>
+          <ul className="mt-5 grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
+            {s.points.map((pt, k) => (
+              <motion.li key={pt} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: calm ? 0 : 0.35, delay: calm ? 0 : 0.08 + k * 0.05, ease: EASE }}
+                className="flex items-start gap-2.5 text-[14.5px] leading-snug text-[#CBD5E1]">
+                <CircleCheck size={17} className="mt-px shrink-0 text-[#4ADE80]" /> {pt}
+              </motion.li>
+            ))}
+          </ul>
+          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <a href={href} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+               className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-[13.5px] font-semibold text-[#0F172A] transition-colors hover:bg-[#E2E8F0]">
+              {s.link} {ext ? <ArrowUpRight size={14} /> : <ArrowRight size={14} />}
+            </a>
+            {s.price && <span className="text-[14px] font-semibold tabular-nums text-[#4ADE80]">{s.price}</span>}
+          </div>
+        </motion.div>
+      </AnimatePresence>
+      <div className="relative mt-4 min-h-[300px] flex-1 overflow-hidden sm:min-h-[360px]">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div key={s.key} className="absolute inset-0 px-7 sm:px-10" exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
+            <Stage k={s.key} d={d} />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
 export function Services() {
   const { lang } = useLanguage();
   const d = T[(lang as "bs" | "en")] ?? T.bs;
   const calm = useCalm();
+  const wide = useWide();
+  const n = d.items.length;
   const [a, setA] = useState(0);
+  const track = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: track, offset: ["start start", "end end"] });
 
-  const s = d.items[a];
-  const href = HREFS[s.key];
-  const ext = href.startsWith("http");
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    if (!wide) return;
+    const next = Math.min(n - 1, Math.max(0, Math.floor(v * n)));
+    setA((cur) => (cur === next ? cur : next));
+  });
+
+  const go = (i: number) => {
+    if (!wide || !track.current) { setA(i); return; }
+    const el = track.current;
+    const top = el.getBoundingClientRect().top + window.scrollY;
+    const run = el.offsetHeight - window.innerHeight;
+    window.scrollTo({ top: top + run * ((i + 0.05) / n), behavior: calm ? "auto" : "smooth" });
+  };
+
+  const header = (
+    <div>
+      <span className="inline-flex items-center gap-2.5 rounded-full border border-[#E2E8F0] bg-white px-3.5 py-1.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#64748B]">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#DC2626] shadow-[0_0_0_4px_rgba(220,38,38,0.15)]" />{d.label}
+      </span>
+      <h2 className="mt-5 text-[34px] font-semibold leading-[1.06] tracking-[-0.035em] text-[#0F172A] sm:text-[46px]" style={{ textWrap: "balance" }}>
+        {d.h} <span className="text-[#0F3554]">{d.accent}</span>
+      </h2>
+      <p className="mt-4 max-w-md text-[16px] leading-relaxed text-[#475569]">{d.sub}</p>
+    </div>
+  );
 
   return (
     <section id="usluge" className="relative scroll-mt-24">
-      <div className="mx-auto max-w-6xl px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">{d.label}</p>
-          <h2 className="mt-4 text-[34px] leading-[1.1] sm:text-[48px] font-semibold tracking-[-0.03em] text-[#0F172A]" style={{ textWrap: "balance" }}>
-            {d.h} <span className="text-[#0F3554]">{d.accent}</span>
-          </h2>
-          <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-[#475569]">{d.sub}</p>
-        </div>
-
-        <div role="tablist" aria-label={d.tabs} className="mt-14 grid grid-cols-2 gap-2 lg:grid-cols-4">
-          {d.items.map((x, i) => {
-            const on = i === a;
-            const Icon = ICONS[x.key];
-            return (
-              <button key={x.key} type="button" role="tab" aria-selected={on} onClick={() => setA(i)}
-                className={`relative overflow-hidden rounded-2xl border p-4 text-left transition-colors duration-300 sm:p-5 ${on ? "border-[#0F172A] bg-[#0F172A] text-white" : "border-[#E2E8F0] bg-white text-[#0F172A] hover:border-[#CBD5E1]"}`}>
-                <span className="flex items-center justify-between">
-                  <span className={`grid h-10 w-10 place-items-center rounded-xl transition-colors ${on ? "bg-white/10" : "bg-[#EEF3F8] text-[#0F3554]"}`}><Icon size={18} /></span>
-                  <span className={`text-[12px] font-semibold tabular-nums ${on ? "text-[#64748B]" : "text-[#94A3B8]"}`}>0{i + 1}</span>
-                </span>
-                <span className="mt-4 block text-[17px] sm:text-[18px] font-semibold tracking-[-0.01em]">{x.title}</span>
-                <span className={`mt-1 hidden text-[13px] leading-snug sm:block ${on ? "text-[#94A3B8]" : "text-[#64748B]"}`}>{x.lead}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="relative mt-4 overflow-hidden rounded-[32px] bg-[#0F172A] text-white">
-          <div className="grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-            <div className="relative z-10 p-7 sm:p-10 lg:p-12">
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div key={s.key} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 16 }} transition={{ duration: calm ? 0 : 0.35, ease: EASE }}>
-                  <p className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#8FB3D9]">0{a + 1} · {s.title}</p>
-                  <h3 className="mt-4 text-[26px] leading-[1.15] sm:text-[30px] font-semibold tracking-[-0.02em]">{s.lead}</h3>
-                  <p className="mt-4 text-[15.5px] leading-relaxed text-[#94A3B8]">{s.desc}</p>
-                  <ul className="mt-7 space-y-3">
-                    {s.points.map((pt, i) => (
-                      <motion.li key={pt} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: calm ? 0 : 0.35, delay: calm ? 0 : 0.1 + i * 0.06, ease: EASE }}
-                        className="flex items-start gap-2.5 text-[15px] text-[#E2E8F0]">
-                        <CircleCheck size={18} className="mt-0.5 shrink-0 text-[#4ADE80]" /> {pt}
-                      </motion.li>
-                    ))}
-                  </ul>
-                  <div className="mt-9 flex flex-wrap items-center gap-4">
-                    <a href={href} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                       className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-[14px] font-semibold text-[#0F172A] transition-colors hover:bg-[#E2E8F0]">
-                      {s.link} {ext ? <ArrowUpRight size={15} /> : <ArrowRight size={15} />}
-                    </a>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
+      <div ref={track} className="relative" style={wide ? { height: `${n * 85}vh` } : undefined}>
+        <div className={wide ? "sticky top-0 flex h-screen items-center" : ""}>
+          <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-6 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:gap-14 lg:px-8">
+            <div className="flex min-w-0 flex-col justify-center">
+              {header}
+              <div role="tablist" aria-label={d.tabs} className="-mx-6 mt-8 flex gap-2 overflow-x-auto px-6 pb-1 lg:mx-0 lg:mt-10 lg:flex-col lg:gap-0 lg:overflow-visible lg:px-0">
+                {d.items.map((x, i) => {
+                  const on = i === a;
+                  return (
+                    <button key={x.key} type="button" role="tab" aria-selected={on} onClick={() => go(i)}
+                      className={`relative shrink-0 text-left transition-colors duration-300 lg:w-full ${on
+                        ? "rounded-2xl bg-white shadow-[0_1px_2px_rgba(15,23,42,0.05),0_18px_40px_-12px_rgba(15,23,42,0.18)] lg:rounded-[22px]"
+                        : "rounded-2xl border border-[#E2E8F0] bg-white/60 lg:rounded-none lg:border-0 lg:border-t lg:bg-transparent"} px-4 py-3 lg:px-6 lg:py-5`}>
+                      {on && <span className="absolute bottom-5 left-0 top-5 hidden w-1 rounded-full bg-[#DC2626] lg:block" />}
+                      <span className="flex items-baseline gap-4">
+                        <span className={`hidden text-[13px] font-semibold tabular-nums lg:inline ${on ? "text-[#DC2626]" : "text-[#94A3B8]"}`}>0{i + 1}</span>
+                        <span>
+                          <span className={`block whitespace-nowrap text-[15px] font-semibold tracking-[-0.01em] lg:text-[22px] ${on ? "text-[#0F172A]" : "text-[#64748B] lg:text-[#94A3B8]"}`}>{x.title}</span>
+                          <span className={`mt-1 hidden text-[14px] lg:block ${on ? "text-[#475569]" : "text-[#94A3B8]"}`}>{x.tag}</span>
+                          {on && wide && <Bar p={scrollYProgress} i={i} n={n} />}
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            <div className="relative h-[340px] overflow-hidden sm:h-[460px] lg:h-auto lg:min-h-[540px]">
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div key={s.key} className="absolute inset-0 px-7 pt-2 sm:px-10 lg:pl-0 lg:pr-10 lg:pt-12" exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
-                  <Stage k={s.key} d={d} />
-                </motion.div>
-              </AnimatePresence>
+            <div className="h-[640px] sm:h-[700px] lg:h-[min(680px,82vh)]">
+              <Panel s={d.items[a]} i={a} n={n} d={d} calm={calm} />
             </div>
           </div>
         </div>
