@@ -1,14 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowRight, ArrowUpRight, Check, X, Plus, Bell, Car, CarFront, Building2, CalendarClock, Wrench, ShieldCheck } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, X, Plus, Car, CarFront, Building2, CalendarClock, Wrench, ShieldCheck } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import { COPY, type RcCopy } from "@/components/rjesenja/rentACarCopy";
 import { RcForm } from "@/components/rjesenja/RcForm";
+import { RcCompare } from "@/components/rjesenja/RcCompare";
 import { SystemDemo } from "@/components/sections/SystemDemo";
 import { Value } from "@/components/sections/Value";
 import { Booking } from "@/components/sections/Booking";
-import { Backdrop, Head, Fade, BrowserFrame, PhoneMockup, PlanCard, SOFT, FLOAT } from "@/components/ui/kit";
+import { Backdrop, Head, Fade, BrowserFrame, PlanCard, SOFT } from "@/components/ui/kit";
 
 const PLAN_ICONS = [Car, CarFront, Building2];
 
@@ -18,29 +19,40 @@ function Hero({ c }: { c: RcCopy }) {
   return (
     <section className="hero-light relative bg-white">
       <Backdrop>
-        <div className="mx-auto grid max-w-6xl items-center gap-14 px-6 pb-24 pt-36 sm:pt-40 lg:grid-cols-[1fr_1.05fr] lg:px-8">
-          <Fade>
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-white px-3 py-1 text-[12.5px] font-medium text-[#0F172A]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#16A34A]" /> {h.eyebrow}
-            </span>
-            <h1 className="mt-6 text-[38px] leading-[1.08] sm:text-[54px] font-semibold tracking-[-0.035em] text-[#0F172A]" style={{ textWrap: "balance" }}>
-              {h.h1a} <span className="block text-[#0F3554]">{h.h1b.replace(/-/g, "\u2011")}</span>
-            </h1>
-            <p className="mt-6 max-w-xl text-[17px] leading-relaxed text-[#475569]">{h.sub}</p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <a href="#upit" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-[#B91C1C]">
-                {h.ctaPrimary} <ArrowRight size={16} />
-              </a>
-              <a href="#paketi" className="inline-flex items-center justify-center rounded-xl border border-[#E5E7EB] bg-white px-6 py-3.5 text-[15px] font-semibold text-[#0F172A] transition-colors hover:bg-[#F9FAFB]">
-                {h.ctaSecondary}
-              </a>
-            </div>
-            <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2">
+        <div className="mx-auto max-w-6xl px-6 pb-20 pt-28 sm:pt-32 lg:px-8 lg:pb-24">
+          <div className="grid gap-7 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-end lg:gap-12">
+            <Fade>
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-white px-3 py-1 text-[12.5px] font-medium text-[#0F172A]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#16A34A]" /> {h.eyebrow}
+              </span>
+              <h1 className="mt-6 text-[36px] font-semibold leading-[1.05] tracking-[-0.042em] text-[#0F172A] sm:text-[56px] lg:text-[48px] xl:text-[54px]" style={{ textWrap: "balance" }}>
+                {h.h1a} <span className="block text-[#0F3554]">{h.h1b.replace(/-/g, "\u2011")}<span className="text-[#DC2626]">.</span></span>
+              </h1>
+            </Fade>
+            <Fade delay={0.08}>
+              <p className="max-w-xl text-[17px] text-[#475569]">{h.sub}</p>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <a href="#upit" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-[#B91C1C]">
+                  {h.ctaPrimary} <ArrowRight size={16} />
+                </a>
+                <a href="#paketi" className="inline-flex items-center justify-center rounded-xl border border-[#E5E7EB] bg-white px-6 py-3.5 text-[15px] font-semibold text-[#0F172A] transition-colors hover:bg-[#F9FAFB]">
+                  {h.ctaSecondary}
+                </a>
+              </div>
+            </Fade>
+          </div>
+
+          <Fade delay={0.12} className="mt-10 lg:mt-12">
+            <RcCompare />
+          </Fade>
+
+          <div className="mt-7 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <ul className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:gap-x-6 lg:shrink-0 lg:flex-nowrap">
               {h.points.map((p) => (
-                <li key={p} className="flex items-center gap-2 text-[14px] text-[#334155]"><Check size={15} strokeWidth={2.5} className="text-[#16A34A]" /> {p}</li>
+                <li key={p} className="flex items-center gap-2 whitespace-nowrap text-[14px] text-[#334155]"><Check size={15} strokeWidth={2.5} className="text-[#16A34A]" /> {p}</li>
               ))}
             </ul>
-            <a href="/maximum" className="group mt-10 flex max-w-xl items-center gap-5 rounded-2xl border border-[#E5E7EB] bg-white/80 p-4 transition-colors hover:border-[#CBD5E1]" style={{ boxShadow: SOFT }}>
+            <a href="/maximum" className="group flex w-full items-center gap-5 rounded-[16px] border border-[#E5E7EB] bg-white/80 p-4 transition-colors hover:border-[#CBD5E1] lg:w-auto lg:min-w-0 lg:max-w-[520px]" style={{ boxShadow: SOFT }}>
               <span className="hidden shrink-0 border-r border-[#F1F5F9] pr-5 sm:block">
                 <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748B]">{cs.label}</span>
                 <span className="mt-0.5 block text-[14px] font-semibold text-[#0F172A]">Maximum Rent a Car</span>
@@ -55,29 +67,7 @@ function Hero({ c }: { c: RcCopy }) {
               </dl>
               <ArrowUpRight size={16} className="shrink-0 text-[#94A3B8] transition-colors group-hover:text-[#0F172A]" />
             </a>
-          </Fade>
-
-          <Fade delay={0.1} className="relative mx-auto w-full max-w-[560px] pb-6 pt-4">
-            <div className="w-[88%]">
-              <BrowserFrame url="maximum-rent.vercel.app/admin">
-                <span className="relative block aspect-[16/10]">
-                  <Image src="/portfolio/maximum-admin-desktop-svijetla.webp" alt={h.h1a} fill sizes="(max-width: 1024px) 90vw, 500px" quality={85} priority className="object-cover object-top" />
-                </span>
-              </BrowserFrame>
-            </div>
-            <div className="absolute -bottom-2 right-0 w-[34%]"><PhoneMockup src="/portfolio/maximum-admin-mob-svijetla.webp" alt={h.h1a} /></div>
-            <div className="absolute -left-4 -top-3 flex w-[54%] items-start gap-3 rounded-2xl border border-[#E5E7EB] bg-white p-3.5 sm:-left-8" style={{ boxShadow: FLOAT }}>
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#EEF3F8] text-[#0F3554]"><Bell size={16} /></span>
-              <span className="min-w-0">
-                <span className="block text-[13px] font-semibold text-[#0F172A]">{h.cardTitle}</span>
-                <span className="block truncate text-[12px] text-[#64748B]">{h.cardBody}</span>
-              </span>
-            </div>
-            <div className="absolute -bottom-6 left-[6%] flex w-[52%] items-center gap-2.5 rounded-2xl bg-[#0F172A] p-3.5" style={{ boxShadow: FLOAT }}>
-              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#16A34A] text-white"><Check size={14} strokeWidth={3} /></span>
-              <span className="text-[12.5px] font-medium leading-snug text-white">{h.cardOk}</span>
-            </div>
-          </Fade>
+          </div>
         </div>
       </Backdrop>
     </section>
