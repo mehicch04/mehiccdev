@@ -1,375 +1,671 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { motion, AnimatePresence, useMotionValue, useSpring, useReducedMotion, type PanInfo } from "framer-motion";
-import { ArrowRight, ArrowUpRight, Check, CarFront, Gauge, Gem, PenTool, Trophy, UserPlus, type LucideIcon } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRight, Check, Globe, Instagram, Mail, MessageCircle, Mouse, Reply, Send, type LucideIcon } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
-import { PhoneMockup } from "@/components/ui/kit";
+import { GLINTS, SIL, STARS, TRAIL } from "@/components/sections/heroScene";
 
-type Stat = { label: string; value: string; bar?: number; foot: [string, string] };
-type Note = { title: string; detail: string; status: string };
-type Shot = { name: string; short: string; cat: string; alt: string; open: string; stat: Stat; note: Note };
-
-type Content = {
-  chipTag: string; chipText: string;
-  h1a: string; h1b: string;
-  sub: string;
-  ctaPrimary: string; ctaSecondary: string;
-  pick: string;
-  shots: Shot[];
+type Lang = "bs" | "en";
+type Src = "wa" | "ig" | "web" | "viber" | "mail";
+type Out = "ck" | "send" | "reply";
+type Text = { msg: string; title: string; a: string; b: string; steps: [string, string, string] };
+type Copy = {
+  status: string; city: string;
+  h1a: string; h1b: string; h1u: string;
+  sub: string; cta: string; cta2: string;
+  meta: string; year: string;
+  incoming: string; customers: string; system: string;
+  onBridge: (n: number) => string; handled: (n: number) => string;
+  hint: string; hintTouch: string; now: string; tap: string;
+  quote: [string, string];
+  src: Record<Src, string>;
+  items: Text[];
 };
+type Row = { id: number; i: number; time: string };
+type Tok = { t: number; prev: number; ok: boolean; tin: number; tout: number };
 
-const T: Record<"bs" | "en", Content> = {
+const T: Record<Lang, Copy> = {
   bs: {
-    chipTag: "Dostupni",
-    chipText: "za nove projekte",
-    h1a: "Vašem biznisu ne treba sajt.",
-    h1b: "Treba mu sistem.",
-    sub: "Web aplikacije koje vode vaš posao, sajtovi koje sami uređujete i marketing koji dovodi upite. Sve iz jedne ruke, iz Mostara za cijeli region.",
-    ctaPrimary: "Besplatne konsultacije",
-    ctaSecondary: "Šta smo napravili",
-    pick: "Izaberite projekat",
-    shots: [
-      {
-        name: "Maximum Rent a Car", short: "Maximum", cat: "Web aplikacija · Iznajmljivanje vozila",
-        alt: "Naslovna stranica sajta za iznajmljivanje vozila", open: "Pogledajte projekat",
-        stat: { label: "Učitavanje sajta", value: "3,2 s", bar: 15, foot: ["ranije 21,6 s", "Maximum Rent a Car"] },
-        note: { title: "Nova rezervacija", detail: "VW Golf 8 · 10. do 13. jula", status: "Potvrđeno" },
-      },
-      {
-        name: "Adnan Gosto · IFBB Pro", short: "Adnan Gosto", cat: "Web aplikacija · Coaching",
-        alt: "Adnan Gosto, platforma za IFBB Pro trenera", open: "Pogledajte projekat",
-        stat: { label: "Klijent", value: "IFBB Pro", foot: ["višestruki prvak BiH", "Adnan Gosto"] },
-        note: { title: "Nova prijava", detail: "Online coaching · 12 sedmica", status: "Primljeno" },
-      },
-      {
-        name: "Roobet Rewards", short: "Roobet", cat: "UI/UX dizajn · Gaming platforma",
-        alt: "Roobet, sistem nagrada za gaming platformu", open: "Pogledajte uživo",
-        stat: { label: "Naš dio posla", value: "UI/UX", foot: ["sistem nagrada i nivoa", "Roobet"] },
-        note: { title: "Novi nivo otključan", detail: "Gold · nagrada je spremna", status: "Preuzmi nagradu" },
-      },
+    status: "Dostupni za nove projekte", city: "Mostar",
+    h1a: "Vašem biznisu ne treba sajt.", h1b: "Treba mu", h1u: "most do kupaca",
+    sub: "Pravimo web aplikacije koje primaju upite sa svih strana i pretvaraju ih u potvrđene rezervacije. I u ponoć, i nedjeljom.",
+    cta: "Besplatne konsultacije", cta2: "Pogledajte radove",
+    meta: "Stari most", year: "1566.",
+    incoming: "Dolazni upit", customers: "Vaši kupci", system: "Vaš sistem",
+    onBridge: (n) => `${n} ${n === 1 ? "upit" : "upita"} na mostu`,
+    handled: (n) => `${n} obrađeno danas`,
+    hint: "Pređite mišem preko ikonice na mostu", hintTouch: "Dodirnite ikonicu na mostu",
+    now: "Upravo na mostu", tap: "Dodirnite ikonicu",
+    quote: ["„", "“"],
+    src: { wa: "WhatsApp", ig: "Instagram", web: "Sajt", viber: "Viber", mail: "Email" },
+    items: [
+      { msg: "Je li Golf slobodan za vikend?", title: "Rezervacija potvrđena", a: "VW Golf 8 · 14. do 17. jula", b: "285 KM",
+        steps: ["Upit primljen", "Termin upisan u kalendar", "Potvrda poslana na email i WhatsApp"] },
+      { msg: "Koja je cijena za 7 dana?", title: "Ponuda poslana", a: "Škoda Octavia · 7 dana", b: "450 KM",
+        steps: ["Upit primljen", "Cijena izračunata za 7 dana", "Ponuda poslana u poruke"] },
+      { msg: "Rezervacija: VW Passat, 3 dana", title: "Rezervacija potvrđena", a: "VW Passat · 20. do 23. jula", b: "330 KM",
+        steps: ["Rezervacija sa sajta", "Termin upisan u kalendar", "Potvrda poslana na email"] },
+      { msg: "Imate li dječiju sjedalicu?", title: "Odgovoreno", a: "Audi A4 Avant · 18. jula", b: "+ dječija sjedalica",
+        steps: ["Upit primljen", "Odgovor poslan kupcu", "Sjedalica dodana uz rezervaciju"] },
+      { msg: "Upit za firmu, auto na 10 dana", title: "Ponuda poslana", a: "Toyota RAV4 · 10 dana", b: "1.150 KM",
+        steps: ["Upit primljen", "Ponuda napravljena", "Ponuda poslana na email kao PDF"] },
     ],
   },
   en: {
-    chipTag: "Available",
-    chipText: "for new projects",
-    h1a: "Your business doesn't need a website.",
-    h1b: "It needs a system.",
-    sub: "Web apps that run your business, websites you can edit yourself, and marketing that brings inquiries. All from one team, from Mostar for the whole region.",
-    ctaPrimary: "Free consultation",
-    ctaSecondary: "See what we've built",
-    pick: "Choose a project",
-    shots: [
-      {
-        name: "Maximum Rent a Car", short: "Maximum", cat: "Web app · Car rental",
-        alt: "Home page of a car rental website", open: "See the project",
-        stat: { label: "Page load time", value: "3.2 s", bar: 15, foot: ["was 21.6 s", "Maximum Rent a Car"] },
-        note: { title: "New booking", detail: "VW Golf 8 · July 10 to 13", status: "Confirmed" },
-      },
-      {
-        name: "Adnan Gosto · IFBB Pro", short: "Adnan Gosto", cat: "Web app · Coaching",
-        alt: "Adnan Gosto, a platform for an IFBB Pro coach", open: "See the project",
-        stat: { label: "Client", value: "IFBB Pro", foot: ["multiple national champion", "Adnan Gosto"] },
-        note: { title: "New sign up", detail: "Online coaching · 12 weeks", status: "Received" },
-      },
-      {
-        name: "Roobet Rewards", short: "Roobet", cat: "UI/UX design · Gaming platform",
-        alt: "Roobet, a rewards system for a gaming platform", open: "See it live",
-        stat: { label: "Our part", value: "UI/UX", foot: ["rewards and tier system", "Roobet"] },
-        note: { title: "New tier unlocked", detail: "Gold · reward is ready", status: "Claim reward" },
-      },
+    status: "Available for new projects", city: "Mostar",
+    h1a: "Your business doesn't need a website.", h1b: "It needs", h1u: "a bridge to customers",
+    sub: "We build web apps that take inquiries from every channel and turn them into confirmed bookings. At midnight and on Sundays, too.",
+    cta: "Free consultation", cta2: "See our work",
+    meta: "Stari Most", year: "1566",
+    incoming: "New inquiry", customers: "Your customers", system: "Your system",
+    onBridge: (n) => `${n} on the bridge`,
+    handled: (n) => `${n} handled today`,
+    hint: "Hover an icon on the bridge", hintTouch: "Tap an icon on the bridge",
+    now: "On the bridge right now", tap: "Tap an icon",
+    quote: ["“", "”"],
+    src: { wa: "WhatsApp", ig: "Instagram", web: "Website", viber: "Viber", mail: "Email" },
+    items: [
+      { msg: "Is the Golf free this weekend?", title: "Booking confirmed", a: "VW Golf 8 · July 14 to 17", b: "€145",
+        steps: ["Inquiry received", "Dates added to the calendar", "Confirmation sent by email and WhatsApp"] },
+      { msg: "What's the price for 7 days?", title: "Quote sent", a: "Škoda Octavia · 7 days", b: "€230",
+        steps: ["Inquiry received", "Price calculated for 7 days", "Quote sent in messages"] },
+      { msg: "Booking: VW Passat, 3 days", title: "Booking confirmed", a: "VW Passat · July 20 to 23", b: "€170",
+        steps: ["Booked on the website", "Dates added to the calendar", "Confirmation sent by email"] },
+      { msg: "Do you have a child seat?", title: "Answered", a: "Audi A4 Avant · July 18", b: "+ child seat",
+        steps: ["Inquiry received", "Reply sent to the customer", "Child seat added to the booking"] },
+      { msg: "Company inquiry, a car for 10 days", title: "Quote sent", a: "Toyota RAV4 · 10 days", b: "€590",
+        steps: ["Inquiry received", "Quote prepared", "Quote emailed as a PDF"] },
     ],
   },
 };
 
-const META: { src: string; bar: "light" | "dark"; barColor?: string; href: string; statIcon: LucideIcon; noteIcon: LucideIcon }[] = [
-  { src: "/portfolio/maximum-poslije-mob.webp", bar: "light", href: "/maximum", statIcon: Gauge, noteIcon: CarFront },
-  { src: "/portfolio/gosto-mob.webp", bar: "dark", barColor: "#0A0A0A", href: "/portfolio", statIcon: Trophy, noteIcon: UserPlus },
-  { src: "/portfolio/roobet-mob.webp", bar: "dark", barColor: "#191939", href: "https://roobet.com/", statIcon: PenTool, noteIcon: Gem },
+const SRC: Record<Src, { c: string; I: LucideIcon }> = {
+  wa: { c: "#25D366", I: MessageCircle },
+  ig: { c: "#C13584", I: Instagram },
+  web: { c: "#2563EB", I: Globe },
+  viber: { c: "#7360F2", I: MessageCircle },
+  mail: { c: "#64748B", I: Mail },
+};
+const OUT: Record<Out, LucideIcon> = { ck: Check, send: Send, reply: Reply };
+const ITEMS: { src: Src; who: string; out: Out }[] = [
+  { src: "wa", who: "Amar H.", out: "ck" },
+  { src: "ig", who: "lejla.k", out: "send" },
+  { src: "web", who: "Kenan M.", out: "ck" },
+  { src: "viber", who: "Ivana S.", out: "reply" },
+  { src: "mail", who: "Marko P.", out: "send" },
 ];
 
-const SLOTS = {
-  left:   { x: "-160%", y: "3%", rotateY: -22, scale: 0.96 },
-  center: { x: "-50%",  y: "0%", rotateY: 0,   scale: 1.07 },
-  right:  { x: "60%",   y: "3%", rotateY: 22,  scale: 0.96 },
-} as const;
-
-const CYCLE = 5600;
+const FRAMES = { m: { x: -262, y: -282, w: 560, h: 345 }, d: { x: -470, y: -340, w: 940, h: 403 } };
+const CYCLE = 19000;
+const START = 5200;
+const MIN = 60000;
 const EASE = [0.22, 1, 0.36, 1] as const;
-const CARD_SHADOW = "0 1px 2px rgba(15,23,42,0.05), 0 18px 40px -16px rgba(15,23,42,0.22)";
+
+const PATH: [number, number][] = (() => {
+  const p: [number, number][] = [[-171, -184], [-152, -198], [-12, -225.63]];
+  for (let k = 1; k <= 16; k++) {
+    const t = k / 16;
+    const u = 1 - t;
+    p.push([24 * t - 12, u * u * -225.63 + 2 * u * t * -228 + t * t * -225.63]);
+  }
+  p.push([152, -198], [171, -184]);
+  return p;
+})();
+const CUM = PATH.map((_, i) => i).reduce<number[]>((acc, i) => {
+  acc.push(i ? acc[i - 1] + Math.hypot(PATH[i][0] - PATH[i - 1][0], PATH[i][1] - PATH[i - 1][1]) : 0);
+  return acc;
+}, []);
+const LEN = CUM[CUM.length - 1];
+
+function pointAt(t: number): [number, number] {
+  const d = t * LEN;
+  let i = 1;
+  while (i < CUM.length - 1 && CUM[i] < d) i++;
+  const k = (d - CUM[i - 1]) / (CUM[i] - CUM[i - 1] || 1);
+  return [PATH[i - 1][0] + (PATH[i][0] - PATH[i - 1][0]) * k, PATH[i - 1][1] + (PATH[i][1] - PATH[i - 1][1]) * k];
+}
+
+let fmt: Intl.DateTimeFormat | null = null;
+function clock(ms: number) {
+  if (!fmt) fmt = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Europe/Sarajevo" });
+  return fmt.format(new Date(ms));
+}
+function minutesToday(ms: number) {
+  const [h, m] = clock(ms).split(":").map(Number);
+  return h * 60 + m;
+}
+
+function Step({ state, text }: { state: "d" | "r" | "w"; text: string }) {
+  return (
+    <div className={`flex items-center gap-2 text-[12px] ${state === "r" ? "font-semibold text-[#1D4ED8]" : state === "w" ? "text-[#94A3B8]" : "text-[#334155]"}`}>
+      {state === "d" ? (
+        <span className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-[#16A34A] text-white"><Check size={10} strokeWidth={3.4} /></span>
+      ) : state === "r" ? (
+        <span className="most-spin h-4 w-4 shrink-0 rounded-full border-2 border-[#BFDBFE] border-t-[#2563EB]" />
+      ) : (
+        <span className="h-4 w-4 shrink-0 rounded-full border-[1.5px] border-[#CBD5E1]" />
+      )}
+      <span className="min-w-0">{text}</span>
+    </div>
+  );
+}
+
+function Info({ i, ok, tin, tout, d }: { i: number; ok: boolean; tin: string; tout: string; d: Copy }) {
+  const it = ITEMS[i];
+  const tx = d.items[i];
+  const S = SRC[it.src].I;
+  const O = OUT[it.out];
+  return (
+    <>
+      <div className="flex items-center gap-2.5">
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] text-white" style={{ background: ok ? "#16A34A" : SRC[it.src].c }}>
+          {ok ? <O size={16} strokeWidth={2.4} /> : <S size={16} />}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[13.5px] font-semibold tracking-[-0.01em] text-[#0F172A]">{ok ? tx.title : `${d.incoming} · ${d.src[it.src]}`}</span>
+          <span className="mt-px block text-[11.5px] text-[#64748B]">{it.who}{ok ? ` · ${d.src[it.src]}` : ""}</span>
+        </span>
+        <time className="self-start text-[11.5px] tabular-nums text-[#94A3B8]">{ok ? tout : tin}</time>
+      </div>
+      {ok ? (
+        <div className="mt-2.5 text-[13px] leading-[1.45]">
+          <span className="block font-semibold text-[#0F172A]">{tx.a}</span>
+          <span className="font-bold text-[#15803D]">{tx.b}</span>
+        </div>
+      ) : (
+        <div className="mt-2.5 text-[13px] leading-[1.45] text-[#334155]">{d.quote[0]}{tx.msg}{d.quote[1]}</div>
+      )}
+      <div className="mt-3 grid gap-[7px] border-t border-[#EEF2F6] pt-2.5">
+        <Step state="d" text={`${tx.steps[0]} · ${tin}`} />
+        <Step state={ok ? "d" : "r"} text={tx.steps[1]} />
+        <Step state={ok ? "d" : "w"} text={tx.steps[2]} />
+      </div>
+    </>
+  );
+}
+
+function Feed({ side, title, badge, rows, d }: { side: "l" | "r"; title: string; badge: React.ReactNode; rows: Row[]; d: Copy }) {
+  return (
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: side === "l" ? 0 : 0.12, ease: EASE }}
+         className={`absolute bottom-[84px] z-10 hidden w-[244px] overflow-hidden rounded-[16px] border border-white/[0.14] bg-[#070C18]/[0.86] xl:block 2xl:w-[256px] ${side === "l" ? "left-10 2xl:left-16" : "right-10 2xl:right-16"}`}
+         style={{ boxShadow: "0 24px 48px -20px rgba(0,0,0,0.8)" }}>
+      <div className="flex items-center justify-between gap-3 border-b border-white/[0.1] bg-white/[0.02] px-3 py-2.5">
+        <span className="whitespace-nowrap text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[#8A9AB2]">{title}</span>
+        <span className="flex items-center gap-1.5 whitespace-nowrap text-[11.5px] font-semibold text-[#4ADE80]">{badge}</span>
+      </div>
+      <div>
+        <AnimatePresence initial={false}>
+          {rows.map((r) => {
+            const it = ITEMS[r.i];
+            const tx = d.items[r.i];
+            const I = side === "l" ? SRC[it.src].I : OUT[it.out];
+            return (
+              <motion.div key={r.id} layout initial={{ opacity: 0, y: -8, backgroundColor: "rgba(74,222,128,0.14)" }}
+                          animate={{ opacity: 1, y: 0, backgroundColor: "rgba(74,222,128,0)" }} exit={{ opacity: 0 }}
+                          transition={{ duration: 0.45, ease: EASE, backgroundColor: { duration: 2.4 } }}
+                          className="flex items-center gap-2.5 border-t border-white/[0.07] px-3 py-[9px] first:border-t-0">
+                <span className="grid h-[26px] w-[26px] shrink-0 place-items-center rounded-[8px] text-white" style={{ background: side === "l" ? SRC[it.src].c : "#16A34A" }}>
+                  <I size={13} strokeWidth={2.4} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex justify-between gap-2 whitespace-nowrap text-[12px] font-semibold text-[#F1F5F9]">
+                    {side === "l" ? it.who : tx.title}
+                    <span className="text-[10.5px] font-medium tabular-nums text-[#64748B]">{r.time}</span>
+                  </span>
+                  <span className="mt-px block truncate text-[11.5px] text-[#94A3B8]">{side === "l" ? tx.msg : tx.a}</span>
+                </span>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
 
 export function Hero() {
   const { lang } = useLanguage();
-  const d = T[(lang as "bs" | "en")] ?? T.bs;
-  const prefersReduced = useReducedMotion() ?? false;
+  const L: Lang = lang === "en" ? "en" : "bs";
+  const d = T[L];
+
+  const section = useRef<HTMLElement>(null);
+  const top = useRef<HTMLDivElement>(null);
+  const box = useRef<HTMLDivElement>(null);
+  const els = useRef<(HTMLButtonElement | null)[]>([]);
+  const toks = useRef<Tok[]>(ITEMS.map(() => ({ t: 0, prev: -1, ok: false, tin: 0, tout: 0 })));
+  const incRef = useRef(-1);
+  const geo = useRef({ s: 1, ox: 0, oy: 0 });
+  const paused = useRef(false);
+  const visible = useRef(true);
+  const acc = useRef(START);
+  const nextId = useRef(100);
+
+  const [lit, setLit] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [now, setNow] = useState("");
+  const [left, setLeft] = useState<Row[]>([]);
+  const [right, setRight] = useState<Row[]>([]);
+  const [done, setDone] = useState(0);
+  const [inc, setInc] = useState(0);
+  const [tip, setTip] = useState<{ i: number; x: number; y: number; ax: number } | null>(null);
+  const [sel, setSel] = useState(0);
+  const [selOk, setSelOk] = useState(false);
+  const [auto, setAuto] = useState(true);
+  const [hinted, setHinted] = useState(false);
   const [reduce, setReduce] = useState(false);
-  useEffect(() => setReduce(prefersReduced), [prefersReduced]);
+  const [fine, setFine] = useState(true);
+  const pointer = useRef("mouse");
 
-  const [active, setActive] = useState(0);
-  const [hold, setHold] = useState(false);
-  const [touched, setTouched] = useState(false);
-  const auto = !reduce && !hold && !touched;
-
-  const tx = useMotionValue(0);
-  const ty = useMotionValue(0);
-  const tiltX = useSpring(tx, { stiffness: 90, damping: 18 });
-  const tiltY = useSpring(ty, { stiffness: 90, damping: 18 });
-
-  const go = useCallback((i: number) => { setActive(((i % 3) + 3) % 3); setTouched(true); }, []);
+  const selRef = useRef(0);
+  selRef.current = sel;
 
   useEffect(() => {
-    if (!auto) return;
-    const id = window.setTimeout(() => {
-      if (!document.hidden) setActive((a) => (a + 1) % 3);
-    }, CYCLE);
+    setReduce(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const on = () => setFine(mq.matches);
+    on();
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+
+  useEffect(() => {
+    const html = document.documentElement;
+    if (!html.hasAttribute("data-most")) {
+      setLit(true);
+      return;
+    }
+    let raf = 0;
+    let id = 0;
+    let started = false;
+    const go = () => {
+      if (started) return;
+      started = true;
+      raf = requestAnimationFrame(() => {
+        id = window.setTimeout(() => {
+          html.removeAttribute("data-most");
+          setLit(true);
+        }, 90);
+      });
+    };
+    const check = () => {
+      if (!html.hasAttribute("data-most")) {
+        mo.disconnect();
+        setLit(true);
+      } else if (!html.hasAttribute("data-intro")) {
+        mo.disconnect();
+        go();
+      }
+    };
+    const mo = new MutationObserver(check);
+    mo.observe(html, { attributes: true, attributeFilter: ["data-intro", "data-most"] });
+    check();
+    return () => {
+      mo.disconnect();
+      cancelAnimationFrame(raf);
+      window.clearTimeout(id);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!lit) return;
+    const id = window.setTimeout(() => setReady(true), reduce ? 0 : 1500);
     return () => window.clearTimeout(id);
-  }, [auto, active]);
+  }, [lit, reduce]);
 
-  const slotOf = (i: number) => (i === active ? "center" : i === (active + 2) % 3 ? "left" : "right");
+  useEffect(() => {
+    const t0 = Date.now();
+    setNow(clock(t0));
+    setLeft([{ id: 1, i: 0, time: clock(t0 - 2 * MIN) }, { id: 2, i: 1, time: clock(t0 - 5 * MIN) }, { id: 3, i: 2, time: clock(t0 - 23 * MIN) }]);
+    setRight([{ id: 4, i: 2, time: clock(t0 - MIN) }, { id: 5, i: 3, time: clock(t0 - 24 * MIN) }, { id: 6, i: 4, time: clock(t0 - 41 * MIN) }]);
+    setDone(4 + Math.floor(minutesToday(t0) / 60));
+    toks.current.forEach((k, i) => {
+      const t = (START / CYCLE + i / ITEMS.length) % 1;
+      k.tin = t0 - t * CYCLE;
+      k.tout = k.tin + CYCLE / 2;
+    });
+    const id = window.setInterval(() => setNow(clock(Date.now())), 15000);
+    return () => window.clearInterval(id);
+  }, []);
 
-  const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (reduce || e.pointerType !== "mouse") return;
-    const r = e.currentTarget.getBoundingClientRect();
-    ty.set(((e.clientX - r.left) / r.width - 0.5) * 9);
-    tx.set(-((e.clientY - r.top) / r.height - 0.5) * 6);
+  useEffect(() => {
+    const sec = section.current;
+    const el = top.current;
+    if (!sec || !el) return;
+    const fit = () => {
+      if (!window.matchMedia("(min-width: 1024px)").matches) {
+        sec.style.removeProperty("--tb");
+        return;
+      }
+      sec.style.setProperty("--tb", `${Math.round(el.offsetTop + el.offsetHeight + 28)}px`);
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    ro.observe(sec);
+    return () => ro.disconnect();
+  }, []);
+
+  const measure = useCallback(() => {
+    const el = box.current;
+    if (!el) return;
+    const cw = el.clientWidth;
+    const ch = el.clientHeight;
+    const f = window.matchMedia("(min-width: 640px)").matches ? FRAMES.d : FRAMES.m;
+    const s = Math.min(cw / f.w, ch / f.h);
+    geo.current = { s, ox: (cw - f.w * s) / 2 - f.x * s, oy: ch - f.h * s - f.y * s };
+  }, []);
+
+  const place = useCallback((i: number) => {
+    const el = box.current;
+    if (!el) return null;
+    const [x, y] = pointAt(toks.current[i].t);
+    const g = geo.current;
+    const px = g.ox + x * g.s;
+    const py = g.oy + y * g.s;
+    const w = 288;
+    const lx = Math.max(12, Math.min(el.clientWidth - w - 12, px - w / 2));
+    return { i, x: lx, y: py + 24, ax: px - lx };
+  }, []);
+
+  const draw = useCallback(() => {
+    const g = geo.current;
+    const base = acc.current / CYCLE;
+    let n = 0;
+    toks.current.forEach((k, i) => {
+      const t = reduce ? (i / ITEMS.length + 0.1) % 1 : (base + i / ITEMS.length) % 1;
+      const el = els.current[i];
+      const [x, y] = pointAt(t);
+      if (el) {
+        el.style.transform = `translate3d(${(g.ox + x * g.s).toFixed(1)}px, ${(g.oy + y * g.s).toFixed(1)}px, 0)`;
+        el.style.opacity = String(t < 0.05 ? t / 0.05 : t > 0.95 ? (1 - t) / 0.05 : 1);
+      }
+      const ok = t >= 0.5;
+      const stamp = Date.now();
+      if (k.prev >= 0 && k.prev > 0.9 && t < 0.1) {
+        k.tin = stamp;
+        setLeft((rows) => [{ id: nextId.current++, i, time: clock(stamp) }, ...rows.filter((r) => r.i !== i)].slice(0, 3));
+      }
+      if (k.prev >= 0 && k.prev < 0.96 && t >= 0.96) {
+        setRight((rows) => [{ id: nextId.current++, i, time: clock(stamp) }, ...rows.filter((r) => r.i !== i)].slice(0, 3));
+        setDone((v) => v + 1);
+      }
+      if (ok !== k.ok) {
+        k.ok = ok;
+        if (ok && k.prev >= 0) k.tout = stamp;
+        if (el) {
+          if (ok) {
+            el.setAttribute("data-ok", "");
+            if (k.prev >= 0) {
+              el.setAttribute("data-pop", "");
+              window.setTimeout(() => el.removeAttribute("data-pop"), 500);
+            }
+          } else {
+            el.removeAttribute("data-ok");
+          }
+        }
+        if (i === selRef.current) setSelOk(ok);
+      }
+      if (!ok && t > 0.03) n++;
+      k.prev = t;
+      k.t = t;
+    });
+    if (incRef.current !== n) {
+      incRef.current = n;
+      setInc(n);
+    }
+  }, [reduce]);
+
+  useEffect(() => {
+    if (!ready) return;
+    measure();
+    draw();
+    const ro = new ResizeObserver(() => {
+      measure();
+      draw();
+      setTip(null);
+    });
+    if (box.current) ro.observe(box.current);
+    const io = new IntersectionObserver(([e]) => { visible.current = e.isIntersecting; }, { threshold: 0.05 });
+    if (section.current) io.observe(section.current);
+    let raf = 0;
+    let last = performance.now();
+    const loop = (t: number) => {
+      const dt = Math.min(64, t - last);
+      last = t;
+      if (!paused.current && visible.current && !reduce) {
+        acc.current += dt;
+        draw();
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      io.disconnect();
+    };
+  }, [ready, reduce, measure, draw]);
+
+  useEffect(() => {
+    if (!ready || !auto || reduce) return;
+    const id = window.setInterval(() => {
+      if (!visible.current || window.matchMedia("(min-width: 1024px)").matches) return;
+      const n = (selRef.current + 1) % ITEMS.length;
+      setSel(n);
+      setSelOk(toks.current[n].ok);
+    }, 3800);
+    return () => window.clearInterval(id);
+  }, [ready, auto, reduce]);
+
+  useEffect(() => {
+    els.current.forEach((el, i) => {
+      if (!el) return;
+      if (i === sel && !window.matchMedia("(min-width: 1024px)").matches) el.setAttribute("data-on", "");
+      else if (!tip || tip.i !== i) el.removeAttribute("data-on");
+    });
+  }, [sel, tip, ready]);
+
+  const resumeAt = useRef(0);
+  const pick = (i: number) => {
+    setSel(i);
+    setSelOk(toks.current[i].ok);
+    setAuto(false);
+    window.clearTimeout(resumeAt.current);
+    resumeAt.current = window.setTimeout(() => setAuto(true), 9000);
   };
-  const onLeave = () => { tx.set(0); ty.set(0); setHold(false); };
-  const onPanEnd = (_: unknown, info: PanInfo) => {
-    if (Math.abs(info.offset.x) < 40 || Math.abs(info.offset.x) < Math.abs(info.offset.y)) return;
-    go(active + (info.offset.x < 0 ? 1 : -1));
+
+  const wide = () => window.matchMedia("(min-width: 1024px)").matches;
+  const show = (i: number) => {
+    if (!wide()) return;
+    paused.current = true;
+    els.current.forEach((el, j) => { if (el && j !== i) el.removeAttribute("data-on"); });
+    els.current[i]?.setAttribute("data-on", "");
+    setTip(place(i));
+    setHinted(true);
+  };
+  const hide = () => {
+    paused.current = false;
+    els.current.forEach((el) => el?.removeAttribute("data-on"));
+    setTip(null);
+  };
+  const tap = (i: number) => {
+    if (!wide()) {
+      pick(i);
+      return;
+    }
+    if (pointer.current === "mouse") return;
+    if (tip?.i === i) hide();
+    else show(i);
   };
 
-  const rise = (delay: number) => ({
-    initial: { opacity: 0, y: 18 },
-    animate: { opacity: 1, y: 0 },
-    transition: reduce ? { duration: 0 } : { duration: 0.6, delay, ease: EASE },
+  useEffect(() => {
+    if (!tip || fine) return;
+    const off = (e: PointerEvent) => {
+      if (!(e.target as Element).closest?.(".most-tk")) hide();
+    };
+    document.addEventListener("pointerdown", off);
+    return () => document.removeEventListener("pointerdown", off);
   });
 
-  const shot = d.shots[active];
-  const meta = META[active];
-  const StatIcon = meta.statIcon;
-  const NoteIcon = meta.noteIcon;
-  const swap = {
-    initial: { opacity: 0, y: 8 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -8 },
-    transition: { duration: reduce ? 0 : 0.35, ease: EASE },
-  };
-  const external = meta.href.startsWith("http");
+  const k = toks.current;
 
   return (
-    <section className="hero-light relative bg-white">
-      <div className="relative overflow-hidden"
-           style={{ background: "linear-gradient(180deg, #D9E4F0 0%, #E7EEF6 34%, #F4F7FB 68%, #FFFFFF 100%)" }}>
-
-      <motion.div {...rise(0.35)} className="pointer-events-none absolute left-[3%] xl:left-[6%] top-[300px] hidden lg:block">
-        <div className="float-y" style={{ animationDuration: "6s" }}>
-          <div className="w-[230px] -rotate-[6deg] rounded-2xl border border-[#E5E7EB] bg-white p-4 text-left" style={{ boxShadow: CARD_SHADOW }}>
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div key={active} {...swap}>
-                <div className="flex items-center gap-2">
-                  <span className="grid h-7 w-7 place-items-center rounded-lg bg-[#0F3554] text-white"><StatIcon size={14} /></span>
-                  <span className="text-[12px] font-medium text-[#64748B]">{shot.stat.label}</span>
-                </div>
-                <p className="mt-3 text-[30px] font-semibold leading-none tracking-[-0.03em] text-[#0F172A]">{shot.stat.value}</p>
-                {shot.stat.bar !== undefined ? (
-                  <div className="mt-3 space-y-1.5">
-                    <div className="h-1.5 rounded-full bg-[#16A34A]" style={{ width: `${shot.stat.bar}%` }} />
-                    <div className="h-1.5 w-full rounded-full bg-[#E5E7EB]" />
-                  </div>
-                ) : (
-                  <div className="mt-3 h-px w-full bg-[#E5E7EB]" />
-                )}
-                <div className="mt-2 flex items-center justify-between gap-2 text-[11px]">
-                  <span className="text-[#94A3B8]">{shot.stat.foot[0]}</span>
-                  <span className="font-medium text-[#475569]">{shot.stat.foot[1]}</span>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+    <section ref={section} data-hero aria-labelledby="hero-title"
+             className="most-hero hero-light relative isolate flex flex-col overflow-hidden bg-[#0B1733] text-white lg:block lg:h-[100svh] lg:min-h-[680px] lg:max-h-[1180px]">
+      <div className="pointer-events-none absolute inset-x-0 top-[92px] z-10 hidden lg:block">
+        <div className="most-in mx-auto max-w-7xl px-8 text-right text-[11px] uppercase leading-[1.9] tracking-[0.16em] text-[#64748B]" style={{ "--d": "0.5s" } as CSSProperties}>
+          {d.meta} · <b className="font-semibold tracking-[0.08em] text-[#CBD5E1]">{d.year}</b>
+          <br />
+          {d.city} <b className="font-semibold tabular-nums tracking-[0.08em] text-[#CBD5E1]">{now || "     "}</b>
         </div>
-      </motion.div>
-
-      <motion.div {...rise(0.45)} className="pointer-events-none absolute right-[3%] xl:right-[6%] top-[230px] hidden lg:block">
-        <div className="float-y" style={{ animationDuration: "7s", animationDelay: "0.8s" }}>
-          <div className="w-[240px] rotate-[6deg] rounded-2xl border border-[#E5E7EB] bg-white p-4 text-left" style={{ boxShadow: CARD_SHADOW }}>
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div key={active} {...swap}>
-                <div className="flex items-center gap-2.5">
-                  <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#F1F5F9] text-[#0F3554]"><NoteIcon size={17} /></span>
-                  <span className="min-w-0">
-                    <span className="block text-[13px] font-semibold text-[#0F172A]">{shot.note.title}</span>
-                    <span className="block text-[11.5px] text-[#64748B]">{shot.note.detail}</span>
-                  </span>
-                </div>
-                <div className="mt-3.5 flex items-center gap-1.5 rounded-lg bg-[#16A34A] px-3 py-2 text-[12.5px] font-semibold text-white">
-                  <Check size={14} strokeWidth={3} /> {shot.note.status}
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-      </motion.div>
-
-      <div className="relative max-w-5xl mx-auto px-6 pt-32 sm:pt-36 lg:pt-40 text-center">
-
-        <motion.div {...rise(0)} className="flex justify-center">
-          <a
-            href="#usluge"
-            className="group inline-flex items-center gap-2.5 rounded-full border border-[#E5E7EB] bg-white
-                       pl-1.5 pr-3.5 sm:pr-4 py-1.5 text-[12px] sm:text-[13px] text-[#0F172A] whitespace-nowrap
-                       transition-colors duration-200 hover:border-[#D1D5DB] hover:bg-[#F9FAFB]"
-          >
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#16A34A] px-2.5 py-0.5 text-[11px] font-semibold text-white">
-              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" /> {d.chipTag}
-            </span>
-            <span className="font-medium">{d.chipText}</span>
-            <ArrowRight size={14} className="hidden sm:block text-[#6B7280] transition-transform duration-200 group-hover:translate-x-0.5" />
-          </a>
-        </motion.div>
-
-        <motion.h1
-          {...rise(0.06)}
-          className="mt-8 text-[40px] leading-[1.08] sm:text-6xl lg:text-[68px] font-semibold tracking-[-0.035em] text-[#0F172A]"
-          style={{ textWrap: "balance" }}
-        >
-          {d.h1a}
-          <span className="block text-[#0F3554]">
-            <svg viewBox="0 0 24 24" aria-hidden
-                 className="hidden sm:inline-block h-[0.6em] w-[0.6em] mr-[0.16em] align-[0.02em]">
-              <rect x="2"  y="13" width="5" height="9"  rx="1.5" fill="currentColor" opacity=".45" />
-              <rect x="9.5" y="8" width="5" height="14" rx="1.5" fill="currentColor" opacity=".7" />
-              <rect x="17" y="2"  width="5" height="20" rx="1.5" fill="currentColor" />
-            </svg>
-            {d.h1b}
-          </span>
-        </motion.h1>
-
-        <motion.p {...rise(0.12)} className="mx-auto mt-7 max-w-2xl text-[17px] sm:text-lg leading-relaxed text-[#475569]">
-          {d.sub}
-        </motion.p>
-
-        <motion.div {...rise(0.18)} className="relative mt-10 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
-          <svg aria-hidden viewBox="0 0 120 70" fill="none"
-               className="pointer-events-none absolute right-[calc(50%+188px)] top-[-14px] hidden md:block w-[104px] text-[#94A3B8]">
-            <path d="M6 8 C 10 44, 46 64, 104 52" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeDasharray="5 6" />
-            <path d="M96 44 L106 52 L95 59" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <a
-            href="#zakazi"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-6 py-3.5
-                       text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-[#B91C1C]
-                       focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#DC2626]"
-          >
-            {d.ctaPrimary}
-            <ArrowRight size={16} />
-          </a>
-          <a
-            href="#portfolio"
-            className="inline-flex items-center justify-center rounded-xl border border-[#E5E7EB] bg-white px-6 py-3.5
-                       text-[15px] font-semibold text-[#0F172A] transition-colors duration-200 hover:border-[#D1D5DB] hover:bg-[#F9FAFB]"
-          >
-            {d.ctaSecondary}
-          </a>
-        </motion.div>
       </div>
 
-      <motion.div {...rise(0.28)} className="relative mx-auto mt-14 sm:mt-16 max-w-5xl px-4 sm:px-6">
-        <motion.div
-          onPointerMove={onMove}
-          onPointerEnter={(e) => { if (e.pointerType === "mouse") setHold(true); }}
-          onPointerLeave={onLeave}
-          onPanEnd={onPanEnd}
-          style={{ perspective: "1100px", touchAction: "pan-y" }}
-          className="relative h-[320px] sm:h-[460px] lg:h-[540px] overflow-hidden"
-        >
-          <motion.div className="absolute inset-0" style={{ rotateX: tiltX, rotateY: tiltY, transformStyle: "preserve-3d" }}>
-            {META.map((m, i) => {
-              const slot = slotOf(i);
-              const side = slot !== "center";
-              return (
-                <motion.button
-                  key={m.src}
-                  type="button"
-                  onClick={() => side && go(i)}
-                  tabIndex={side ? 0 : -1}
-                  aria-label={side ? d.shots[i].name : undefined}
-                  aria-hidden={!side}
-                  initial={false}
-                  animate={SLOTS[slot]}
-                  transition={reduce ? { duration: 0 } : { duration: 0.9, ease: EASE }}
-                  className={`absolute left-1/2 top-6 block w-[31%] max-w-[290px] text-left ${side ? "cursor-pointer" : "cursor-default"}`}
-                  style={{ zIndex: slot === "center" ? 3 : 1, transformStyle: "preserve-3d", transformOrigin: "50% 0%" }}
-                >
-                  <span className="relative block">
-                    <motion.span aria-hidden className="absolute inset-y-[1%] -right-[3%] left-[3%] rounded-[15.5%/7%] bg-[#C9CDD3]"
-                                 initial={false} animate={{ opacity: slot === "left" ? 1 : 0 }} transition={{ duration: 0.4 }} />
-                    <motion.span aria-hidden className="absolute inset-y-[1%] -left-[3%] right-[3%] rounded-[15.5%/7%] bg-[#C9CDD3]"
-                                 initial={false} animate={{ opacity: slot === "right" ? 1 : 0 }} transition={{ duration: 0.4 }} />
-                    <span className="relative block transition-[filter] duration-500" style={{ filter: side ? "saturate(0.85)" : "none" }}>
-                      <PhoneMockup src={m.src} alt={d.shots[i].alt} bar={m.bar} barColor={m.barColor} priority={i === 0} />
-                    </span>
-                  </span>
-                </motion.button>
-              );
-            })}
-          </motion.div>
+      <div ref={top} className="most-top relative z-10 order-1 mx-auto w-full max-w-5xl px-5 pt-[92px] sm:px-6 sm:text-center lg:pt-[96px]">
+        <div className="most-in" style={{ "--d": "0.05s" } as CSSProperties}>
+          <span className="inline-flex h-8 items-center gap-2.5 rounded-full border border-white/[0.14] bg-[#050913]/40 pl-3 pr-3.5 text-[13px] font-medium text-[#CBD5E1]">
+            <span className="relative h-2 w-2 rounded-full bg-[#16A34A]" style={{ boxShadow: "0 0 0 4px rgba(22,163,74,0.25)" }} />
+            {d.status}
+            <span className="text-[#7C8BA1]">· {d.city}</span>
+          </span>
+        </div>
+        <h1 id="hero-title" className={`most-h1 most-in mt-5 text-[40px] font-semibold leading-[1.04] tracking-[-0.045em] sm:text-[54px] lg:leading-[1.02] lg:tracking-[-0.05em] ${L === "en" ? "lg:text-[56px]" : "lg:text-[62px]"}`}
+            style={{ "--d": "0.12s" } as CSSProperties}>
+          <span className="block text-[#9AABCA]">{d.h1a}</span>
+          <span className="block">
+            {d.h1b}{" "}
+            <span className="relative whitespace-nowrap">
+              {d.h1u}
+              <span aria-hidden className="absolute inset-x-[2px] -bottom-[5px] h-[3px] rounded-full bg-[#DC2626]" />
+            </span>
+            .
+          </span>
+        </h1>
+        <p className="most-in mt-5 max-w-[620px] text-[16px] text-[#C3CEE0] sm:mx-auto sm:text-[17px]" style={{ "--d": "0.22s", lineHeight: 1.6 } as CSSProperties}>
+          {d.sub}
+        </p>
+        <div className="most-in mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center" style={{ "--d": "0.32s" } as CSSProperties}>
+          <a href="#zakazi"
+             className="cta-primary inline-flex h-[52px] items-center justify-center gap-2.5 rounded-[14px] bg-[#DC2626] px-6 text-[15.5px] font-semibold text-white transition-colors duration-200 hover:bg-[#B91C1C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:h-[54px]"
+             style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18), 0 12px 26px -12px rgba(220,38,38,0.7)" }}>
+            {d.cta}
+            <ArrowRight size={17} />
+          </a>
+          <a href="#portfolio"
+             className="inline-flex h-[52px] items-center justify-center rounded-[14px] border border-white/20 px-6 text-[15.5px] font-semibold text-white transition-colors duration-200 hover:border-white/35 hover:bg-white/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:h-[54px]">
+            {d.cta2}
+          </a>
+        </div>
+      </div>
+
+      <div ref={box} className="most-box order-2 mt-7 lg:mt-0">
+        <Image src="/hero/most-sumrak.svg" alt="" width={1520} height={463} priority unoptimized draggable={false} className="most-img select-none" />
+        <svg className="most-img" viewBox="-760 -400 1520 463" preserveAspectRatio="none" aria-hidden>
+          <defs>
+            <radialGradient id="most-glow" cx="0" cy="-40" r="250" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stopColor="#F4B76A" stopOpacity="0.12" />
+              <stop offset="1" stopColor="#F4B76A" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <rect className="most-glow" x="-760" y="-280" width="1520" height="282" fill="url(#most-glow)" />
+          <g className="most-sil" fill="#0B1733">
+            {SIL.map((p) => <path key={p} d={p} />)}
+          </g>
+          {STARS.map(([x, y, r, dl]) => (
+            <circle key={`${x}${y}`} className="most-tw" cx={x} cy={y} r={r} fill="#E8EEF7" style={{ animationDelay: `${dl}s` }} />
+          ))}
+          {GLINTS.map(([x, y, w, dl]) => (
+            <path key={`${x}${y}`} className="most-gl" d={`M${x} ${y}h${w}`} stroke="#F2BD73" strokeWidth={1.6} strokeLinecap="round"
+                  vectorEffect="non-scaling-stroke" style={{ animationDelay: `${dl}s` }} />
+          ))}
+          <path className="most-trail" d={TRAIL} fill="none" stroke="#4ADE80" strokeWidth={1.6} strokeDasharray="1 6" strokeLinecap="round"
+                vectorEffect="non-scaling-stroke" opacity={0.75} />
+        </svg>
+
+        <motion.div className="pointer-events-none absolute inset-0 z-[2]" initial={false} animate={{ opacity: ready ? 1 : 0 }} transition={{ duration: 0.8 }}>
+          {ITEMS.map((it, i) => {
+            const S = SRC[it.src].I;
+            const O = OUT[it.out];
+            return (
+              <button key={i} type="button" ref={(el) => { els.current[i] = el; }} tabIndex={ready ? 0 : -1}
+                      aria-label={`${d.src[it.src]}, ${it.who}`} aria-describedby={tip?.i === i ? "most-tip" : undefined}
+                      className="most-tk" style={{ "--c": SRC[it.src].c, "--ring": `${SRC[it.src].c}59`, pointerEvents: ready ? "auto" : "none" } as CSSProperties}
+                      onPointerDown={(e) => { pointer.current = e.pointerType; }}
+                      onPointerEnter={(e) => { if (e.pointerType === "mouse") show(i); }}
+                      onPointerLeave={(e) => { if (e.pointerType === "mouse") hide(); }}
+                      onFocus={(e) => { if (e.currentTarget.matches(":focus-visible")) show(i); }}
+                      onBlur={() => { if (pointer.current !== "touch") hide(); }}
+                      onClick={() => tap(i)}>
+                <span className="dot">
+                  <span className="a"><S size={15} strokeWidth={2.2} /></span>
+                  <span className="b"><O size={15} strokeWidth={2.6} /></span>
+                </span>
+              </button>
+            );
+          })}
         </motion.div>
 
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[30%]"
-             style={{
-               backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
-               maskImage: "linear-gradient(to bottom, transparent 0%, black 65%)",
-               WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 65%)",
-             }} />
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[45%]"
-             style={{ background: "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.75) 55%, #FFFFFF 100%)" }} />
+        <AnimatePresence>
+          {tip && (
+            <motion.div key={tip.i} id="most-tip" role="tooltip"
+                        initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 4 }}
+                        transition={{ duration: 0.18, ease: EASE }}
+                        className="pointer-events-none absolute left-0 top-0 z-30 w-[288px] rounded-[16px] bg-white p-3.5 text-[#0F172A]"
+                        style={{ left: tip.x, top: tip.y, boxShadow: "0 30px 60px -20px rgba(0,0,0,0.75)" }}>
+              <span aria-hidden className="absolute -top-[6px] h-[13px] w-[13px] -translate-x-1/2 rotate-45 rounded-[2px] bg-white" style={{ left: tip.ax }} />
+              <Info i={tip.i} ok={k[tip.i].ok} tin={clock(k[tip.i].tin)} tout={clock(k[tip.i].tout)} d={d} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
-        <div className="absolute inset-x-0 bottom-3 sm:bottom-6 z-10 flex flex-col items-center gap-3 px-4">
-          <div role="tablist" aria-label={d.pick}
-               className="flex items-center gap-1 rounded-full border border-[#E5E7EB] bg-white p-1"
-               style={{ boxShadow: "0 1px 2px rgba(15,23,42,0.05), 0 10px 24px -14px rgba(15,23,42,0.3)" }}>
-            {d.shots.map((s, i) => {
-              const on = i === active;
-              return (
-                <button
-                  key={s.short}
-                  type="button"
-                  role="tab"
-                  aria-selected={on}
-                  onClick={() => go(i)}
-                  className={`relative overflow-hidden rounded-full px-3 sm:px-4 py-1.5 text-[12.5px] sm:text-[13px] font-semibold transition-colors duration-300 ${on ? "text-white" : "text-[#475569] hover:text-[#0F172A]"}`}
-                >
-                  {on && (
-                    <motion.span layoutId="hero-pill" className="absolute inset-0 rounded-full bg-[#0F172A]"
-                                 transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 32 }} />
-                  )}
-                  {on && auto && (
-                    <span key={`p${active}`} aria-hidden className="hero-progress absolute bottom-0 left-0 h-[2px] bg-[#DC2626]"
-                          style={{ animationDuration: `${CYCLE}ms` }} />
-                  )}
-                  <span className="relative">{s.short}</span>
-                </button>
-              );
-            })}
-          </div>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.a
-              key={active}
-              {...swap}
-              href={meta.href}
-              {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-              className="group inline-flex items-center gap-2 text-[13px] text-[#64748B] transition-colors hover:text-[#0F172A]"
-            >
-              <span className="hidden sm:inline">{shot.cat}</span>
-              <span aria-hidden className="hidden text-[#CBD5E1] sm:inline">·</span>
-              <span className="font-semibold text-[#0F172A] underline decoration-[#CBD5E1] underline-offset-4 group-hover:decoration-[#0F172A]">{shot.open}</span>
-              <ArrowUpRight size={13} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-            </motion.a>
-          </AnimatePresence>
+      {ready && (
+        <>
+          <Feed side="l" title={d.customers} rows={left} d={d}
+                badge={<><span className="h-2 w-2 rounded-full bg-[#16A34A]" style={{ boxShadow: "0 0 0 3px rgba(22,163,74,0.28)" }} />{d.onBridge(inc)}</>} />
+          <Feed side="r" title={d.system} rows={right} d={d}
+                badge={<><Check size={12} strokeWidth={3} />{d.handled(done)}</>} />
+        </>
+      )}
+
+      <AnimatePresence>
+        {ready && !hinted && (
+          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}
+                       className="pointer-events-none absolute bottom-5 left-1/2 z-10 hidden -translate-x-1/2 items-center gap-2 whitespace-nowrap text-[12px] text-[#8FA3BC] lg:inline-flex">
+            <Mouse size={15} strokeWidth={1.8} />
+            {fine ? d.hint : d.hintTouch}
+          </motion.span>
+        )}
+      </AnimatePresence>
+
+      <div className="relative z-10 order-3 mx-auto w-full max-w-md px-5 pb-9 pt-3 lg:hidden">
+        <div className="mb-2 flex items-center justify-between">
+          <span className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[#8A9AB2]">{d.now}</span>
+          <span className="text-[11.5px] text-[#64748B]">{d.tap}</span>
         </div>
-      </motion.div>
-
+        <div className="min-h-[178px] rounded-[16px] bg-white p-3.5 text-[#0F172A]">
+          {ready ? (
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div key={`${sel}${selOk ? "o" : "i"}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                          transition={{ duration: 0.25, ease: EASE }}>
+                <Info i={sel} ok={selOk} tin={clock(k[sel].tin)} tout={clock(k[sel].tout)} d={d} />
+              </motion.div>
+            </AnimatePresence>
+          ) : (
+            <div className="grid gap-3 py-1">
+              <div className="race-sk h-8 w-2/3 rounded-[10px]" />
+              <div className="race-sk h-4 w-5/6 rounded-md" />
+              <div className="race-sk h-16 w-full rounded-[10px]" />
+            </div>
+          )}
+        </div>
+        <div className="mt-3 flex justify-center gap-1.5">
+          {ITEMS.map((it, i) => (
+            <button key={i} type="button" aria-label={`${d.src[it.src]}, ${it.who}`} onClick={() => pick(i)}
+                    className={`h-[7px] rounded-full transition-[width,background-color] duration-300 ${i === sel ? "w-5 bg-white" : "w-[7px] bg-white/25"}`} />
+          ))}
+        </div>
       </div>
     </section>
   );

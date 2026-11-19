@@ -24,8 +24,9 @@ const SOLUTIONS = [
   },
 ];
 
-export function Navbar() {
+export function Navbar({ overDark = false }: { overDark?: boolean } = {}) {
   const [scrolled,   setScrolled]   = useState(false);
+  const [past,       setPast]       = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [solOpen,    setSolOpen]    = useState(false);
   const [solAccOpen, setSolAccOpen] = useState(false);
@@ -35,10 +36,25 @@ export function Navbar() {
   const bookHref = BOOKING_PAGES.includes(pathname ?? "") ? "#zakazi" : "/zakazi";
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 20);
+      if (!overDark) return;
+      const hero = document.querySelector<HTMLElement>("[data-hero]");
+      setPast(hero ? window.scrollY > hero.offsetTop + hero.offsetHeight - 64 : true);
+    };
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [overDark]);
+
+  const dark = overDark && !past;
+  const item = dark
+    ? "text-[#CBD5E1] hover:text-white hover:bg-white/[0.07]"
+    : "text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface)]";
 
   const NAV_LINKS = [
     { label: L.services,  href: "/#usluge"    },
@@ -51,8 +67,10 @@ export function Navbar() {
     <>
       <header className={cn(
         "fixed top-0 inset-x-0 z-50 border-b transition-[background-color,border-color] duration-300",
-        scrolled ? "bg-white border-[#E5E7EB]" : "bg-transparent border-transparent"
-      )}>
+        dark
+          ? (scrolled ? "bg-[#0B1733]/80 border-white/[0.08]" : "bg-transparent border-transparent")
+          : (scrolled ? "bg-white border-[#E5E7EB]" : "bg-transparent border-transparent")
+      )} style={dark && scrolled ? { backdropFilter: "blur(14px) saturate(140%)", WebkitBackdropFilter: "blur(14px) saturate(140%)" } : undefined}>
         <nav className="max-w-7xl mx-auto h-16 px-6 lg:px-8 flex items-center justify-between">
           <a href="/" className="flex items-center" aria-label="mehiccdev, naslovna"
              onClick={(e) => {
@@ -62,7 +80,7 @@ export function Navbar() {
                if (window.location.hash) history.replaceState(null, "", "/");
                window.scrollTo({ top: 0, behavior: "smooth" });
              }}>
-            <Logo className="h-[17px] w-auto" mark markClassName="h-[30px] w-auto" />
+            <Logo variant={dark ? "dark" : "light"} className="h-[17px] w-auto" mark markClassName="h-[30px] w-auto" />
           </a>
 
           <ul className="hidden lg:flex items-center gap-1">
@@ -74,9 +92,7 @@ export function Navbar() {
                 onClick={() => setSolOpen((v) => !v)}
                 aria-expanded={solOpen}
                 aria-haspopup="true"
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium
-                           text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface)]
-                           transition-colors duration-200"
+                className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors duration-200 ${item}`}
               >
                 {L.solutions}
                 <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-[#16A34A] animate-pulse" />
@@ -115,8 +131,7 @@ export function Navbar() {
 
             <li>
               <a href="/portfolio"
-                 className="px-3 py-2 rounded-xl text-sm font-medium text-[var(--text-muted)]
-                            hover:text-[var(--text)] hover:bg-[var(--surface)] transition-all duration-200">
+                 className={`px-3 py-2 rounded-xl text-sm font-medium transition-colors duration-200 ${item}`}>
                 {L.portfolio}
               </a>
             </li>
@@ -125,9 +140,7 @@ export function Navbar() {
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className="relative px-3 py-2 rounded-xl text-sm font-medium text-[var(--text-muted)]
-                             hover:text-[var(--text)] hover:bg-[var(--surface)]
-                             transition-all duration-200"
+                  className={`relative px-3 py-2 rounded-xl text-sm font-medium transition-colors duration-200 ${item}`}
                 >
                   {link.label}
                 </a>
@@ -136,13 +149,12 @@ export function Navbar() {
           </ul>
 
           <div className="flex items-center gap-1.5">
-            <div className="relative flex items-center rounded-full border border-[var(--border)]
-                            bg-[var(--surface)] p-0.5"
+            <div className={`relative flex items-center rounded-full border p-0.5 transition-colors duration-300 ${dark ? "border-white/15 bg-white/[0.06]" : "border-[var(--border)] bg-[var(--surface)]"}`}
                  role="group" aria-label="Language">
               <span aria-hidden
-                    className={`absolute top-0.5 bottom-0.5 left-0.5 w-8 rounded-full
-                                bg-brand-600/15 border border-brand-600/35
+                    className={`absolute top-0.5 bottom-0.5 left-0.5 w-8 rounded-full border
                                 transition-transform duration-300 ease-out
+                                ${dark ? "bg-white/15 border-white/25" : "bg-brand-600/15 border-brand-600/35"}
                                 ${lang === "en" ? "translate-x-8" : ""}`} />
               <button onClick={() => setLang("bs")} aria-label="Bosanski"
                       className={`relative z-10 w-8 h-7 flex items-center justify-center rounded-full
@@ -158,11 +170,9 @@ export function Navbar() {
 
             <a
               href={bookHref}
-              className="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl
-                         bg-gradient-to-r from-brand-600 to-brand-500 text-white text-sm font-bold
-                         shadow-lg shadow-brand-600/25
-                         transition-all duration-200 hover:shadow-xl hover:shadow-brand-600/40
-                         hover:-translate-y-0.5"
+              className={dark
+                ? "hidden lg:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-[#0F172A] text-sm font-bold transition-colors duration-200 hover:bg-[#E2E8F0]"
+                : "hidden lg:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 text-white text-sm font-bold shadow-lg shadow-brand-600/25 transition-all duration-200 hover:shadow-xl hover:shadow-brand-600/40 hover:-translate-y-0.5"}
             >
               {L.book}
               <ArrowUpRight size={14} />
@@ -170,8 +180,7 @@ export function Navbar() {
 
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden p-2 rounded-xl text-[var(--text-muted)] hover:text-[var(--text)]
-                         hover:bg-[var(--surface)] transition-all duration-200"
+              className={`lg:hidden p-2 rounded-xl transition-colors duration-200 ${dark ? "text-white hover:bg-white/10" : "text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface)]"}`}
               aria-label="Toggle menu"
             >
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}

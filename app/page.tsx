@@ -13,7 +13,7 @@ import { Footer }     from "@/components/sections/Footer";
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      <Navbar />
+      <Navbar overDark />
       <Hero />
       <Clients />
       <Portfolio />
