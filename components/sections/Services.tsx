@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform, useMotionValueEvent, type MotionValue } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, useInView } from "framer-motion";
 import {
   ArrowRight, ArrowUpRight, BellRing, CalendarCheck, CarFront, Check, CircleCheck,
   Globe, LayoutDashboard, Megaphone, PenTool, type LucideIcon,
@@ -329,23 +329,13 @@ function Stage({ k, d }: { k: Key; d: Content }) {
   );
 }
 
-function useWide() {
-  const [wide, setWide] = useState(false);
-  useEffect(() => {
-    const m = window.matchMedia("(min-width: 1024px)");
-    const on = () => setWide(m.matches);
-    on();
-    m.addEventListener("change", on);
-    return () => m.removeEventListener("change", on);
-  }, []);
-  return wide;
-}
+const DURATION = 7000;
 
-function Bar({ p, i, n }: { p: MotionValue<number>; i: number; n: number }) {
-  const w = useTransform(p, (v) => `${Math.min(1, Math.max(0, v * n - i)) * 100}%`);
+function Bar({ run, ms, k }: { run: boolean; ms: number; k: string }) {
   return (
     <span className="mt-4 block h-[3px] w-full max-w-[260px] overflow-hidden rounded-full bg-[#E2E8F0]">
-      <motion.span className="block h-full rounded-full bg-[#DC2626]" style={{ width: w }} />
+      <span key={k} className="block h-full origin-left rounded-full bg-[#DC2626]"
+            style={{ animation: `svc-fill ${ms}ms linear forwards`, animationPlayState: run ? "running" : "paused" }} />
     </span>
   );
 }
@@ -394,25 +384,24 @@ export function Services() {
   const { lang } = useLanguage();
   const d = T[(lang as "bs" | "en")] ?? T.bs;
   const calm = useCalm();
-  const wide = useWide();
   const n = d.items.length;
   const [a, setA] = useState(0);
-  const track = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: track, offset: ["start start", "end end"] });
+  const [hold, setHold] = useState(false);
+  const [cycle, setCycle] = useState(0);
+  const root = useRef<HTMLElement>(null);
+  const seen = useInView(root, { amount: 0.35 });
+  const run = seen && !hold && !calm;
 
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    if (!wide) return;
-    const next = Math.min(n - 1, Math.max(0, Math.floor(v * n)));
-    setA((cur) => (cur === next ? cur : next));
-  });
+  const left = useRef(DURATION);
+  useEffect(() => { left.current = DURATION; }, [a, cycle]);
+  useEffect(() => {
+    if (!run) return;
+    const start = performance.now();
+    const id = window.setTimeout(() => { setA((v) => (v + 1) % n); setCycle((c) => c + 1); }, left.current);
+    return () => { window.clearTimeout(id); left.current = Math.max(0, left.current - (performance.now() - start)); };
+  }, [run, a, cycle, n]);
 
-  const go = (i: number) => {
-    if (!wide || !track.current) { setA(i); return; }
-    const el = track.current;
-    const top = el.getBoundingClientRect().top + window.scrollY;
-    const run = el.offsetHeight - window.innerHeight;
-    window.scrollTo({ top: top + run * ((i + 0.05) / n), behavior: calm ? "auto" : "smooth" });
-  };
+  const go = (i: number) => { setA(i); setCycle((c) => c + 1); };
 
   const header = (
     <div>
@@ -427,38 +416,44 @@ export function Services() {
   );
 
   return (
-    <section id="usluge" className="relative scroll-mt-24">
-      <div ref={track} className="relative" style={wide ? { height: `${n * 85}vh` } : undefined}>
-        <div className={wide ? "sticky top-0 flex h-screen items-center" : ""}>
-          <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-6 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:gap-14 lg:px-8">
-            <div className="flex min-w-0 flex-col justify-center">
-              {header}
-              <div role="tablist" aria-label={d.tabs} className="-mx-6 mt-8 flex gap-2 overflow-x-auto px-6 pb-1 lg:mx-0 lg:mt-10 lg:flex-col lg:gap-0 lg:overflow-visible lg:px-0">
-                {d.items.map((x, i) => {
-                  const on = i === a;
-                  return (
-                    <button key={x.key} type="button" role="tab" aria-selected={on} onClick={() => go(i)}
-                      className={`relative shrink-0 text-left transition-colors duration-300 lg:w-full ${on
-                        ? "rounded-2xl bg-white shadow-[0_1px_2px_rgba(15,23,42,0.05),0_18px_40px_-12px_rgba(15,23,42,0.18)] lg:rounded-[22px]"
-                        : "rounded-2xl border border-[#E2E8F0] bg-white/60 lg:rounded-none lg:border-0 lg:border-t lg:bg-transparent"} px-4 py-3 lg:px-6 lg:py-5`}>
-                      {on && <span className="absolute bottom-5 left-0 top-5 hidden w-1 rounded-full bg-[#DC2626] lg:block" />}
-                      <span className="flex items-baseline gap-4">
-                        <span className={`hidden text-[13px] font-semibold tabular-nums lg:inline ${on ? "text-[#DC2626]" : "text-[#94A3B8]"}`}>0{i + 1}</span>
-                        <span>
-                          <span className={`block whitespace-nowrap text-[15px] font-semibold tracking-[-0.01em] lg:text-[22px] ${on ? "text-[#0F172A]" : "text-[#64748B] lg:text-[#94A3B8]"}`}>{x.title}</span>
-                          <span className={`mt-1 hidden text-[14px] lg:block ${on ? "text-[#475569]" : "text-[#94A3B8]"}`}>{x.tag}</span>
-                          {on && wide && <Bar p={scrollYProgress} i={i} n={n} />}
-                        </span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="h-[640px] sm:h-[700px] lg:h-[min(680px,82vh)]">
-              <Panel s={d.items[a]} i={a} n={n} d={d} calm={calm} />
-            </div>
+    <section ref={root} id="usluge" className="relative scroll-mt-24"
+             onPointerEnter={(e) => { if (e.pointerType === "mouse") setHold(true); }}
+             onPointerLeave={(e) => { if (e.pointerType === "mouse") setHold(false); }}
+             onFocusCapture={() => setHold(true)} onBlurCapture={() => setHold(false)}>
+      <style>{"@keyframes svc-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}"}</style>
+      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-6 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:items-center lg:gap-14 lg:px-8">
+        <div className="flex min-w-0 flex-col justify-center">
+          {header}
+          <div role="tablist" aria-label={d.tabs} className="-mx-6 mt-8 flex gap-2 overflow-x-auto px-6 pb-1 [scrollbar-width:none] lg:mx-0 lg:mt-10 lg:flex-col lg:gap-0 lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden">
+            {d.items.map((x, i) => {
+              const on = i === a;
+              return (
+                <button key={x.key} type="button" role="tab" aria-selected={on} onClick={() => go(i)}
+                  className={`relative shrink-0 text-left transition-[background-color,box-shadow,border-color] duration-300 lg:w-full ${on
+                    ? "rounded-2xl bg-white shadow-[0_1px_2px_rgba(15,23,42,0.05),0_18px_40px_-12px_rgba(15,23,42,0.18)] lg:rounded-[22px]"
+                    : "rounded-2xl border border-[#E2E8F0] bg-white/60 hover:bg-white lg:rounded-none lg:border-0 lg:border-t lg:bg-transparent lg:hover:bg-transparent"} px-4 py-3 lg:px-6 lg:py-5`}>
+                  {on && <motion.span layoutId="svc-mark" transition={{ type: "spring", stiffness: 420, damping: 36 }} className="absolute bottom-5 left-0 top-5 hidden w-1 rounded-full bg-[#DC2626] lg:block" />}
+                  <span className="flex items-baseline gap-4">
+                    <span className={`hidden text-[13px] font-semibold tabular-nums transition-colors lg:inline ${on ? "text-[#DC2626]" : "text-[#94A3B8]"}`}>0{i + 1}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className={`block whitespace-nowrap text-[15px] font-semibold tracking-[-0.01em] transition-colors lg:text-[22px] ${on ? "text-[#0F172A]" : "text-[#64748B] lg:text-[#94A3B8] lg:group-hover:text-[#64748B]"}`}>{x.title}</span>
+                      <span className={`mt-1 hidden text-[14px] lg:block ${on ? "text-[#475569]" : "text-[#94A3B8]"}`}>{x.tag}</span>
+                      {on && !calm && <span className="hidden lg:block"><Bar run={run} ms={DURATION} k={`${a}-${cycle}`} /></span>}
+                    </span>
+                  </span>
+                  {on && !calm && (
+                    <span className="absolute inset-x-4 bottom-1.5 block h-[2px] overflow-hidden rounded-full bg-[#F1F5F9] lg:hidden">
+                      <span key={`${a}-${cycle}`} className="block h-full origin-left bg-[#DC2626]"
+                            style={{ animation: `svc-fill ${DURATION}ms linear forwards`, animationPlayState: run ? "running" : "paused" }} />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
+        </div>
+        <div className="h-[640px] sm:h-[700px] lg:h-[640px]">
+          <Panel s={d.items[a]} i={a} n={n} d={d} calm={calm} />
         </div>
       </div>
     </section>
