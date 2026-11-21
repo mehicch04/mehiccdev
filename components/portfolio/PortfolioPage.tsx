@@ -187,9 +187,16 @@ export function PortfolioPage() {
                if (!live) return;
                const r = list.current!.getBoundingClientRect();
                const nx = e.clientX - r.left;
-               vx.set(nx - mx.get());
+               const ny = e.clientY - r.top;
+               if (!hover) {
+                 x.jump(nx);
+                 y.jump(ny);
+                 vx.set(0);
+               } else {
+                 vx.set(nx - mx.get());
+               }
                mx.set(nx);
-               my.set(e.clientY - r.top);
+               my.set(ny);
              }}
              onPointerLeave={() => setHover(null)}>
           <AnimatePresence mode="popLayout" initial={false}>
@@ -202,9 +209,18 @@ export function PortfolioPage() {
                             exit={{ opacity: 0, transition: { duration: 0.15 } }}
                             transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : Math.min(i, 5) * 0.06, ease: EASE }}
                             className="relative border-b border-[#E5E7EB]">
-                  <span aria-hidden className={`pointer-events-none absolute inset-y-0 left-0 w-full origin-left bg-[#F4F7FB] transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] ${on ? "scale-x-100" : "scale-x-0"}`} />
+                  <span aria-hidden className={`pointer-events-none absolute inset-y-0 -left-3 -right-3 origin-left rounded-2xl bg-[#F4F7FB] sm:-left-5 sm:-right-5 transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] ${on ? "scale-x-100" : "scale-x-0"}`} />
                   <button type="button" onClick={() => toggle(p.id)} aria-expanded={on} aria-controls={`pf-${p.id}`}
-                          onPointerEnter={(e) => { if (e.pointerType === "mouse") setHover(p.id); }}
+                          onPointerEnter={(e) => {
+                            if (e.pointerType !== "mouse") return;
+                            if (live && !hover) {
+                              const r = list.current!.getBoundingClientRect();
+                              const nx = e.clientX - r.left;
+                              const ny = e.clientY - r.top;
+                              mx.set(nx); my.set(ny); x.jump(nx); y.jump(ny); vx.set(0);
+                            }
+                            setHover(p.id);
+                          }}
                           onFocus={() => setHover(null)}
                           className={`group relative grid w-full grid-cols-[32px_1fr_auto] items-center gap-3 py-5 text-left transition-opacity duration-300 sm:grid-cols-[40px_1fr_auto] sm:gap-4 sm:py-6 lg:grid-cols-[64px_1.6fr_1fr_1fr_120px_40px] lg:py-7 ${dim ? "opacity-40" : "opacity-100"}`}>
                     <span className={`text-[13px] font-semibold tabular-nums transition-colors ${on ? "text-[#DC2626]" : "text-[#94A3B8] group-hover:text-[#0F172A]"}`}>{String(PROJECTS.indexOf(p) + 1).padStart(2, "0")}</span>
@@ -226,7 +242,7 @@ export function PortfolioPage() {
                     {on && (
                       <motion.div id={`pf-${p.id}`} key="body" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
                                   transition={{ duration: reduce ? 0 : 0.5, ease: EASE }} className="relative overflow-hidden">
-                        <div className="grid gap-8 pb-10 sm:pl-14 lg:grid-cols-[1.2fr_1fr] lg:pl-[80px]">
+                        <div className="grid gap-8 pb-10 sm:pl-14 lg:grid-cols-[1.2fr_1fr] lg:gap-10 lg:pl-[80px]">
                           <motion.div initial={{ opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: reduce ? 0 : 0.6, delay: reduce ? 0 : 0.1, ease: EASE }}
                                       className="rounded-[22px] px-5 pb-12 pt-6 sm:px-8 sm:pt-7" style={{ background: `linear-gradient(150deg, ${p.accent}, #0F172A)` }}>
                             <Shot p={p} d={d} onZoom={setZoom} sizes="(max-width:1024px) 90vw, 560px" />
@@ -263,13 +279,19 @@ export function PortfolioPage() {
             <motion.div aria-hidden style={{ x, y, rotate: tilt }} className="pointer-events-none absolute left-0 top-0 z-20">
               <AnimatePresence>
                 {hp && open === null && (
-                  <motion.div key={hp.id} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-                              transition={{ duration: 0.22, ease: EASE }}
+                  <motion.div key="pf-prev" initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+                              transition={{ duration: 0.18, ease: EASE }}
                               className="w-[300px] -translate-y-1/2 translate-x-8 overflow-hidden rounded-2xl border-[3px] border-white"
                               style={{ boxShadow: "0 30px 60px -24px rgba(15,23,42,.5)", background: hp.accent }}>
-                    {hp.desk
-                      ? <span className="relative block aspect-[16/10]"><Image src={hp.desk} alt="" fill sizes="300px" className="object-cover object-top" /></span>
-                      : <span className="grid aspect-[16/10] place-items-center text-[13px] font-semibold text-white/80">{d.soon}</span>}
+                    <span className="relative block aspect-[16/10]">
+                      {PROJECTS.map((q) => (
+                        <span key={q.id} className={`absolute inset-0 transition-opacity duration-200 ${q.id === hp.id ? "opacity-100" : "opacity-0"}`} style={{ background: q.accent }}>
+                          {q.desk
+                            ? <Image src={q.desk} alt="" fill sizes="300px" className="object-cover object-top" />
+                            : <span className="grid h-full place-items-center text-[13px] font-semibold text-white/80">{d.soon}</span>}
+                        </span>
+                      ))}
+                    </span>
                     <span className="flex items-center justify-between bg-white px-3 py-2 text-[11.5px] font-semibold text-[#0F172A]">
                       {name(hp, lang)} <span className="inline-flex items-center gap-1 text-[#DC2626]">{d.open} <ArrowUpRight size={12} /></span>
                     </span>
