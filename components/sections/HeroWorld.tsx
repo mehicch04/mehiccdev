@@ -19,8 +19,8 @@ const PERKS = [Search, CalendarCheck, Wallet, ShieldCheck];
 const T = {
   bs: {
     eyebrow: "Iskustvo iz SAD i Japana", about: "O nama",
-    h1a: "Vašem biznisu ne treba sajt.", h1b: "Treba mu most do kupaca.",
-    sub: "Gradimo sisteme po standardu na kojem smo radili za firme iz Amerike i Japana. Primaju upite i pretvaraju ih u rezervacije, i u ponoć, i nedjeljom.",
+    h1a: "Ne treba vam sajt.", h1b: "Treba vam most do klijenata.",
+    sub: "Sistemi koji primaju upite i rezervacije 24/7, građeni po standardu firmi iz Amerike i Japana.",
     cta: "Zakažite besplatan poziv", cta2: "Pogledajte Maximum uživo",
     perks: [
       { t: "Pronađu vas na Googleu", d: "SEO i brzina 100/100" },
@@ -39,8 +39,8 @@ const T = {
   },
   en: {
     eyebrow: "Experience from the US and Japan", about: "About us",
-    h1a: "Your business doesn't need a website.", h1b: "It needs a bridge to customers.",
-    sub: "We build systems to the standard we worked to for companies in the US and Japan. They take inquiries and turn them into bookings, at midnight and on Sundays, too.",
+    h1a: "You don't need a website.", h1b: "You need a bridge to clients.",
+    sub: "Systems that take inquiries and bookings 24/7, built to the standard of companies in the US and Japan.",
     cta: "Book a free call", cta2: "See Maximum live",
     perks: [
       { t: "Found on Google", d: "SEO and 100/100 speed" },
@@ -90,7 +90,7 @@ function useSize(ref: React.RefObject<HTMLElement>) {
   return w;
 }
 
-function Card({ on, d, l, run, go }: { on: Spot; d: (typeof T)["bs"]; l: L; run: boolean; go: (dir: 1 | -1) => void }) {
+function Card({ on, d, l, run, go, pick }: { on: Spot; d: (typeof T)["bs"]; l: L; run: boolean; go: (dir: 1 | -1) => void; pick: (k: Spot) => void }) {
   const x = d.info[on];
   const f = SPOT_FLAG[on];
   const idx = SPOTS.indexOf(on);
@@ -117,12 +117,15 @@ function Card({ on, d, l, run, go }: { on: Spot; d: (typeof T)["bs"]; l: L; run:
       </div>
       <div className="flex items-center gap-2 border-t border-white/[0.07] px-3 py-2">
         <button type="button" onClick={() => go(-1)} aria-label={d.prev} className="grid h-7 w-7 place-items-center rounded-lg text-[#94A3B8] transition-colors hover:bg-white/[0.06] hover:text-white"><ChevronLeft size={15} /></button>
-        <div className="flex flex-1 items-center gap-1">
+        <div className="flex flex-1 items-center gap-0.5">
           {SPOTS.map((k, i) => (
-            <span key={k} className="relative h-[3px] flex-1 overflow-hidden rounded-full bg-white/[0.08]">
-              {i < idx && <span className="absolute inset-0 bg-white/40" />}
-              {i === idx && <span key={on + String(run)} className="absolute inset-0 origin-left bg-white" title={SPOT_NAME[k]} style={run ? { animation: `hw-bar ${STEP}ms linear forwards` } : undefined} />}
-            </span>
+            <button key={k} type="button" onClick={() => pick(k)} aria-label={SPOT_NAME[k]} aria-current={i === idx ? "step" : undefined} title={SPOT_NAME[k]}
+              className="group/s flex h-7 flex-1 items-center px-[2px]">
+              <span className="relative h-[3px] w-full overflow-hidden rounded-full bg-white/[0.08] transition-[height,background-color] duration-200 group-hover/s:h-[5px] group-hover/s:bg-white/20">
+                {i < idx && <span className="absolute inset-0 bg-white/40" />}
+                {i === idx && <span key={on + String(run)} className="absolute inset-0 origin-left bg-white" style={run ? { animation: `hw-bar ${STEP}ms linear forwards` } : undefined} />}
+              </span>
+            </button>
           ))}
         </div>
         <button type="button" onClick={() => go(1)} aria-label={d.next} className="grid h-7 w-7 place-items-center rounded-lg text-[#94A3B8] transition-colors hover:bg-white/[0.06] hover:text-white"><ChevronRight size={15} /></button>
@@ -176,7 +179,7 @@ export function HeroWorld() {
         <Image src="/hero/most-sumrak.svg" alt="" width={1520} height={463} unoptimized priority className="w-full" />
       </div>
 
-      <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-5 pb-24 pt-28 sm:px-6 lg:grid-cols-[1fr_1fr] lg:gap-8 lg:px-8 lg:pb-64 lg:pt-32">
+      <div className="relative mx-auto grid max-w-[1240px] items-center gap-10 px-5 pb-24 pt-28 sm:px-6 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)] lg:gap-6 lg:px-8 lg:pb-64 lg:pt-36">
         <div>
           <motion.a {...rise(0)} href="/o-nama" className="group inline-flex h-8 items-center gap-2.5 rounded-full border border-white/[0.14] bg-[#050913]/40 pl-1.5 pr-3 text-[13px] font-medium text-[#CBD5E1] transition-colors duration-200 hover:border-white/30 hover:text-white">
             <span className="flex h-5 items-center gap-1 rounded-full bg-white/[0.08] px-1.5" aria-hidden>
@@ -185,10 +188,10 @@ export function HeroWorld() {
             {d.eyebrow}
             <span className="flex items-center gap-1 border-l border-white/[0.14] pl-2.5 font-semibold text-white">{d.about}<ArrowRight size={13} className="transition-transform duration-200 group-hover:translate-x-0.5" /></span>
           </motion.a>
-          <motion.h1 {...rise(1)} id="hero-title" className="mt-6 text-[38px] font-semibold leading-[1.04] tracking-[-0.045em] sm:text-[50px] lg:text-[54px]">
+          <motion.h1 {...rise(1)} id="hero-title" className="mt-7 text-[40px] font-semibold leading-[1.05] tracking-[-0.045em] sm:text-[52px] lg:text-[56px] xl:text-[60px]">
             <span className="block text-[#9AABCA]">{d.h1a}</span>{d.h1b}
           </motion.h1>
-          <motion.p {...rise(2)} className="mt-6 max-w-lg text-[16px] leading-relaxed text-[#C3CEE0] sm:text-[17px]">{d.sub}</motion.p>
+          <motion.p {...rise(2)} className="mt-6 max-w-[440px] text-[16px] leading-relaxed text-[#C3CEE0] sm:text-[18px]">{d.sub}</motion.p>
           <motion.div {...rise(3)} className="mt-8 flex flex-col gap-3 sm:flex-row">
             <a href="#zakazi" className="cta-primary group inline-flex h-[52px] items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-[#DC2626] px-6 text-[15px] font-semibold text-white transition-colors hover:bg-[#B91C1C]">
               {d.cta} <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -210,12 +213,12 @@ export function HeroWorld() {
           </motion.ul>
         </div>
 
-        <motion.div {...rise(2)} className="relative flex flex-col items-center lg:items-start">
+        <motion.div {...rise(2)} className="relative flex flex-col items-center lg:translate-x-6 lg:items-start min-[1400px]:translate-x-20">
           <div ref={slot} className="w-full max-w-[480px]">
             {w > 0 && <ClientGlobe size={size} active={on} onPick={pick} reduce={reduce} labels={size > 330} />}
           </div>
-          <div className="relative z-10 mt-4 w-full max-w-[480px] lg:absolute lg:-right-6 lg:bottom-[-36px] lg:mt-0 lg:w-[330px] xl:-right-12">
-            <Card on={on} d={d} l={l} run={run} go={go} />
+          <div className="relative z-10 mt-4 w-full max-w-[480px] lg:absolute lg:-right-2 lg:bottom-[-36px] lg:mt-0 lg:w-[330px] min-[1400px]:-right-12">
+            <Card on={on} d={d} l={l} run={run} go={go} pick={pick} />
           </div>
           <p className="mt-3 self-center text-[11.5px] text-[#64748B] lg:hidden">{d.hint}</p>
         </motion.div>

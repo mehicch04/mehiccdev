@@ -226,7 +226,7 @@ export function PricingBuilder({ fixed, cta = "#zakazi", id = "cjenovnik", headi
           </motion.div>
         )}
 
-        <div className={`${heading ? "mt-10 sm:mt-12" : ""} grid gap-5 lg:grid-cols-[1.3fr_1fr] lg:items-stretch lg:gap-6`}>
+        <div className={`${heading ? "mt-10 sm:mt-12" : ""} grid grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-stretch lg:gap-6`}>
           <div className="space-y-5 sm:space-y-6">
             {!fixed && (
               <motion.div {...reveal(1)}>
