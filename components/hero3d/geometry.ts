@@ -92,7 +92,7 @@ export function terrainHeight(x: number, z: number) {
     const s = THREE.MathUtils.smoothstep(d, 0, 12);
     h = -6 + s * 22 + Math.max(d - 12, 0) * 0.08;
     h += (n - 0.5) * 7 * Math.min(d / 6, 1) + (n2 - 0.5) * 4.5 * Math.min(d / 4, 1);
-    h += THREE.MathUtils.smoothstep(Math.abs(x - c), 70, 220) * 40 * (0.55 + n);
+    h += THREE.MathUtils.smoothstep(Math.abs(x - c), 70, 220) * 16 * (0.55 + n);
   } else {
     h += (n2 - 0.5) * 1.2;
   }
@@ -163,7 +163,7 @@ export function townLayout(q: Quality): Town {
     const side = r() < 0.5 ? -1 : 1;
     const z = -420 + r() * 480;
     const c = riverCenter(z);
-    const x = c + side * (22 + Math.pow(r(), 1.2) * 200);
+    const x = c + side * (26 + Math.pow(r(), 1.1) * 190);
     if (scanMask(x, z) > 0.02) continue;
     if (Math.hypot(x - MOSQUE[0], z - MOSQUE[1]) < 26) continue;
     const w = 6 + r() * 4.5;
@@ -174,7 +174,7 @@ export function townLayout(q: Quality): Town {
     if (lo < 3 || hi - lo > 6) continue;
     if (!placed.every(([px, pz, pr]) => Math.hypot(px - x, pz - z) > pr + Math.max(w, d) * 0.55)) continue;
     placed.push([x, z, Math.max(w, d) * 0.55]);
-    const hh = 5 + Math.floor(r() * 3) * 2.6 + r() * 0.8;
+    const hh = 3.6 + Math.floor(r() * 2) * 2.6 + r() * 0.8;
     const yaw = (r() - 0.5) * 0.4;
     e.set(0, yaw, 0);
     qq.setFromEuler(e);
@@ -187,11 +187,11 @@ export function townLayout(q: Quality): Town {
     for (let f = 0; f < floors; f++) {
       const cols = w > 8 ? 3 : 2;
       for (let k = 0; k < cols; k++) {
-        if (r() < 0.55) continue;
+        if (r() < 0.78) continue;
         const lx = (k - (cols - 1) / 2) * (w / cols);
         const ly = top - 1.6 - f * 2.6;
         const p = new THREE.Vector3(lx, ly - (base + H / 2), d / 2 + 0.06).applyQuaternion(qq).add(new THREE.Vector3(x, base + H / 2, z));
-        win.push(new THREE.Matrix4().compose(p, qq, s.set(0.7, 1.0, 1)));
+        win.push(new THREE.Matrix4().compose(p, qq, s.set(0.5, 0.75, 1)));
       }
     }
   }

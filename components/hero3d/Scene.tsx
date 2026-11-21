@@ -141,9 +141,9 @@ function Backdrop({ q }: { q: Quality }) {
     })();
     const winGeo = new THREE.PlaneGeometry(1, 1);
     const rock = stoneMaterial({ color: "#ffffff", masonry: 0, uplight: 0.12, reach: 0, vertexColors: true, roughness: 1 });
-    const townStone = stoneMaterial({ color: "#8f8676", masonry: 1, course: 0.52, uplight: 0.18, reach: 0 });
-    const townRoof = stoneMaterial({ color: "#55555a", masonry: 1, course: 0.3, uplight: 0.05, reach: 0 });
-    const winDim = new THREE.MeshBasicMaterial({ color: new THREE.Color(1.35, 0.78, 0.34), toneMapped: false, side: THREE.DoubleSide });
+    const townStone = stoneMaterial({ color: "#b5a48b", masonry: 1, course: 0.42, uplight: 0.42, reach: 0, roughness: 0.96 });
+    const townRoof = stoneMaterial({ color: "#7e7a75", masonry: 1, course: 0.26, uplight: 0.12, reach: 0, roughness: 0.98 });
+    const winDim = new THREE.MeshBasicMaterial({ color: new THREE.Color(0.95, 0.56, 0.25), toneMapped: false, side: THREE.DoubleSide });
     const mosqueMat = stoneMaterial({ color: "#b9b0a3", masonry: 0, uplight: 0.5, reach: 0 });
     const ridgeMats = ["#0e1834", "#0b142c", "#091024"].map((c) => new THREE.MeshBasicMaterial({ color: c, fog: true }));
     return { terrain, mosque, town, ridges, houseGeo, roofGeo, winGeo, rock, townStone, townRoof, winDim, mosqueMat, ridgeMats };
