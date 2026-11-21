@@ -386,3 +386,9 @@ html[data-most] .most-in { opacity: 0; transform: translateY(14px); transition: 
 .pf-float { animation: pf-float 5.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
 @keyframes pf-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 @media (prefers-reduced-motion: reduce) { .pf-float { animation: none; } }
+
+.map-intro { display: none; }
+html[data-map] .map-intro { display: flex; }
+html[data-map] .most-draw { animation: none; }
+html[data-map] .most-brand { animation: none; opacity: 0; }
+html[data-map] body { overflow: hidden; }

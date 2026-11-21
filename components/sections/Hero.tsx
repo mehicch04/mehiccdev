@@ -13,6 +13,7 @@ type Src = "wa" | "ig" | "web" | "viber" | "mail";
 type Out = "ck" | "send" | "reply";
 type Text = { msg: string; title: string; a: string; b: string; steps: [string, string, string] };
 type Copy = {
+  know: string; knowLong: string; about: string;
   status: string; city: string;
   h1a: string; h1b: string; h1u: string;
   sub: string; cta: string; cta2: string;
@@ -29,7 +30,7 @@ type Tok = { t: number; prev: number; ok: boolean; tin: number; tout: number };
 
 const T: Record<Lang, Copy> = {
   bs: {
-    status: "Dostupni za nove projekte", city: "Mostar",
+    status: "Dostupni za nove projekte", city: "Mostar", know: "Iskustvo iz SAD i Japana", knowLong: "Iskustvo iz New Yorka, LA, San Diega i Yokohame", about: "O nama",
     h1a: "Vašem biznisu ne treba sajt.", h1b: "Treba mu", h1u: "most do kupaca",
     sub: "Pravimo web aplikacije koje primaju upite sa svih strana i pretvaraju ih u potvrđene rezervacije. I u ponoć, i nedjeljom.",
     cta: "Besplatne konsultacije", cta2: "Pogledajte radove",
@@ -55,7 +56,7 @@ const T: Record<Lang, Copy> = {
     ],
   },
   en: {
-    status: "Available for new projects", city: "Mostar",
+    status: "Available for new projects", city: "Mostar", know: "Experience from the US and Japan", knowLong: "Experience from New York, LA, San Diego and Yokohama", about: "About us",
     h1a: "Your business doesn't need a website.", h1b: "It needs", h1u: "a bridge to customers",
     sub: "We build web apps that take inquiries from every channel and turn them into confirmed bookings. At midnight and on Sundays, too.",
     cta: "Free consultation", cta2: "See our work",
@@ -281,15 +282,21 @@ export function Hero() {
       setLit(true);
       return;
     }
-    const id = window.setTimeout(() => {
-      try { sessionStorage.setItem("mehiccdev-intro", "1"); } catch {}
-      html.removeAttribute("data-most");
-      setLit(true);
-    }, 1750);
+    let id = 0;
+    const start = () => {
+      if (id) return;
+      id = window.setTimeout(() => {
+        try { sessionStorage.setItem("mehiccdev-intro", "1"); } catch {}
+        html.removeAttribute("data-most");
+        setLit(true);
+      }, 1750);
+    };
+    if (!html.hasAttribute("data-map")) start();
     const mo = new MutationObserver(() => {
       if (!html.hasAttribute("data-most")) setLit(true);
+      if (!html.hasAttribute("data-map")) start();
     });
-    mo.observe(html, { attributes: true, attributeFilter: ["data-most"] });
+    mo.observe(html, { attributes: true, attributeFilter: ["data-most", "data-map"] });
     return () => {
       window.clearTimeout(id);
       mo.disconnect();
@@ -519,11 +526,18 @@ export function Hero() {
 
       <div ref={top} className="most-top relative z-10 order-1 mx-auto w-full max-w-5xl px-5 pt-[92px] sm:px-6 sm:text-center lg:pt-[96px]">
         <div className="most-in" style={{ "--d": "0.05s" } as CSSProperties}>
-          <span className="inline-flex h-8 items-center gap-2.5 rounded-full border border-white/[0.14] bg-[#050913]/40 pl-3 pr-3.5 text-[13px] font-medium text-[#CBD5E1]">
-            <span className="relative h-2 w-2 rounded-full bg-[#16A34A]" />
-            {d.status}
-            <span className="text-[#7C8BA1]">· {d.city}</span>
-          </span>
+          <a href="/o-nama" className="group inline-flex h-8 items-center gap-2.5 rounded-full border border-white/[0.14] bg-[#050913]/40 pl-1.5 pr-3 text-[13px] font-medium text-[#CBD5E1] transition-colors duration-200 hover:border-white/30 hover:text-white">
+            <span className="flex h-5 items-center gap-1 rounded-full bg-white/[0.08] px-1.5" aria-hidden>
+              <span className="h-1.5 w-1.5 rounded-full bg-[#DC2626]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#16A34A]" />
+            </span>
+            <span className="sm:hidden">{d.know}</span>
+            <span className="hidden sm:inline">{d.knowLong}</span>
+            <span className="flex items-center gap-1 border-l border-white/[0.14] pl-2.5 font-semibold text-white">
+              {d.about}<ArrowRight size={13} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+            </span>
+          </a>
         </div>
         <h1 id="hero-title" className={`most-h1 most-in mt-5 text-[40px] font-semibold leading-[1.04] tracking-[-0.045em] sm:text-[54px] lg:leading-[1.02] lg:tracking-[-0.05em] ${L === "en" ? "lg:text-[56px]" : "lg:text-[62px]"}`}
             style={{ "--d": "0.12s" } as CSSProperties}>

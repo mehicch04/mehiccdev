@@ -8,10 +8,12 @@ import { PricingBuilder } from "@/components/sections/PricingBuilder";
 import { Faq }        from "@/components/sections/Faq";
 import { Booking }    from "@/components/sections/Booking";
 import { Footer }     from "@/components/sections/Footer";
+import { MapIntro }   from "@/components/ui/MapIntro";
 
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+      <MapIntro />
       <Navbar overDark />
       <Hero />
       <Clients />
