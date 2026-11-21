@@ -308,13 +308,13 @@ function Stage({ k, d }: { k: Key; d: Content }) {
   );
   if (k === "web") return (
     <div className="relative h-full">
-      <motion.div {...rise(0)} className="absolute left-0 right-[-10%] top-10"><Browser url="oxybaricmostar.ba" src="/portfolio/oxybaric.png" alt={alt} /></motion.div>
+      <motion.div {...rise(0)} className="absolute left-0 right-[-10%] top-10"><Browser url="oxybaricmostar.ba" src="/portfolio/oxybaric.webp" alt={alt} /></motion.div>
       <motion.div {...rise(0.25, 16)} className="absolute left-6 top-0 w-[270px] max-w-[78%]"><TypingEditor d={d} /></motion.div>
     </div>
   );
   if (k === "ux") return (
     <div className="relative h-full">
-      <motion.div {...rise(0)} className="absolute left-0 right-[22%] top-10 opacity-90"><Browser dark url="roobet.com/rewards" src="/portfolio/roobet.png" alt={alt} /></motion.div>
+      <motion.div {...rise(0)} className="absolute left-0 right-[22%] top-10 opacity-90"><Browser dark url="roobet.com/rewards" src="/portfolio/roobet.webp" alt={alt} /></motion.div>
       <motion.div {...rise(0.12, 60)} className="absolute right-4 top-4 w-[30%]">
         <div className="relative"><Phone src="/portfolio/roobet-mob.webp" alt={alt} /><DesignOverlay d={d} /></div>
       </motion.div>

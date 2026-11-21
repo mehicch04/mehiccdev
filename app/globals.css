@@ -383,3 +383,6 @@ html[data-most] .most-in { opacity: 0; transform: translateY(14px); transition: 
   .most-tw, .most-gl, .most-trail, .most-spin, .most-tk[data-pop] .dot, .most-draw { animation: none; }
   .most-gl { opacity: 0.4; }
 }
+.pf-float { animation: pf-float 5.5s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+@keyframes pf-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@media (prefers-reduced-motion: reduce) { .pf-float { animation: none; } }
