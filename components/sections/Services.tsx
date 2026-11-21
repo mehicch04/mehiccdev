@@ -386,11 +386,10 @@ export function Services() {
   const calm = useCalm();
   const n = d.items.length;
   const [a, setA] = useState(0);
-  const [hold, setHold] = useState(false);
   const [cycle, setCycle] = useState(0);
   const root = useRef<HTMLElement>(null);
   const seen = useInView(root, { amount: 0.35 });
-  const run = seen && !hold && !calm;
+  const run = seen && !calm;
 
   const left = useRef(DURATION);
   useEffect(() => { left.current = DURATION; }, [a, cycle]);
@@ -416,10 +415,7 @@ export function Services() {
   );
 
   return (
-    <section ref={root} id="usluge" className="relative scroll-mt-24"
-             onPointerEnter={(e) => { if (e.pointerType === "mouse") setHold(true); }}
-             onPointerLeave={(e) => { if (e.pointerType === "mouse") setHold(false); }}
-             onFocusCapture={() => setHold(true)} onBlurCapture={() => setHold(false)}>
+    <section ref={root} id="usluge" className="relative scroll-mt-24">
       <style>{"@keyframes svc-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}"}</style>
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-10 px-6 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:items-center lg:gap-14 lg:px-8">
         <div className="flex min-w-0 flex-col justify-center">

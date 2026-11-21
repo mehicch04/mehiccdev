@@ -1,81 +1,139 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowRight, Check } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
-import { PageHero } from "@/components/ui/PageHero";
 import { Pricing } from "@/components/sections/Pricing";
 import { PricingBuilder } from "@/components/sections/PricingBuilder";
 import { Faq } from "@/components/sections/Faq";
 import { Booking } from "@/components/sections/Booking";
 
+const MONTHS = 36;
+const EASE = [0.22, 1, 0.36, 1] as const;
+
 const T = {
   bs: {
-    eyebrow: "Cjenovnik", h1: "Cijene bez", h1b: "skrivenih troškova",
-    sub: "Aplikaciju plaćate jednom i ona je vaša. Održavanje uzimate samo ako vam zatreba, a marketing mjesečno dok vam donosi upite.",
-    primary: "Zakažite poziv", secondary: "Izračunajte isplativost",
-    q: "Šta vam treba?", pick: "Preporuka za vas", from: "od", once: "jednom, bez pretplate", see: "Pogledajte paket", popular: "Najčešći izbor",
-    opts: [
-      { a: "Jedan alat, npr. evidencija ili katalog", name: "Starter", price: "990 KM", gets: ["Radi na telefonu i računaru", "Sami mijenjate sadržaj", "Upiti stižu direktno vama"] },
-      { a: "Online rezervacije i termini", name: "Business", price: "1.790 KM", gets: ["Rezervacije bez duplih termina", "WhatsApp obavijest za svaku", "Na dva jezika"] },
-      { a: "Sistem po mjeri cijelog procesa", name: "Premium", price: "2.890 KM", gets: ["Online plaćanje i depozit", "Lični developer", "Prioritetna podrška"] },
-    ],
+    eyebrow: "Cjenovnik", h1: "Platite jednom.", h1b: "Ne svaki mjesec.",
+    sub: "Gotove platforme naplaćuju pretplatu dok god ih koristite. Kod nas je sistem vaš, a mjesečni trošak je nula.",
+    primary: "Pogledajte cijene", secondary: "Zakažite poziv",
+    trust: ["Plaćanje 50% na početku, 50% po predaji", "0 KM mjesečno, bez pretplate", "Bez provizije po rezervaciji"],
+    chart: "Ukupan trošak kroz 3 godine", month: "mjesec", cross: (n: number) => `${n}. mjesec`,
+    subL: "Pretplata", subPer: "/mj", once: "mehiccdev, jednom",
+    note: "Poređenje s tipičnom pretplatom za sistem rezervacija. Primjer, ne tačna cijena konkurencije.",
+    rate: 120, total: 1790, money: (n: number) => `${n.toLocaleString("de-DE")} KM`,
   },
   en: {
-    eyebrow: "Pricing", h1: "Prices with no", h1b: "hidden costs",
-    sub: "You pay for the app once and it's yours. Maintenance only if you need it, and marketing monthly while it brings you inquiries.",
-    primary: "Book a call", secondary: "Calculate the return",
-    q: "What do you need?", pick: "Our pick for you", from: "from", once: "one time, no subscription", see: "See the plan", popular: "Most popular",
-    opts: [
-      { a: "One tool, e.g. records or a catalog", name: "Starter", price: "€505", gets: ["Works on phone and desktop", "You edit the content", "Inquiries come straight to you"] },
-      { a: "Online bookings and appointments", name: "Business", price: "€915", gets: ["Bookings with no double slots", "WhatsApp alert for each one", "In two languages"] },
-      { a: "A system built around your process", name: "Premium", price: "€1,480", gets: ["Online payment and deposit", "Personal developer", "Priority support"] },
-    ],
+    eyebrow: "Pricing", h1: "Pay once.", h1b: "Not every month.",
+    sub: "Off the shelf platforms charge a subscription for as long as you use them. With us the system is yours and the monthly cost is zero.",
+    primary: "See the prices", secondary: "Book a call",
+    trust: ["50% upfront, 50% on delivery", "€0 per month, no subscription", "No fee per booking"],
+    chart: "Total cost over 3 years", month: "month", cross: (n: number) => `month ${n}`,
+    subL: "Subscription", subPer: "/mo", once: "mehiccdev, one time",
+    note: "Compared with a typical booking system subscription. An example, not a specific competitor's price.",
+    rate: 60, total: 915, money: (n: number) => `€${n.toLocaleString("en-US")}`,
   },
 };
 
-function Picker() {
+function CostChart({ d }: { d: (typeof T)["bs"] }) {
+  const reduce = useReducedMotion() ?? false;
+  const [m, setM] = useState(reduce ? MONTHS : 0);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (reduce) { setM(MONTHS); return; }
+    let raf = 0;
+    let start = 0;
+    const tick = (t: number) => {
+      if (!start) start = t;
+      const k = Math.min(1, (t - start) / 2200);
+      setM(Math.round((1 - Math.pow(1 - k, 2)) * MONTHS));
+      if (k < 1) raf = requestAnimationFrame(tick);
+    };
+    const id = window.setTimeout(() => { raf = requestAnimationFrame(tick); }, 450);
+    return () => { window.clearTimeout(id); cancelAnimationFrame(raf); };
+  }, [reduce]);
+
+  const W = 520, H = 240, P = 24;
+  const max = d.rate * MONTHS;
+  const x = (i: number) => P + (i / MONTHS) * (W - P * 2);
+  const y = (v: number) => H - P - (v / max) * (H - P * 2);
+  const cross = Math.ceil(d.total / d.rate);
+  const line = Array.from({ length: m + 1 }, (_, i) => `${i ? "L" : "M"}${x(i).toFixed(1)} ${y(d.rate * i).toFixed(1)}`).join(" ");
+  const flat = `M${x(0)} ${y(d.total)} L${x(Math.max(m, 0.001)).toFixed(1)} ${y(d.total)}`;
+  const past = m >= cross;
+  const labelLeft = x(cross) > W * 0.62;
+
+  return (
+    <div ref={ref} className="rounded-[26px] border border-[#E5E7EB] bg-white p-5 shadow-[0_30px_60px_-34px_rgba(15,23,42,0.35)] sm:p-6">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[13px] font-semibold text-[#0F172A]">{d.chart}</p>
+        <span className="rounded-full bg-[#F1F5F9] px-2.5 py-0.5 text-[12px] font-medium tabular-nums text-[#475569]">{d.month} {m}</span>
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} className="mt-4 w-full" role="img" aria-label={d.chart}>
+        {[0, 0.25, 0.5, 0.75, 1].map((g) => <line key={g} x1={P} x2={W - P} y1={y(max * g)} y2={y(max * g)} stroke="#F1F5F9" />)}
+        <path d={line} fill="none" stroke="#DC2626" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={flat} fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" />
+        <motion.g initial={false} animate={{ opacity: past ? 1 : 0, scale: past ? 1 : 0.6 }} transition={{ duration: 0.35, ease: EASE }}
+                  style={{ transformOrigin: `${x(cross)}px ${y(d.total)}px` }}>
+          <circle cx={x(cross)} cy={y(d.total)} r="9" fill="#0F172A" opacity="0.12" />
+          <circle cx={x(cross)} cy={y(d.total)} r="4.5" fill="#0F172A" />
+          <rect x={labelLeft ? x(cross) - 82 : x(cross) + 10} y={y(d.total) - 34} width="72" height="22" rx="6" fill="#0F172A" />
+          <text x={labelLeft ? x(cross) - 46 : x(cross) + 46} y={y(d.total) - 19} fontSize="11.5" fill="#FFFFFF" fontWeight="600" textAnchor="middle">{d.cross(cross)}</text>
+        </motion.g>
+      </svg>
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <div className="rounded-2xl bg-[#FEF2F2] p-4">
+          <p className="flex items-center gap-1.5 text-[12px] text-[#B91C1C]"><span className="h-2 w-2 rounded-full bg-[#DC2626]" />{d.subL} {d.money(d.rate)}{d.subPer}</p>
+          <p className="mt-1 text-[20px] font-semibold tabular-nums text-[#0F172A] sm:text-[22px]">{d.money(d.rate * m)}</p>
+        </div>
+        <div className="rounded-2xl bg-[#F0FDF4] p-4">
+          <p className="flex items-center gap-1.5 text-[12px] text-[#15803D]"><span className="h-2 w-2 rounded-full bg-[#16A34A]" />{d.once}</p>
+          <p className="mt-1 text-[20px] font-semibold tabular-nums text-[#0F172A] sm:text-[22px]">{d.money(d.total)}</p>
+        </div>
+      </div>
+      <p className="mt-3 text-[12px] leading-relaxed text-[#64748B]">{d.note}</p>
+    </div>
+  );
+}
+
+function PricingHero() {
   const { lang } = useLanguage();
   const d = T[lang === "en" ? "en" : "bs"];
-  const [i, setI] = useState(1);
-  const o = d.opts[i];
+  const reduce = useReducedMotion() ?? false;
+  const rise = (i: number) => (reduce ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6, delay: i * 0.08, ease: EASE } });
+
   return (
-    <>
-      <p className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">{d.q}</p>
-      <div className="mt-3 space-y-2">
-        {d.opts.map((x, k) => (
-          <button key={x.name} type="button" onClick={() => setI(k)}
-            className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left text-[14px] font-semibold transition-colors ${k === i ? "border-[#0F172A] bg-[#0F172A] text-white" : "border-[#E2E8F0] text-[#0F172A] hover:border-[#94A3B8]"}`}>
-            <span className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 ${k === i ? "border-white" : "border-[#CBD5E1]"}`}>{k === i && <span className="h-2 w-2 rounded-full bg-white" />}</span>
-            {x.a}
-          </button>
-        ))}
-      </div>
-      <div className="mt-5 rounded-2xl bg-[#F4F7FB] p-5">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#64748B]">{d.pick}</p>
-          {i === 1 && <span className="rounded-full bg-[#DC2626] px-2.5 py-0.5 text-[11px] font-semibold text-white">{d.popular}</span>}
+    <section className="hero-light relative bg-white">
+      <div className="mx-auto grid max-w-6xl items-center gap-10 px-6 pb-16 pt-32 sm:pt-36 lg:grid-cols-[1.05fr_1fr] lg:gap-12 lg:px-8 lg:pb-20">
+        <div>
+          <motion.span {...rise(0)} className="inline-flex items-center gap-2 rounded-full border border-[#E5E7EB] bg-white px-3 py-1 text-[12.5px] font-medium text-[#0F172A]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#16A34A]" />{d.eyebrow}
+          </motion.span>
+          <motion.h1 {...rise(1)} className="mt-6 text-[42px] font-semibold leading-[1.03] tracking-[-0.04em] text-[#0F172A] sm:text-[56px]">
+            {d.h1}<span className="block text-[#94A3B8]">{d.h1b}</span>
+          </motion.h1>
+          <motion.p {...rise(2)} className="mt-6 max-w-lg text-[16.5px] leading-relaxed text-[#475569] sm:text-[17px]">{d.sub}</motion.p>
+          <motion.div {...rise(3)} className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <a href="#cjenovnik" className="group inline-flex items-center justify-center gap-2 rounded-xl bg-[#DC2626] px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-[#B91C1C]">
+              {d.primary} <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+            </a>
+            <a href="#zakazi" className="inline-flex items-center justify-center rounded-xl border border-[#E5E7EB] bg-white px-6 py-3.5 text-[15px] font-semibold text-[#0F172A] transition-colors hover:bg-[#F9FAFB]">{d.secondary}</a>
+          </motion.div>
+          <motion.ul {...rise(4)} className="mt-8 flex flex-wrap gap-x-6 gap-y-2">
+            {d.trust.map((t) => <li key={t} className="flex items-center gap-2 text-[13.5px] text-[#475569]"><ShieldCheck size={15} className="text-[#16A34A]" />{t}</li>)}
+          </motion.ul>
         </div>
-        <p className="mt-2 text-[22px] font-semibold tracking-[-0.02em] text-[#0F172A]">{o.name}</p>
-        <p className="text-[14px] text-[#475569]"><span className="text-[#64748B]">{d.from}</span> <span className="text-[20px] font-semibold text-[#0F172A]">{o.price}</span> · {d.once}</p>
-        <ul className="mt-3 space-y-1.5">
-          {o.gets.map((g) => <li key={g} className="flex items-center gap-2 text-[13.5px] text-[#334155]"><Check size={15} strokeWidth={2.5} className="text-[#16A34A]" /> {g}</li>)}
-        </ul>
-        <a href="#cjenovnik" className="group mt-4 inline-flex items-center gap-1.5 text-[14px] font-semibold text-[#0F3554] hover:text-[#0F172A]">
-          {d.see} <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-        </a>
+        <motion.div {...rise(2)}><CostChart d={d} /></motion.div>
       </div>
-    </>
+    </section>
   );
 }
 
 export function PricingPage() {
-  const { lang } = useLanguage();
-  const d = T[lang === "en" ? "en" : "bs"];
   return (
     <main className="relative bg-white">
-      <PageHero eyebrow={d.eyebrow} h1={d.h1} h1b={d.h1b} sub={d.sub}
-        primary={{ label: d.primary, href: "#zakazi" }} secondary={{ label: d.secondary, href: "#cjenovnik" }} aside={<Picker />} />
+      <PricingHero />
       <PricingBuilder />
       <Pricing extras />
       <Faq />
