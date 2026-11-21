@@ -9,7 +9,7 @@ export default function Image() {
     eyebrow: "Rješenje za rent-a-car firme",
     h1: "Rezervacioni sistem",
     h2: "za vašu rent\u2011a\u2011car firmu",
-    sub: "Sajt, admin panel i kalendar dostupnosti u jednom. Paketi od 1.400 KM.",
+    sub: "Sajt, admin panel i kalendar dostupnosti u jednom. Paketi od 1.390 KM.",
     chips: ["Bez duplih termina", "Radi 24/7", "Sistem ostaje vaš"],
     phone: "phone-rent.jpg",
   });

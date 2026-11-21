@@ -5,6 +5,7 @@ import { ArrowRight, Check } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import { PageHero } from "@/components/ui/PageHero";
 import { Pricing } from "@/components/sections/Pricing";
+import { PricingBuilder } from "@/components/sections/PricingBuilder";
 import { Savings } from "@/components/sections/Savings";
 import { Faq } from "@/components/sections/Faq";
 import { Booking } from "@/components/sections/Booking";
@@ -16,9 +17,9 @@ const T = {
     primary: "Zakažite poziv", secondary: "Izračunajte isplativost",
     q: "Šta vam treba?", pick: "Preporuka za vas", from: "od", once: "jednom, bez pretplate", see: "Pogledajte paket", popular: "Najčešći izbor",
     opts: [
-      { a: "Jedan alat, npr. evidencija ili katalog", name: "Starter", price: "1.000 KM", gets: ["Radi na telefonu i računaru", "Sami mijenjate sadržaj", "Upiti stižu direktno vama"] },
-      { a: "Online rezervacije i termini", name: "Business", price: "1.800 KM", gets: ["Rezervacije bez duplih termina", "WhatsApp obavijest za svaku", "Na dva jezika"] },
-      { a: "Sistem po mjeri cijelog procesa", name: "Premium", price: "2.800 KM", gets: ["Online plaćanje i depozit", "Lični developer", "Prioritetna podrška"] },
+      { a: "Jedan alat, npr. evidencija ili katalog", name: "Starter", price: "990 KM", gets: ["Radi na telefonu i računaru", "Sami mijenjate sadržaj", "Upiti stižu direktno vama"] },
+      { a: "Online rezervacije i termini", name: "Business", price: "1.790 KM", gets: ["Rezervacije bez duplih termina", "WhatsApp obavijest za svaku", "Na dva jezika"] },
+      { a: "Sistem po mjeri cijelog procesa", name: "Premium", price: "2.890 KM", gets: ["Online plaćanje i depozit", "Lični developer", "Prioritetna podrška"] },
     ],
   },
   en: {
@@ -27,9 +28,9 @@ const T = {
     primary: "Book a call", secondary: "Calculate the return",
     q: "What do you need?", pick: "Our pick for you", from: "from", once: "one time, no subscription", see: "See the plan", popular: "Most popular",
     opts: [
-      { a: "One tool, e.g. records or a catalog", name: "Starter", price: "€500", gets: ["Works on phone and desktop", "You edit the content", "Inquiries come straight to you"] },
-      { a: "Online bookings and appointments", name: "Business", price: "€920", gets: ["Bookings with no double slots", "WhatsApp alert for each one", "In two languages"] },
-      { a: "A system built around your process", name: "Premium", price: "€1,430", gets: ["Online payment and deposit", "Personal developer", "Priority support"] },
+      { a: "One tool, e.g. records or a catalog", name: "Starter", price: "€505", gets: ["Works on phone and desktop", "You edit the content", "Inquiries come straight to you"] },
+      { a: "Online bookings and appointments", name: "Business", price: "€915", gets: ["Bookings with no double slots", "WhatsApp alert for each one", "In two languages"] },
+      { a: "A system built around your process", name: "Premium", price: "€1,480", gets: ["Online payment and deposit", "Personal developer", "Priority support"] },
     ],
   },
 };
@@ -76,7 +77,8 @@ export function PricingPage() {
     <main className="relative bg-white">
       <PageHero eyebrow={d.eyebrow} h1={d.h1} h1b={d.h1b} sub={d.sub}
         primary={{ label: d.primary, href: "#zakazi" }} secondary={{ label: d.secondary, href: "#vrijednost" }} aside={<Picker />} />
-      <Pricing full bare />
+      <PricingBuilder />
+      <Pricing extras />
       <Savings />
       <Faq />
       <Booking />

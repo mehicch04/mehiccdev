@@ -14,7 +14,7 @@ const T = {
     sub: "Sajt, kalendar dostupnosti i admin panel rade zajedno. Gost rezerviše sam, vi potvrđujete jednim klikom, a vozilo se zaključa za te datume.",
     cta: "Pogledajte sistem i cijene",
     priceTag: "Plaćate jednom, sistem ostaje vaš",
-    ctaSub: "Paketi od 1.400 KM, bez mjesečne pretplate",
+    ctaSub: "Paketi od 1.390 KM, bez mjesečne pretplate",
     frameTitle: "Prikaz rezervacijskog sistema za rent a car",
     pause: "Pauza", play: "Pokreni", replay: "Ispočetka",
     ctaPage: "Pogledajte pakete",

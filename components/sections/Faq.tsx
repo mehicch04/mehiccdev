@@ -23,7 +23,7 @@ const T: Record<"bs" | "en", Content> = {
     askBtn: "WhatsApp",
     askMail: "Pošaljite upit",
     items: [
-      { q: "Koliko košta sajt ili aplikacija?", a: "Web aplikacije kreću od 1.000 KM (oko €500) i plaćate ih jednom. Tačnu cijenu dobijete nakon besplatne konsultacije, kad znamo šta vam tačno treba." },
+      { q: "Koliko košta sajt ili aplikacija?", a: "Web aplikacije kreću od 990 KM (oko €505) i plaćate ih jednom. Tačnu cijenu dobijete nakon besplatne konsultacije, kad znamo šta vam tačno treba." },
       { q: "Da li plaćam mjesečnu pretplatu?", a: "Ne. Aplikaciju plaćate jednom i ona je vaša. Održavanje je po želji: 100 KM mjesečno ili 50 KM po satu, samo kad vam zatreba. Hosting se plaća zasebno, po stvarnoj potrošnji." },
       { q: "Koliko traje izrada?", a: "Zavisi od obima posla. Rok dobijete u ponudi nakon konsultacije, a napredak pratite cijelo vrijeme." },
       { q: "Mogu li sam mijenjati tekst, slike i cijene?", a: "Da. Dobijete jednostavan panel i uputstvo, pa za uobičajene izmjene ne trebate programera." },
@@ -40,7 +40,7 @@ const T: Record<"bs" | "en", Content> = {
     askBtn: "WhatsApp",
     askMail: "Send an inquiry",
     items: [
-      { q: "How much does a website or app cost?", a: "Web apps start at €500 (about 1,000 KM) and you pay once. You get an exact price after a free consultation, once we know exactly what you need." },
+      { q: "How much does a website or app cost?", a: "Web apps start at €505 (about 990 KM) and you pay once. You get an exact price after a free consultation, once we know exactly what you need." },
       { q: "Do I pay a monthly subscription?", a: "No. You pay for the app once and it's yours. Maintenance is optional: €50 a month or €25 an hour, only when you need it. Hosting is billed separately, based on actual usage." },
       { q: "How long does it take?", a: "It depends on the scope. You get the deadline in the quote after the consultation, and you can follow the progress the whole time." },
       { q: "Can I change text, photos and prices myself?", a: "Yes. You get a simple panel and a guide, so everyday changes don't need a developer." },

@@ -33,7 +33,7 @@ const T: Record<"bs" | "en", Content> = {
         key: "app", title: "Web aplikacije", tag: "Rezervacije, termini i admin panel", lead: "Aplikacija koja vodi vaš posao",
         desc: "Rezervacije, evidencija klijenata ili interni alat za tim. Sve na jednom mjestu, plaćate jednom i aplikacija je vaša.",
         points: ["Rezervacije, termini i upiti na jednom mjestu", "Admin panel za vas i vaš tim", "Obavijesti na email i WhatsApp", "Plaćate jednom, bez pretplate"],
-        price: "od 1.000 KM", link: "Pogledajte primjer", alt: "Admin panel, Maximum Rent a Car",
+        price: "od 990 KM", link: "Pogledajte primjer", alt: "Admin panel, Maximum Rent a Car",
       },
       {
         key: "web", title: "Sajtovi", tag: "Brz sajt, prvo za telefon", lead: "Sajt koji se vidi i koji sami uređujete",
@@ -73,7 +73,7 @@ const T: Record<"bs" | "en", Content> = {
         key: "app", title: "Web apps", tag: "Bookings, scheduling and an admin panel", lead: "An app that runs your business",
         desc: "Bookings, client records or an internal tool for your team. All in one place, you pay once and the app is yours.",
         points: ["Bookings, appointments and inquiries in one place", "Admin panel for you and your team", "Email and WhatsApp alerts", "Pay once, no subscription"],
-        price: "from €500", link: "See an example", alt: "Admin panel, Maximum Rent a Car",
+        price: "from €505", link: "See an example", alt: "Admin panel, Maximum Rent a Car",
       },
       {
         key: "web", title: "Websites", tag: "Fast and built for phones first", lead: "A site people find and you edit yourself",

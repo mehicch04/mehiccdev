@@ -71,7 +71,7 @@ const PRICING: Record<"bs" | "en", PricingData> = {
     apps: [
       {
         name: "Starter", tag: "Jedan alat koji rješava jedan problem, npr. evidencija ili jednostavan katalog.",
-        price: "1.000 KM", alt: "oko €500", from: true, monthly: "50", gift: "Start",
+        price: "990 KM", alt: "oko €505", from: true, monthly: "50", gift: "Start",
         features: [
           "Jedna glavna funkcija (npr. katalog vozila ili evidencija klijenata)",
           "Vi i vaš tim se prijavljujete lozinkom",
@@ -83,7 +83,7 @@ const PRICING: Record<"bs" | "en", PricingData> = {
       },
       {
         name: "Business", tag: "Web aplikacija za rezervacije i termine. Gost bira datum i šalje upit, vi potvrđujete iz panela. Za sve što se iznajmljuje ili zakazuje.",
-        price: "1.800 KM", alt: "oko €920", from: true, ctaLabel: "Zakažimo razgovor", monthly: "75", gift: "Rast",
+        price: "1.790 KM", alt: "oko €915", from: true, ctaLabel: "Zakažimo razgovor", monthly: "75", gift: "Rast",
         features: [
           "2 mjeseca besplatne podrške nakon isporuke, za sve nejasnoće i probleme",
           "SVE iz Startera, plus:",
@@ -98,7 +98,7 @@ const PRICING: Record<"bs" | "en", PricingData> = {
       },
       {
         name: "Premium", tag: "Aplikacija bez ograničenja, kreirana tačno oko vašeg procesa.",
-        price: "2.800 KM", alt: "oko €1.430", monthly: "100", from: true, gift: "Dominacija",
+        price: "2.890 KM", alt: "oko €1.480", monthly: "100", from: true, gift: "Dominacija",
         features: [
           "SVE iz Business paketa, plus:",
           "Neograničeni dijelovi i funkcije po vašoj želji",
@@ -203,7 +203,7 @@ const PRICING: Record<"bs" | "en", PricingData> = {
     apps: [
       {
         name: "Starter", tag: "One tool that solves one problem, e.g. records or a simple catalog.",
-        price: "€500", alt: "about 1,000 KM", from: true, monthly: "50", gift: "Start",
+        price: "€505", alt: "about 990 KM", from: true, monthly: "50", gift: "Start",
         features: [
           "One main feature (e.g. vehicle catalog or client records)",
           "You and your team log in with a password",
@@ -215,7 +215,7 @@ const PRICING: Record<"bs" | "en", PricingData> = {
       },
       {
         name: "Business", tag: "A web app for bookings and appointments. The guest picks a date and sends a request, you confirm it from the panel. For anything you rent out or schedule.",
-        price: "€920", alt: "about 1,800 KM", from: true, ctaLabel: "Let\u0027s talk", monthly: "75", gift: "Growth",
+        price: "€915", alt: "about 1,790 KM", from: true, ctaLabel: "Let\u0027s talk", monthly: "75", gift: "Growth",
         features: [
           "2 months of free support after launch, for any questions or issues",
           "EVERYTHING in Starter, plus:",
@@ -230,7 +230,7 @@ const PRICING: Record<"bs" | "en", PricingData> = {
       },
       {
         name: "Premium", tag: "An app without limits, built exactly around your process.",
-        price: "€1,430", alt: "about 2,800 KM", monthly: "100", from: true, gift: "Domination",
+        price: "€1,480", alt: "about 2,890 KM", monthly: "100", from: true, gift: "Domination",
         features: [
           "EVERYTHING in Business, plus:",
           "Unlimited parts and features to your spec",
@@ -400,7 +400,7 @@ function CompareBlock({ open, setOpen, d, rows, names, reduce }: { open: boolean
   );
 }
 
-export function Pricing({ full = false, bare = false }: { full?: boolean; bare?: boolean }) {
+export function Pricing({ full = false, bare = false, extras = false }: { full?: boolean; bare?: boolean; extras?: boolean }) {
   const { lang } = useLanguage();
   const d = PRICING[(lang as "bs" | "en")] ?? PRICING.bs;
   const reduce = useReducedMotion() ?? false;
@@ -417,6 +417,63 @@ export function Pricing({ full = false, bare = false }: { full?: boolean; bare?:
     exit: { opacity: 0, y: -10 },
     transition: { duration: reduce ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] as const },
   };
+
+  const after = (
+              <div id="odrzavanje" className={`mx-auto max-w-5xl scroll-mt-24 ${extras ? "" : "mt-16"}`}>
+                <p className="text-center text-[13px] font-semibold uppercase tracking-[0.14em] text-[#8FB3D9]">{d.afterHeading}</p>
+                <h3 className="mt-3 text-center text-[26px] font-semibold tracking-[-0.02em] text-white sm:text-[32px]">
+                  {d.afterTitle} <span className="text-[#4ADE80]">{d.afterAccent}</span>
+                </h3>
+                <p className="mx-auto mt-3 max-w-xl text-center text-[14.5px] leading-relaxed text-[#94A3B8]">{d.afterSub}</p>
+                <div className="mt-8">
+                <Swipe bp="md" dark grid="md:grid-cols-3 md:gap-4" item="w-[82%] sm:w-[60%]">
+                  {d.afterBoxes.map((b, i) => {
+                    const Icon = AFTER_ICONS[i];
+                    return (
+                      <div key={b.label}
+                           className={`relative flex h-full flex-col rounded-[20px] border p-6 transition-transform duration-300 md:hover:-translate-y-1 ${b.free ? "border-[#4ADE80]/40 bg-[#16A34A]/[0.10]" : "border-white/[0.08] bg-white/[0.03]"}`}>
+                        {b.free && <span className="absolute right-4 top-4 rounded-full bg-[#16A34A] px-2.5 py-0.5 text-[11px] font-semibold text-white">{d.defaultTag}</span>}
+                        <span className={`grid h-10 w-10 place-items-center rounded-xl ${b.free ? "bg-[#16A34A] text-white" : "bg-white/[0.06] text-white"}`}><Icon size={18} /></span>
+                        <p className="mt-4 text-[14px] font-semibold text-white">{b.label}</p>
+                        <p className="mt-1 flex items-baseline gap-1.5">
+                          <span className={`text-[28px] font-semibold tracking-tight tabular-nums ${b.free ? "text-[#4ADE80]" : "text-white"}`}>{b.price}</span>
+                          <span className="text-[13px] text-[#94A3B8]">{b.per}</span>
+                          {b.alt && <span className="text-[12px] text-[#64748B]">· {b.alt}</span>}
+                        </p>
+                        <p className="mt-2 text-[13px] leading-relaxed text-[#94A3B8]">{b.sub}</p>
+                      </div>
+                    );
+                  })}
+                </Swipe>
+                </div>
+                <p className="mt-5 text-center text-[13px] text-[#CBD5E1]"><Gift size={14} className="mr-1.5 inline -translate-y-px text-[#4ADE80]" />{d.afterGift}</p>
+                <p className="mt-2 text-center text-[12.5px] text-[#64748B]">{d.hostingNote}</p>
+              </div>
+  );
+
+  if (extras) {
+    return (
+      <section id="odrzavanje-marketing" data-dark className="relative scroll-mt-24 overflow-hidden py-20 sm:py-24"
+               style={{ background: "linear-gradient(180deg, #0B1324 0%, #0F172A 50%, #0B1324 100%)" }}>
+        <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
+          {after}
+          <div className="mt-24">
+            <Head dark eyebrow={d.mktEyebrow} h={d.mktHeading} sub={d.mktSubtitle} />
+            <div className="mt-12">
+              <Swipe bp="lg" dark grid="lg:grid-cols-3 lg:items-stretch lg:gap-5" item="w-[86%] sm:w-[58%]">
+                {d.mkt.map((plan, i) => (
+                  <PlanCard key={plan.name} icon={MKT_ICONS[i]} featured={i === 1} d={d}
+                    plan={{ name: plan.name, tag: plan.tag, price: plan.price, alt: plan.alt, per: d.perMonth, note: plan.note, features: plan.features, cta: d.mktCta }} />
+                ))}
+              </Swipe>
+            </div>
+            <CompareBlock open={open} setOpen={setOpen} d={d} rows={d.compareMkt} names={d.mkt.map((x) => x.name)} reduce={reduce} />
+            <p className="mx-auto mt-6 max-w-2xl text-center text-[13px] leading-relaxed text-[#94A3B8]">{d.mktNote}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="cjenovnik" data-dark className="relative scroll-mt-24 overflow-hidden"
@@ -460,38 +517,7 @@ export function Pricing({ full = false, bare = false }: { full?: boolean; bare?:
               {full && <CompareBlock open={open} setOpen={setOpen} d={d} rows={d.compareApps} names={d.apps.map((x) => x.name)} reduce={reduce} />}
               <p className="mx-auto mt-6 max-w-2xl text-center text-[13px] leading-relaxed text-[#94A3B8]">{d.appNote}</p>
 
-              {full && (
-              <div id="odrzavanje" className="mx-auto mt-16 max-w-5xl scroll-mt-24">
-                <p className="text-center text-[13px] font-semibold uppercase tracking-[0.14em] text-[#8FB3D9]">{d.afterHeading}</p>
-                <h3 className="mt-3 text-center text-[26px] font-semibold tracking-[-0.02em] text-white sm:text-[32px]">
-                  {d.afterTitle} <span className="text-[#4ADE80]">{d.afterAccent}</span>
-                </h3>
-                <p className="mx-auto mt-3 max-w-xl text-center text-[14.5px] leading-relaxed text-[#94A3B8]">{d.afterSub}</p>
-                <div className="mt-8">
-                <Swipe bp="md" dark grid="md:grid-cols-3 md:gap-4" item="w-[82%] sm:w-[60%]">
-                  {d.afterBoxes.map((b, i) => {
-                    const Icon = AFTER_ICONS[i];
-                    return (
-                      <div key={b.label}
-                           className={`relative flex h-full flex-col rounded-[20px] border p-6 transition-transform duration-300 md:hover:-translate-y-1 ${b.free ? "border-[#4ADE80]/40 bg-[#16A34A]/[0.10]" : "border-white/[0.08] bg-white/[0.03]"}`}>
-                        {b.free && <span className="absolute right-4 top-4 rounded-full bg-[#16A34A] px-2.5 py-0.5 text-[11px] font-semibold text-white">{d.defaultTag}</span>}
-                        <span className={`grid h-10 w-10 place-items-center rounded-xl ${b.free ? "bg-[#16A34A] text-white" : "bg-white/[0.06] text-white"}`}><Icon size={18} /></span>
-                        <p className="mt-4 text-[14px] font-semibold text-white">{b.label}</p>
-                        <p className="mt-1 flex items-baseline gap-1.5">
-                          <span className={`text-[28px] font-semibold tracking-tight tabular-nums ${b.free ? "text-[#4ADE80]" : "text-white"}`}>{b.price}</span>
-                          <span className="text-[13px] text-[#94A3B8]">{b.per}</span>
-                          {b.alt && <span className="text-[12px] text-[#64748B]">· {b.alt}</span>}
-                        </p>
-                        <p className="mt-2 text-[13px] leading-relaxed text-[#94A3B8]">{b.sub}</p>
-                      </div>
-                    );
-                  })}
-                </Swipe>
-                </div>
-                <p className="mt-5 text-center text-[13px] text-[#CBD5E1]"><Gift size={14} className="mr-1.5 inline -translate-y-px text-[#4ADE80]" />{d.afterGift}</p>
-                <p className="mt-2 text-center text-[12.5px] text-[#64748B]">{d.hostingNote}</p>
-              </div>
-              )}
+              {full && after}
             </motion.div>
           ) : (
             <motion.div key="mkt" {...swap}>

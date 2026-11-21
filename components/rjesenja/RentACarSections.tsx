@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowRight, ArrowUpRight, Check, X, Plus, Car, CarFront, Building2, CalendarClock, Wrench, ShieldCheck } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, X, Plus, CalendarClock, Wrench, ShieldCheck } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import { COPY, type RcCopy } from "@/components/rjesenja/rentACarCopy";
 import { RcForm } from "@/components/rjesenja/RcForm";
@@ -9,9 +9,8 @@ import { RcCompare } from "@/components/rjesenja/RcCompare";
 import { SystemDemo } from "@/components/sections/SystemDemo";
 import { Value } from "@/components/sections/Value";
 import { Booking } from "@/components/sections/Booking";
-import { Backdrop, Head, Fade, BrowserFrame, PlanCard, SOFT } from "@/components/ui/kit";
-
-const PLAN_ICONS = [Car, CarFront, Building2];
+import { Backdrop, Head, Fade, BrowserFrame, SOFT } from "@/components/ui/kit";
+import { PricingBuilder } from "@/components/sections/PricingBuilder";
 
 function Hero({ c }: { c: RcCopy }) {
   const h = c.hero;
@@ -166,26 +165,8 @@ function Packages({ c }: { c: RcCopy }) {
     <section id="paketi" className="relative bg-white scroll-mt-24">
       <div className="mx-auto max-w-6xl px-6 lg:px-8">
         <Head label={p.label} h={p.heading1} accent={p.headingAccent} />
-        <div className="mt-12 grid gap-6 lg:grid-cols-3 lg:items-stretch">
-          {p.items.map((it, i) => (
-            <PlanCard
-              key={it.name}
-              icon={PLAN_ICONS[i]}
-              name={it.name}
-              tag={it.size}
-              price={it.price}
-              alt={it.priceNote}
-              note={it.perDay}
-              promo={"bonus" in it ? `${it.bonus} · ${it.bonusNote}` : undefined}
-              features={[...it.features]}
-              foot={it.catch}
-              cta={it.cta}
-              href="#upit"
-              badge={i === 1 ? p.recommended : undefined}
-              variant={i === 1 ? "dark" : "plain"}
-              free={p.free}
-            />
-          ))}
+        <div className="mt-12">
+          <PricingBuilder embed fixed="rc" cta="#upit" id="rc-paketi" heading={false} />
         </div>
         <p className="mx-auto mt-6 max-w-2xl text-center text-[13px] text-[#64748B]">{p.note}</p>
 

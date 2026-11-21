@@ -4,7 +4,7 @@ import { Clients }    from "@/components/sections/Clients";
 import { Portfolio }  from "@/components/sections/Portfolio";
 import { Services }   from "@/components/sections/Services";
 import { Process }    from "@/components/sections/Process";
-import { Pricing }    from "@/components/sections/Pricing";
+import { PricingBuilder } from "@/components/sections/PricingBuilder";
 import { Savings }    from "@/components/sections/Savings";
 import { Faq }        from "@/components/sections/Faq";
 import { Booking }    from "@/components/sections/Booking";
@@ -19,7 +19,7 @@ export default function HomePage() {
       <Portfolio />
       <Services />
       <Process />
-      <Pricing />
+      <PricingBuilder />
       <Savings />
       <Faq />
       <Booking />
