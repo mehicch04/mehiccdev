@@ -169,7 +169,7 @@ export function SpeedProof() {
     <div ref={ref} className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-16">
       <motion.div initial={{ opacity: 0, y: 24 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7, ease: EASE }}>
         <span className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#94A3B8]">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#DC2626] shadow-[0_0_0_4px_rgba(220,38,38,0.18)]" />{d.label}
+          <span className="h-1.5 w-1.5 rounded-full bg-[#DC2626]" />{d.label}
         </span>
         <h3 className="mt-5 text-[38px] font-semibold leading-[1.04] tracking-[-0.035em] text-white sm:text-[54px]" style={{ textWrap: "balance" }}>
           {d.h}<br /><span className="bg-gradient-to-r from-[#FB7185] to-[#DC2626] bg-clip-text text-transparent">{d.accent}</span>
@@ -179,7 +179,7 @@ export function SpeedProof() {
           {d.gauges.map(([v, g]) => <Gauge key={g} v={v} l={g} on={inView} />)}
         </div>
         <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
-          <a href="#zakazi" className="inline-flex items-center gap-2 rounded-xl bg-[#DC2626] px-5 py-3.5 text-[14.5px] font-semibold text-white shadow-[0_12px_28px_-10px_rgba(220,38,38,0.7)] transition-colors hover:bg-[#B91C1C]">
+          <a href="#zakazi" className="inline-flex items-center gap-2 rounded-xl bg-[#DC2626] px-5 py-3.5 text-[14.5px] font-semibold text-white transition-colors hover:bg-[#B91C1C]">
             {d.cta} <ArrowRight size={15} />
           </a>
           <a href="https://pagespeed.web.dev" target="_blank" rel="noopener noreferrer"

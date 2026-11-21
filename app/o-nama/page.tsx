@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <>
-      <Navbar />
+      <Navbar overDark />
       <AboutPage />
       <Footer />
     </>

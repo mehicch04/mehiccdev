@@ -405,7 +405,7 @@ export function Services() {
   const header = (
     <div>
       <span className="inline-flex items-center gap-2.5 rounded-full border border-[#E2E8F0] bg-white px-3.5 py-1.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#64748B]">
-        <span className="h-1.5 w-1.5 rounded-full bg-[#DC2626] shadow-[0_0_0_4px_rgba(220,38,38,0.15)]" />{d.label}
+        <span className="h-1.5 w-1.5 rounded-full bg-[#DC2626]" />{d.label}
       </span>
       <h2 className="mt-5 text-[34px] font-semibold leading-[1.06] tracking-[-0.035em] text-[#0F172A] sm:text-[46px]" style={{ textWrap: "balance" }}>
         {d.h} <span className="text-[#0F3554]">{d.accent}</span>

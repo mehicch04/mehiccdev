@@ -311,7 +311,7 @@ html[data-most] .most-sil { opacity: 0.94; transition: none; }
 html[data-most] .most-box > img { filter: brightness(0.38) saturate(0.55); transition: none; }
 .most-hero { transition: background-color 1.6s cubic-bezier(0.3, 0.6, 0.2, 1); }
 html[data-most] .most-hero { background-color: #040913; transition: none; }
-.most-draw { stroke-dasharray: 1; stroke-dashoffset: 0; opacity: 0; transition: opacity 1.1s ease 0.25s; filter: drop-shadow(0 0 4px rgba(244, 183, 106, 0.85)); }
+.most-draw { stroke-dasharray: 1; stroke-dashoffset: 0; opacity: 0; transition: opacity 1.1s ease 0.25s; }
 html[data-most] .most-draw { opacity: 1; stroke-dashoffset: 1; animation: most-draw 1.25s cubic-bezier(0.65, 0, 0.25, 1) var(--d, 0.25s) forwards; transition: none; }
 @keyframes most-draw { to { stroke-dashoffset: 0; } }
 .most-brand { opacity: 0; transform: translateY(-6px) scale(0.98); transition: opacity 0.5s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); pointer-events: none; }

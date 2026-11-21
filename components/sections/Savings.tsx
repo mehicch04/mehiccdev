@@ -269,7 +269,7 @@ export function Savings() {
                   <motion.line x1="0" x2={W} initial={false} animate={{ y1: costY, y2: costY }} transition={tr} stroke="#DC2626" strokeWidth="2" strokeDasharray="6 6" vectorEffect="non-scaling-stroke" />
                 </svg>
                 {paidX !== null && (
-                  <motion.span className="absolute z-10 -ml-2 -mt-2 h-4 w-4 rounded-full border-[3.5px] border-[#16A34A] bg-white shadow-[0_0_0_6px_rgba(22,163,74,0.15)]"
+                  <motion.span className="absolute z-10 -ml-2 -mt-2 h-4 w-4 rounded-full border-[3.5px] border-[#16A34A] bg-white"
                     initial={false} animate={{ left: `${paidX * 100}%`, top: `${(costY / H) * 100}%` }} transition={tr} />
                 )}
               </div>

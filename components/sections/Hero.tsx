@@ -520,7 +520,7 @@ export function Hero() {
       <div ref={top} className="most-top relative z-10 order-1 mx-auto w-full max-w-5xl px-5 pt-[92px] sm:px-6 sm:text-center lg:pt-[96px]">
         <div className="most-in" style={{ "--d": "0.05s" } as CSSProperties}>
           <span className="inline-flex h-8 items-center gap-2.5 rounded-full border border-white/[0.14] bg-[#050913]/40 pl-3 pr-3.5 text-[13px] font-medium text-[#CBD5E1]">
-            <span className="relative h-2 w-2 rounded-full bg-[#16A34A]" style={{ boxShadow: "0 0 0 4px rgba(22,163,74,0.25)" }} />
+            <span className="relative h-2 w-2 rounded-full bg-[#16A34A]" />
             {d.status}
             <span className="text-[#7C8BA1]">· {d.city}</span>
           </span>
@@ -543,7 +543,7 @@ export function Hero() {
         <div className="most-in mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center" style={{ "--d": "0.32s" } as CSSProperties}>
           <a href="#zakazi"
              className="cta-primary inline-flex h-[52px] items-center justify-center gap-2.5 rounded-[14px] bg-[#DC2626] px-6 text-[15.5px] font-semibold text-white transition-colors duration-200 hover:bg-[#B91C1C] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:h-[54px]"
-             style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.18), 0 12px 26px -12px rgba(220,38,38,0.7)" }}>
+            >
             {d.cta}
             <ArrowRight size={17} />
           </a>
@@ -625,7 +625,7 @@ export function Hero() {
       {ready && (
         <>
           <Feed side="l" title={d.customers} rows={left} d={d}
-                badge={<><span className="h-2 w-2 rounded-full bg-[#16A34A]" style={{ boxShadow: "0 0 0 3px rgba(22,163,74,0.28)" }} />{d.onBridge(inc)}</>} />
+                badge={<><span className="h-2 w-2 rounded-full bg-[#16A34A]" />{d.onBridge(inc)}</>} />
           <Feed side="r" title={d.system} rows={right} d={d}
                 badge={<><Check size={12} strokeWidth={3} />{d.handled(done)}</>} />
         </>

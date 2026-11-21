@@ -286,7 +286,7 @@ function Row({ name, bars, compact, grow }: { name: string; bars: Bar[]; compact
                 style={{
                   width: `calc(${n * 100}% + ${n - 1}px - 4px)`,
                   background: bar.kind === "s" ? "repeating-linear-gradient(135deg,#E2E8F0 0 6px,#F1F5F9 6px 12px)" : undefined,
-                  boxShadow: bar.kind === "g" ? "0 0 0 3px rgba(74,222,128,0.25)" : undefined,
+                  
                 }}>
                 {bar.label}
               </motion.span>
@@ -450,7 +450,7 @@ export function RcCompare() {
           {L.chat && <Chat d={d} b={L.chat} />}
           {L.c && <Note text={d.notes[2]} b={L.c} tone="g" />}
           <Inbox d={d} b={L.ntf} show={L.show} tick={tick} />
-          <span style={pos(L.dup, { boxShadow: "0 8px 18px -8px rgba(220,38,38,0.6)" })} className="z-[5] rounded-[7px] bg-[#DC2626] px-[9px] py-[5px] text-[11px] font-bold text-white">{d.dup}</span>
+          <span style={pos(L.dup, {})} className="z-[5] rounded-[7px] bg-[#DC2626] px-[9px] py-[5px] text-[11px] font-bold text-white">{d.dup}</span>
           <Note text={d.notes[0]} b={L.a} tone="y" />
         </Canvas>
       </div>
