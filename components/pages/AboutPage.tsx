@@ -23,7 +23,7 @@ const T = {
     eyebrow: "O nama · Mostar",
     h1: "Iskustvo iz Amerike i Japana.",
     h1b: "Standard za naše tržište.",
-    sub: "Radili smo za digitalne agencije iz New Yorka, Los Angelesa i San Diega i za japansku firmu Mozmene iz Yokohame, na sistemima koji moraju raditi godinama bez zastoja. To znanje smo donijeli kući i pretvorili u sistem koji domaćim firmama nudimo po domaćim cijenama.",
+    sub: "Radili smo za američku agenciju Conspire iz Los Angelesa i njene partnere iz New Yorka i San Diega, kao i za japansku firmu Mozmene iz Yokohame, na sistemima koji moraju raditi godinama bez zastoja. To znanje smo donijeli kući i pretvorili u sistem koji domaćim firmama nudimo po domaćim cijenama.",
     name: "Bakir Mehić", role: ["Osnivač mehiccdev-a", "QA i Lead Developer"], li: "LinkedIn profil",
     primary: "Kako bi radilo kod mene?", secondary: "Isporučeni projekti",
     careLabel: "Uključeno u svaki sistem",
@@ -43,7 +43,7 @@ const T = {
     eyebrow: "About · Mostar",
     h1: "Experience from the US and Japan.",
     h1b: "A standard for our market.",
-    sub: "We worked for digital agencies from New York, Los Angeles and San Diego and for Mozmene, a Japanese company from Yokohama, on systems that have to run for years without downtime. We brought that knowledge home and turned it into a system we offer local companies at local prices.",
+    sub: "We worked for Conspire, a US agency from Los Angeles, and its partners in New York and San Diego, as well as for Mozmene, a Japanese company from Yokohama, on systems that have to run for years without downtime. We brought that knowledge home and turned it into a system we offer local companies at local prices.",
     name: "Bakir Mehić", role: ["Founder of mehiccdev", "QA and Lead Developer"], li: "LinkedIn profile",
     primary: "How would it work for me?", secondary: "Delivered projects",
     careLabel: "Included with every system",
@@ -77,16 +77,16 @@ const FLAG: Record<Spot, Flag> = { ny: "us", la: "us", sd: "us", yo: "jp", mo: "
 const TONE: Record<Flag, { pin: string; text: string }> = { us: { pin: "#DC2626", text: "#F87171" }, jp: { pin: "#F59E0B", text: "#FBBF24" }, ba: { pin: "#16A34A", text: "#4ADE80" } };
 const SPOT_TXT: Record<"bs" | "en", Record<Spot, { c: string; n: string; t: string; d: string; y: string }>> = {
   bs: {
-    ny: { c: "New York", n: "SAD", t: "Digitalna agencija", d: "QA i razvoj web aplikacija", y: "2023 do 2025" },
-    la: { c: "Los Angeles", n: "SAD", t: "Digitalna agencija", d: "Testiranje sistema prije objave", y: "2023 do 2025" },
-    sd: { c: "San Diego", n: "SAD", t: "Digitalna agencija", d: "QA za klijentske platforme", y: "2023 do 2025" },
+    ny: { c: "New York", n: "SAD", t: "Partneri Conspire-a", d: "QA za web shopove klijenata", y: "2023 do 2025" },
+    la: { c: "Los Angeles", n: "SAD", t: "Conspire Agency", d: "QA i razvoj Shopify Plus prodavnica", y: "2023 do 2025" },
+    sd: { c: "San Diego", n: "SAD", t: "Partneri Conspire-a", d: "Testiranje e-commerce platformi", y: "2023 do 2025" },
     yo: { c: "Yokohama", n: "Japan", t: "Mozmene", d: "Freelance QA", y: "freelance" },
     mo: { c: "Mostar", n: "BiH", t: "mehiccdev", d: "Isti standard za domaće firme", y: "od 2025" },
   },
   en: {
-    ny: { c: "New York", n: "USA", t: "Digital agency", d: "QA and web app development", y: "2023 to 2025" },
-    la: { c: "Los Angeles", n: "USA", t: "Digital agency", d: "Testing systems before launch", y: "2023 to 2025" },
-    sd: { c: "San Diego", n: "USA", t: "Digital agency", d: "QA for client platforms", y: "2023 to 2025" },
+    ny: { c: "New York", n: "USA", t: "Conspire partners", d: "QA for client web shops", y: "2023 to 2025" },
+    la: { c: "Los Angeles", n: "USA", t: "Conspire Agency", d: "QA and development of Shopify Plus stores", y: "2023 to 2025" },
+    sd: { c: "San Diego", n: "USA", t: "Conspire partners", d: "Testing e-commerce platforms", y: "2023 to 2025" },
     yo: { c: "Yokohama", n: "Japan", t: "Mozmene", d: "Freelance QA", y: "freelance" },
     mo: { c: "Mostar", n: "BiH", t: "mehiccdev", d: "The same standard for local firms", y: "since 2025" },
   },
@@ -206,7 +206,7 @@ function AboutHero({ go }: { go: boolean }) {
   const lg = useLg();
   const ref = useRef<HTMLElement>(null);
   const seen = useInView(ref, { amount: 0.2 });
-  const [on, setOn] = useState<Spot>("ny");
+  const [on, setOn] = useState<Spot>("la");
   const [hold, setHold] = useState(false);
   const live = go && seen && !reduce;
   useEffect(() => {

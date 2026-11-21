@@ -1,5 +1,5 @@
 import { Navbar }     from "@/components/sections/Navbar";
-import { Hero }       from "@/components/sections/Hero";
+import { HeroWorld }  from "@/components/sections/HeroWorld";
 import { Clients }    from "@/components/sections/Clients";
 import { Portfolio }  from "@/components/sections/Portfolio";
 import { Services }   from "@/components/sections/Services";
@@ -15,7 +15,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <MapIntro />
       <Navbar overDark />
-      <Hero />
+      <HeroWorld />
       <Clients />
       <Portfolio />
       <Services />
