@@ -196,17 +196,19 @@ function Feed({ side, title, badge, rows, d }: { side: "l" | "r"; title: string;
         <span className="whitespace-nowrap text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[#8A9AB2]">{title}</span>
         <span className="flex items-center gap-1.5 whitespace-nowrap text-[11.5px] font-semibold text-[#4ADE80]">{badge}</span>
       </div>
-      <div>
-        <AnimatePresence initial={false}>
-          {rows.map((r) => {
+      <div className="relative h-[165px] overflow-hidden">
+        <AnimatePresence initial={false} mode="popLayout">
+          {rows.map((r, idx) => {
             const it = ITEMS[r.i];
             const tx = d.items[r.i];
             const I = side === "l" ? SRC[it.src].I : OUT[it.out];
             return (
-              <motion.div key={r.id} layout initial={{ opacity: 0, y: -8, backgroundColor: "rgba(74,222,128,0.14)" }}
-                          animate={{ opacity: 1, y: 0, backgroundColor: "rgba(74,222,128,0)" }} exit={{ opacity: 0 }}
-                          transition={{ duration: 0.45, ease: EASE, backgroundColor: { duration: 2.4 } }}
-                          className="flex items-center gap-2.5 border-t border-white/[0.07] px-3 py-[9px] first:border-t-0">
+              <motion.div key={r.id} layout="position"
+                          initial={{ opacity: 0, y: -18, backgroundColor: "rgba(74,222,128,0.10)" }}
+                          animate={{ opacity: 1, y: 0, backgroundColor: "rgba(74,222,128,0)" }}
+                          exit={{ opacity: 0, y: 10, transition: { duration: 0.5, ease: EASE } }}
+                          transition={{ duration: 0.9, ease: EASE, opacity: { duration: 0.7, delay: 0.15 }, backgroundColor: { duration: 3 }, layout: { duration: 0.9, ease: EASE } }}
+                          className={`flex h-[55px] items-center gap-2.5 px-3 ${idx > 0 ? "border-t border-white/[0.07]" : ""}`}>
                 <span className="grid h-[26px] w-[26px] shrink-0 place-items-center rounded-[8px] text-white" style={{ background: side === "l" ? SRC[it.src].c : "#16A34A" }}>
                   <I size={13} strokeWidth={2.4} />
                 </span>
@@ -241,6 +243,8 @@ export function Hero() {
   const paused = useRef(false);
   const visible = useRef(true);
   const acc = useRef(START);
+  const live = useRef(0);
+  const speed = useRef(1);
   const nextId = useRef(100);
 
   const [lit, setLit] = useState(false);
@@ -374,6 +378,7 @@ export function Hero() {
       if (k.prev >= 0 && k.prev < 0.96 && t >= 0.96) {
         setRight((rows) => [{ id: nextId.current++, i, time: clock(stamp) }, ...rows.filter((r) => r.i !== i)].slice(0, 3));
         setDone((v) => v + 1);
+        live.current += 1;
       }
       if (ok !== k.ok) {
         k.ok = ok;
@@ -419,7 +424,9 @@ export function Hero() {
       const dt = Math.min(64, t - last);
       last = t;
       if (!paused.current && visible.current && !reduce) {
-        acc.current += dt;
+        const target = live.current >= 10 ? 0.45 : 1;
+        speed.current += (target - speed.current) * Math.min(1, dt / 2500);
+        acc.current += dt * speed.current;
         draw();
       }
       raf = requestAnimationFrame(loop);
