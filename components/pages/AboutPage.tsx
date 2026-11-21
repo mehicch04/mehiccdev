@@ -65,7 +65,8 @@ type Spot = "ny" | "la" | "sd" | "yo" | "mo";
 type Flag = "us" | "jp" | "ba";
 const SPOTS: Spot[] = ["ny", "la", "sd", "yo", "mo"];
 const VB = { x: 60, y: 30, w: 880, h: 440 };
-const PT: Record<Spot, readonly [number, number]> = { ny: W_CITIES.ny, la: [W_CITIES.la[0] - 4, W_CITIES.la[1] - 7], sd: [W_CITIES.sd[0] + 6, W_CITIES.sd[1] + 9], yo: W_CITIES.yo, mo: W_CITIES.mo };
+const PT: Record<Spot, readonly [number, number]> = { ny: W_CITIES.ny, la: [W_CITIES.la[0] - 9, W_CITIES.la[1] - 13], sd: [W_CITIES.sd[0] + 9, W_CITIES.sd[1] + 15], yo: W_CITIES.yo, mo: W_CITIES.mo };
+const LBL: Record<Spot, { dx: number; dy: number; a: "start" | "end" | "middle" }> = { ny: { dx: 12, dy: -10, a: "start" }, la: { dx: -13, dy: -4, a: "end" }, sd: { dx: 10, dy: 20, a: "start" }, yo: { dx: -13, dy: 5, a: "end" }, mo: { dx: 0, dy: -15, a: "middle" } };
 const FLAG: Record<Spot, Flag> = { ny: "us", la: "us", sd: "us", yo: "jp", mo: "ba" };
 const TONE: Record<Flag, { pin: string; text: string }> = { us: { pin: "#DC2626", text: "#F87171" }, jp: { pin: "#F59E0B", text: "#FBBF24" }, ba: { pin: "#16A34A", text: "#4ADE80" } };
 const SPOT_TXT: Record<"bs" | "en", Record<Spot, { c: string; n: string; t: string; d: string; y: string }>> = {
@@ -129,11 +130,13 @@ function WorldMap({ on, pick, go, live, fade = false }: { on: Spot; pick: (k: Sp
         const act = on === k;
         return (
           <g key={k} className="cursor-pointer" onPointerEnter={(e) => { if (e.pointerType === "mouse") pick(k); }} onClick={() => pick(k)}>
-            <circle cx={x} cy={y} r={20} fill="transparent" />
+            <circle cx={x} cy={y} r={k === "la" || k === "sd" ? 12 : 18} fill="transparent" />
             <motion.circle cx={x} cy={y} fill="none" stroke={TONE[FLAG[k]].pin} strokeWidth={2} initial={false}
               animate={act && live ? { r: [7, 20], opacity: [0.7, 0] } : { r: 7, opacity: 0 }}
               transition={act && live ? { duration: 1.6, repeat: Infinity, ease: "easeOut" } : { duration: 0.2 }} />
             <motion.circle cx={x} cy={y} fill={TONE[FLAG[k]].pin} stroke="#FFFFFF" strokeWidth={2.5} initial={false} animate={{ r: act ? 8 : 6 }} transition={{ duration: 0.3, ease: EASE }} />
+            <text x={x + LBL[k].dx} y={y + LBL[k].dy} textAnchor={LBL[k].a} fontSize={act ? 14 : 12.5} fontWeight={act ? 700 : 500}
+              fill={act ? "#FFFFFF" : "#94A3B8"} stroke="#0B1324" strokeWidth={4} paintOrder="stroke" style={{ transition: "fill 0.3s, font-size 0.3s" }}>{SPOT_TXT.bs[k].c}</text>
           </g>
         );
       })}
@@ -205,14 +208,14 @@ function AboutHero({ go }: { go: boolean }) {
         </motion.div>
       )}
       <div className="pointer-events-none relative mx-auto max-w-6xl px-6 pb-16 pt-32 sm:pt-36 lg:px-8 lg:pb-20 [&>*]:pointer-events-auto">
-        <div className="max-w-xl">
-          <motion.span {...rise(0)} className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-[12.5px] font-medium">
+        <div className="!pointer-events-none max-w-xl [&>*]:pointer-events-auto">
+          <motion.span {...rise(0)} className="!pointer-events-none inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-[12.5px] font-medium">
             <span className="h-1.5 w-1.5 rounded-full bg-[#16A34A]" />{d.eyebrow}
           </motion.span>
-          <motion.h1 {...rise(1)} className="mt-6 text-[40px] font-semibold leading-[1.04] tracking-[-0.04em] sm:text-[54px]" style={{ textWrap: "balance" }}>
+          <motion.h1 {...rise(1)} className="!pointer-events-none mt-6 text-[40px] font-semibold leading-[1.04] tracking-[-0.04em] sm:text-[54px]" style={{ textWrap: "balance" }}>
             {d.h1}<span className="block text-[#8FB3D9]">{d.h1b}</span>
           </motion.h1>
-          <motion.p {...rise(2)} className="mt-6 text-[16.5px] leading-relaxed text-[#CBD5E1]">{d.sub}</motion.p>
+          <motion.p {...rise(2)} className="!pointer-events-none mt-6 text-[16.5px] leading-relaxed text-[#CBD5E1]">{d.sub}</motion.p>
           <motion.div {...rise(3)} className="mt-7 inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-2 pr-3">
             <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl"><Image src="/team/bakir.jpg" alt={d.name} fill sizes="48px" className="object-cover" /></span>
             <span className="min-w-0">
