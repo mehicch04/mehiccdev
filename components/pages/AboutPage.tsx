@@ -66,7 +66,13 @@ type Flag = "us" | "jp" | "ba";
 const SPOTS: Spot[] = ["ny", "la", "sd", "yo", "mo"];
 const VB = { x: 60, y: 30, w: 880, h: 440 };
 const PT: Record<Spot, readonly [number, number]> = { ny: W_CITIES.ny, la: [W_CITIES.la[0] - 9, W_CITIES.la[1] - 13], sd: [W_CITIES.sd[0] + 9, W_CITIES.sd[1] + 15], yo: W_CITIES.yo, mo: W_CITIES.mo };
-const LBL: Record<Spot, { dx: number; dy: number; a: "start" | "end" | "middle" }> = { ny: { dx: 12, dy: -10, a: "start" }, la: { dx: -13, dy: -4, a: "end" }, sd: { dx: 10, dy: 20, a: "start" }, yo: { dx: -13, dy: 5, a: "end" }, mo: { dx: 0, dy: -15, a: "middle" } };
+const LBL: Record<Spot, string> = {
+  ny: "translate(14px, -50%)",
+  la: "translate(-50%, calc(-100% - 16px))",
+  sd: "translate(12px, 8px)",
+  yo: "translate(-50%, calc(-100% - 16px))",
+  mo: "translate(-50%, calc(-100% - 16px))",
+};
 const FLAG: Record<Spot, Flag> = { ny: "us", la: "us", sd: "us", yo: "jp", mo: "ba" };
 const TONE: Record<Flag, { pin: string; text: string }> = { us: { pin: "#DC2626", text: "#F87171" }, jp: { pin: "#F59E0B", text: "#FBBF24" }, ba: { pin: "#16A34A", text: "#4ADE80" } };
 const SPOT_TXT: Record<"bs" | "en", Record<Spot, { c: string; n: string; t: string; d: string; y: string }>> = {
@@ -105,42 +111,56 @@ function WorldMap({ on, pick, go, live, fade = false }: { on: Spot; pick: (k: Sp
     return `M${x} ${y} Q${(x + mx) / 2} ${Math.min(y, my) - 90} ${mx} ${my}`;
   };
   const lit = FLAG[on];
+  const pos = (k: Spot) => ({ left: `${((PT[k][0] - VB.x) / VB.w) * 100}%`, top: `${((PT[k][1] - VB.y) / VB.h) * 100}%` });
   return (
-    <svg viewBox={`${VB.x} ${VB.y} ${VB.w} ${VB.h}`} className={`block w-full ${fade ? "[mask-image:linear-gradient(90deg,transparent,#000_6%,#000_94%,transparent)]" : ""}`} role="img"
-         aria-label={SPOTS.map((k) => SPOT_TXT.bs[k].c).join(", ")}>
-      <path d={LAND_FLAT} fill="#1A2741" stroke="#24344F" strokeWidth={0.6} strokeLinejoin="round" />
-      {(Object.keys(HL_FLAT) as Flag[]).map((k) => (
-        <path key={k} d={HL_FLAT[k]} fill={k === "us" ? "#3B2433" : k === "jp" ? "#43361E" : "#1D4433"} stroke={TONE[k].pin} strokeWidth={0.8}
-          style={{ opacity: lit === k ? 1 : 0, transition: "opacity 0.45s ease" }} />
-      ))}
-      {(["ny", "la", "sd", "yo"] as const).map((k, i) => (
-        <g key={k}>
-          <motion.path d={arc(k)} fill="none" stroke={on === k || on === "mo" ? "#9DBDDF" : "#3B4E6E"} strokeWidth={on === k ? 2.2 : 1.4} strokeLinecap="round"
-            initial={{ pathLength: 0, opacity: 0 }} animate={go ? { pathLength: 1, opacity: 0.95 } : { pathLength: 0, opacity: 0 }}
-            transition={{ duration: 1.6, delay: 0.4 + i * 0.2, ease: EASE }} style={{ transition: "stroke 0.4s, stroke-width 0.4s" }} />
-          {live && (
-            <circle r={3} fill="#FFFFFF">
-              <animateMotion dur={`${3.2 + i * 0.6}s`} begin={`${2.2 + i * 0.5}s`} repeatCount="indefinite" path={arc(k)} keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.4 0 0.2 1" />
-            </circle>
-          )}
-        </g>
-      ))}
-      {SPOTS.map((k) => {
-        const [x, y] = PT[k];
-        const act = on === k;
-        return (
-          <g key={k} className="cursor-pointer" onPointerEnter={(e) => { if (e.pointerType === "mouse") pick(k); }} onClick={() => pick(k)}>
-            <circle cx={x} cy={y} r={k === "la" || k === "sd" ? 12 : 18} fill="transparent" />
-            <motion.circle cx={x} cy={y} fill="none" stroke={TONE[FLAG[k]].pin} strokeWidth={2} initial={false}
-              animate={act && live ? { r: [7, 20], opacity: [0.7, 0] } : { r: 7, opacity: 0 }}
-              transition={act && live ? { duration: 1.6, repeat: Infinity, ease: "easeOut" } : { duration: 0.2 }} />
-            <motion.circle cx={x} cy={y} fill={TONE[FLAG[k]].pin} stroke="#FFFFFF" strokeWidth={2.5} initial={false} animate={{ r: act ? 8 : 6 }} transition={{ duration: 0.3, ease: EASE }} />
-            <text x={x + LBL[k].dx} y={y + LBL[k].dy} textAnchor={LBL[k].a} fontSize={act ? 14 : 12.5} fontWeight={act ? 700 : 500}
-              fill={act ? "#FFFFFF" : "#94A3B8"} stroke="#0B1324" strokeWidth={4} paintOrder="stroke" style={{ transition: "fill 0.3s, font-size 0.3s" }}>{SPOT_TXT.bs[k].c}</text>
+    <div className="relative">
+      <svg viewBox={`${VB.x} ${VB.y} ${VB.w} ${VB.h}`} className={`block w-full ${fade ? "[mask-image:linear-gradient(90deg,transparent,#000_6%,#000_94%,transparent)]" : ""}`} role="img"
+           aria-label={SPOTS.map((k) => SPOT_TXT.bs[k].c).join(", ")}>
+        <path d={LAND_FLAT} fill="#1A2741" stroke="#24344F" strokeWidth={0.6} strokeLinejoin="round" />
+        {(Object.keys(HL_FLAT) as Flag[]).map((k) => (
+          <path key={k} d={HL_FLAT[k]} fill={k === "us" ? "#33233A" : k === "jp" ? "#3D3322" : "#1C3D33"} stroke={TONE[k].pin} strokeOpacity={0.55} strokeWidth={0.7}
+            style={{ opacity: lit === k ? 1 : 0, transition: "opacity 0.45s ease" }} />
+        ))}
+        {(["ny", "la", "sd", "yo"] as const).map((k, i) => (
+          <g key={k}>
+            <motion.path d={arc(k)} fill="none" stroke={on === k || on === "mo" ? "#9DBDDF" : "#33476A"} strokeWidth={on === k ? 1.8 : 1.1} strokeLinecap="round"
+              initial={{ pathLength: 0, opacity: 0 }} animate={go ? { pathLength: 1, opacity: 0.95 } : { pathLength: 0, opacity: 0 }}
+              transition={{ duration: 1.6, delay: 0.4 + i * 0.2, ease: EASE }} style={{ transition: "stroke 0.4s, stroke-width 0.4s" }} />
+            {live && (
+              <circle r={2.4} fill="#FFFFFF">
+                <animateMotion dur={`${3.2 + i * 0.6}s`} begin={`${2.2 + i * 0.5}s`} repeatCount="indefinite" path={arc(k)} keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.4 0 0.2 1" />
+              </circle>
+            )}
           </g>
+        ))}
+        {SPOTS.map((k) => {
+          const [x, y] = PT[k];
+          const act = on === k;
+          const c = TONE[FLAG[k]].pin;
+          return (
+            <g key={k} className="cursor-pointer" onPointerEnter={(e) => { if (e.pointerType === "mouse") pick(k); }} onClick={() => pick(k)}>
+              <circle cx={x} cy={y} r={k === "la" || k === "sd" ? 12 : 16} fill="transparent" />
+              <circle cx={x} cy={y} r={act ? 15 : 0} fill={c} fillOpacity={0.2} style={{ transition: "r 0.3s cubic-bezier(0.22,1,0.36,1)" }} />
+              <circle cx={x} cy={y} r={act ? 8 : 6.5} fill={c} stroke="#FFFFFF" strokeWidth={2.5} style={{ transition: "r 0.3s cubic-bezier(0.22,1,0.36,1)" }} />
+            </g>
+          );
+        })}
+      </svg>
+      {SPOTS.map((k) => {
+        const act = on === k;
+        const L = LBL[k];
+        return (
+          <button key={k} type="button" tabIndex={-1} aria-hidden onPointerEnter={(e) => { if (e.pointerType === "mouse") pick(k); }} onClick={() => pick(k)}
+            className={`absolute whitespace-nowrap ${fade && !act ? "hidden" : ""}`} style={pos(k)}>
+            <span className="block" style={{ transform: L }}>
+              <span className={`flex items-center gap-1.5 rounded-full border px-2 py-[3px] text-[11px] font-medium leading-none transition-colors duration-300 sm:text-[12px] ${act ? "border-white bg-white text-[#0F172A]" : "border-white/10 bg-[#0B1324]/85 text-[#CBD5E1] hover:border-white/25"}`}>
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: TONE[FLAG[k]].pin }} />{SPOT_TXT.bs[k].c}
+              </span>
+            </span>
+          </button>
         );
       })}
-    </svg>
+    </div>
   );
 }
 
@@ -203,9 +223,11 @@ function AboutHero({ go }: { go: boolean }) {
     <section ref={ref} data-hero data-dark className="hero-light relative overflow-hidden text-white" style={{ background: "linear-gradient(180deg,#0B1324 0%,#0F172A 100%)" }}
              onPointerLeave={(e) => { if (e.pointerType === "mouse") setHold(false); }}>
       {lg && (
-        <motion.div {...rise(2)} className="absolute top-[130px] [mask-image:linear-gradient(90deg,transparent,#000_10%,#000_96%,transparent)]" style={{ left: "37%", width: "66%" }}>
-          <WorldMap on={on} pick={pick} go={go} live={live} />
-        </motion.div>
+        <div className="pointer-events-none absolute inset-x-0 top-[104px] mx-auto max-w-6xl px-8">
+          <motion.div {...rise(2)} className="pointer-events-auto relative ml-[43%] w-[66%] [mask-image:linear-gradient(90deg,transparent,#000_7%,#000_96%,transparent)] min-[1360px]:ml-[41%] min-[1360px]:w-[74%]">
+            <WorldMap on={on} pick={pick} go={go} live={live} />
+          </motion.div>
+        </div>
       )}
       <div className="pointer-events-none relative mx-auto max-w-6xl px-6 pb-16 pt-32 sm:pt-36 lg:px-8 lg:pb-20 [&>*]:pointer-events-auto">
         <div className="!pointer-events-none max-w-xl [&>*]:pointer-events-auto">
