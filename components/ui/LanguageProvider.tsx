@@ -13,7 +13,7 @@ interface LanguageContextValue {
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Language>("en");
+  const [lang, setLangState] = useState<Language>("bs");
 
   useEffect(() => {
     const saved = localStorage.getItem("mehiccdev-lang") as Language | null;

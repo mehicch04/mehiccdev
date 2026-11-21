@@ -8,11 +8,11 @@ const DESC = "Projekti mehiccdev tima: web aplikacije, sajtovi i UI/UX dizajn za
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://mehiccdev.com"),
-  title: { absolute: "mehiccdev" },
+  title: { absolute: "Portfolio: web aplikacije i sajtovi | mehiccdev" },
   description: DESC,
   alternates: { canonical: PAGE_URL },
-  openGraph: { title: "Portfolio | mehiccdev", description: DESC, url: PAGE_URL, siteName: "mehiccdev", locale: "bs_BA", type: "website" },
-  twitter: { card: "summary_large_image", title: "Portfolio | mehiccdev", description: DESC },
+  openGraph: { title: "Portfolio: web aplikacije i sajtovi | mehiccdev", description: DESC, url: PAGE_URL, siteName: "mehiccdev", locale: "bs_BA", type: "website" },
+  twitter: { card: "summary_large_image", title: "Portfolio: web aplikacije i sajtovi | mehiccdev", description: DESC },
   robots: { index: true, follow: true },
 };
 

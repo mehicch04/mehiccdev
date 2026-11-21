@@ -285,7 +285,7 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
         <div className="mt-12 grid overflow-hidden rounded-[28px] border border-[#E2E8F0] bg-white lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.3fr)_minmax(0,0.9fr)]" style={{ boxShadow: "0 40px 80px -50px rgba(15,23,42,0.45)" }}>
           <div className="flex flex-col bg-[#0F172A] p-6 text-white sm:p-8">
             <div className="flex items-center gap-3.5">
-              <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl"><Image src="/team/bakir.jpg" alt="Bakir Mehić" fill sizes="48px" className="object-cover" /></span>
+              <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl"><Image src="/team/bakir.jpg" alt="" fill sizes="48px" className="object-cover" /></span>
               <span>
                 <span className="block text-[16px] font-semibold">Bakir Mehić</span>
                 <span className="block text-[13px] text-[#94A3B8]">{d.role}</span>

@@ -7,9 +7,9 @@ const PAGE_URL = "https://mehiccdev.com/maximum";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://mehiccdev.com"),
-  title: { absolute: "mehiccdev" },
+  title: { absolute: "Maximum Rent a Car: case study | mehiccdev" },
   description:
-    "Pregled arhitekture i razvoja SaaS rješenja za rent-a-car agencije.",
+    "Kako smo rent a car firmi napravili sistem za rezervacije: učitavanje na telefonu sa 21,6s na 3,2s i upiti 24 sata dnevno.",
   keywords: [
     "maximum rent a car",
     "case study rent a car sistem",
@@ -19,8 +19,8 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: PAGE_URL },
   openGraph: {
-    title: "Maximum Rent a Car - Case Study | mehiccdev",
-    description: "Pregled arhitekture i razvoja SaaS rješenja za rent-a-car agencije.",
+    title: "Maximum Rent a Car: case study | mehiccdev",
+    description: "Kako smo rent a car firmi napravili sistem za rezervacije: učitavanje na telefonu sa 21,6s na 3,2s i upiti 24 sata dnevno.",
     url: PAGE_URL,
     siteName: "mehiccdev",
     locale: "bs_BA",
@@ -28,8 +28,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Maximum Rent a Car - Case Study | mehiccdev",
-    description: "Pregled arhitekture i razvoja SaaS rješenja za rent-a-car agencije.",
+    title: "Maximum Rent a Car: case study | mehiccdev",
+    description: "Kako smo rent a car firmi napravili sistem za rezervacije: učitavanje na telefonu sa 21,6s na 3,2s i upiti 24 sata dnevno.",
   },
   robots: { index: true, follow: true },
 };
@@ -38,8 +38,8 @@ const JSON_LD = {
   "@context": "https://schema.org",
   "@type": "CreativeWork",
   name: "Maximum Rent a Car",
-  headline: "Maximum Rent a Car - Case Study",
-  description: "Pregled arhitekture i razvoja SaaS rješenja za rent-a-car agencije.",
+  headline: "Maximum Rent a Car: case study",
+  description: "Kako smo rent a car firmi napravili sistem za rezervacije: učitavanje na telefonu sa 21,6s na 3,2s i upiti 24 sata dnevno.",
   url: PAGE_URL,
   author: { "@type": "Organization", name: "mehiccdev", url: "https://mehiccdev.com" },
   inLanguage: ["bs", "en"],
