@@ -12,7 +12,7 @@ type Copy = {
   eyebrow: string; h: string; sub: string; s1: string; s2: string; s2rc: string; s3: string; calc: string;
   valueLabel: (u: string) => string; extraLabel: string; pkg: string; more: string; back: string; day: string; days: string;
   yearA: string; yearB: string; your: string; introPrice: string; startPrice: string; once: string; start: string; end: string;
-  daily: string; ready: string; gets: string; roiA: string; roiB: string; popular: string; cta: string; foot: string;
+  daily: string; ready: string; gets: string; roiA: string; roiB: string; popular: string; cta: string; ctaInq: string; foot: string;
   howT: string; how: { t: string; d: string }[];
   always: string[]; kinds: Record<Kind, { label: string; sub: string; unit: string }>; tiers: Record<Kind, Tier[]>;
 };
@@ -38,12 +38,12 @@ const COPY: Record<L, Copy> = {
     eyebrow: "Cjenovnik", h: "Složite paket i odmah vidite cijenu.",
     sub: "Bez čekanja na ponudu. Cijena koju vidite je cijena koju plaćate, a na pozivu je samo potvrdimo.",
     s1: "Šta vam treba?", s2: "Koji obim vam treba?", s2rc: "Koliko vozila imate?", s3: "Kada vam se vrati uloženo?", calc: "kalkulator povrata",
-    valueLabel: (u) => `Prosječan ${u} vam donese`, extraLabel: "Dodatnih upita mjesečno",
+    valueLabel: (u) => `Jedan ${u} donosi`, extraLabel: "Novih upita mjesečno",
     pkg: "paket", more: "Više mjesečno", back: "Vraća se za", day: "dan", days: "dana",
-    yearA: "U prvoj godini vam ostaje oko", yearB: "više, bez provizije po rezervaciji. Računica je okvirna i zavisi od vašeg posla.",
+    yearA: "Više u prvoj godini", yearB: "Bez provizije po rezervaciji. Računica je okvirna i zavisi od vašeg posla.",
     your: "Vaš paket", introPrice: "uvodna cijena", startPrice: "početna cijena", once: "jednokratno", start: "Na početku", end: "Po predaji",
     daily: "dnevno u prvoj godini", ready: "gotovo za", gets: "Šta dobijate",
-    roiA: "Po vašoj računici paket se vraća za", roiB: "", popular: "Najčešće", cta: "Rezervišite ovu cijenu",
+    roiA: "Po vašoj računici paket se vraća za", roiB: "", popular: "Najčešće", cta: "Zakažite besplatan poziv", ctaInq: "Zatražite ponudu za ovaj paket",
     foot: "0 KM mjesečno. Podrška samo ako je želite, 100 KM/mj.",
     howT: "Kako ide saradnja",
     how: [
@@ -53,7 +53,7 @@ const COPY: Record<L, Copy> = {
     ],
     always: ["Domena i podaci su vaši", "0 KM mjesečno, bez pretplate", "Plaćanje 50% na početku, 50% po predaji", "Bez provizije po rezervaciji"],
     kinds: {
-      web: { label: "Sajt", sub: "prezentacija i upiti", unit: "novi posao" },
+      web: { label: "Sajt", sub: "prezentacija i upiti", unit: "posao" },
       app: { label: "Web aplikacija", sub: "rezervacije, termini, panel", unit: "termin" },
       rc: { label: "Rent a car sistem", sub: "po veličini flote", unit: "najam" },
     },
@@ -62,15 +62,15 @@ const COPY: Record<L, Copy> = {
         { name: "Vizitka", for: "Za obrte i male firme", tag: "Jedna stranica koja prodaje.", time: "7 do 10 dana",
           items: ["Jedna stranica sa svim bitnim informacijama", "Forma za upite, stiže vam na email", "Dugme za poziv i WhatsApp", "Google mapa i radno vrijeme", "Prilagođeno telefonu", "Domena i SSL podešeni"] },
         { name: "Sajt", for: "Za firme koje rastu", tag: "Pravi sajt firme sa svim uslugama.", time: "2 do 3 sedmice", base: "Sve iz Vizitke, plus:",
-          items: ["Do 6 stranica (usluge, o nama, galerija, kontakt)", "Dva jezika, BS i EN", "Sami mijenjate tekst i slike", "Google Business profil i osnovni SEO", "Brzina 90+ na Google mjerenju", "1 mjesec podrške gratis"] },
+          items: ["Do 6 stranica (usluge, o nama, galerija, kontakt)", "Dva jezika po vašem izboru", "Sami mijenjate tekst i slike", "Google Business profil i osnovni SEO", "Brzina 90+ na Google mjerenju", "1 mjesec podrške gratis"] },
         { name: "Sajt Plus", for: "Za firme sa ponudom", tag: "Sajt s katalogom i blogom.", time: "3 do 4 sedmice", base: "Sve iz paketa Sajt, plus:",
-          items: ["Neograničeno stranica", "Katalog ili meni s cijenama", "Blog za bolju poziciju na Googleu", "Analitika posjeta", "2 mjeseca podrške gratis"] },
+          items: ["Neograničeno stranica", "Tri jezika po vašem izboru", "Katalog ili meni s cijenama", "Blog za bolju poziciju na Googleu", "Analitika posjeta", "2 mjeseca podrške gratis"] },
       ]),
       app: withPrices("app", [
         { name: "Starter", for: "Evidencija, katalog, upiti", tag: "Jedan alat koji rješava jedan problem.", time: "2 do 3 sedmice",
           items: ["Jedna glavna funkcija (katalog, evidencija ili upiti)", "Prijava lozinkom za vas i tim", "Panel za dodavanje i izmjenu podataka", "Forma preko koje klijenti šalju upite", "Prilagođeno telefonu i računaru"] },
         { name: "Business", for: "Sve što se iznajmljuje ili zakazuje", tag: "Rezervacije i termini bez telefoniranja.", time: "3 do 5 sedmica", base: "Sve iz Startera, plus:",
-          items: ["Kalendar zauzetosti, bez duplih termina", "Gost bira termin, vi potvrđujete jednim klikom", "Admin panel s ulogama za vlasnika i osoblje", "Email i WhatsApp obavijest za svaku rezervaciju", "Dva jezika, BS i EN", "SEO i Google vidljivost", "2 mjeseca podrške gratis"] },
+          items: ["Kalendar zauzetosti, bez duplih termina", "Gost bira termin, vi potvrđujete jednim klikom", "Admin panel s ulogama za vlasnika i osoblje", "Email i WhatsApp obavijest za svaku rezervaciju", "Do 4 jezika po vašem izboru", "SEO i Google vidljivost", "2 mjeseca podrške gratis"] },
         { name: "Premium", for: "Online plaćanje i automatizacije", tag: "Aplikacija tačno oko vašeg procesa.", time: "5 do 8 sedmica", base: "Sve iz Business paketa, plus:",
           items: ["Online plaćanje i depozit", "Povezivanje s Google Calendarom i drugim alatima", "Automatizacije rutinskih poslova", "Detaljne dozvole po članu tima", "Prioritetna podrška"] },
       ]),
@@ -78,7 +78,7 @@ const COPY: Record<L, Copy> = {
         { name: "Start", for: "3 do 9 vozila", tag: "Katalog vozila i forma za rezervaciju.", time: "2 do 3 sedmice",
           items: ["Sajt s katalogom vozila i cijenama", "Forma za rezervaciju, upit stiže na email", "Dugme za poziv i WhatsApp", "Prilagođeno telefonu", "Izmjene vozila i cijena radimo mi, po satu"] },
         { name: "Pro", for: "10 do 20 vozila", tag: "Kompletan sistem kao kod Maximuma.", time: "3 do 4 sedmice", base: "Sve iz Start paketa, plus:",
-          items: ["Admin panel: sami mijenjate vozila, cijene i slike", "Kalendar dostupnosti po vozilu", "Gost vidi samo slobodna vozila, nema duplih termina", "Potvrda rezervacije jednim klikom", "Obavijest za svaki novi upit", "Dva jezika, BS i EN", "2 mjeseca podrške gratis"] },
+          items: ["Admin panel: sami mijenjate vozila, cijene i slike", "Kalendar dostupnosti po vozilu", "Gost vidi samo slobodna vozila, nema duplih termina", "Potvrda rezervacije jednim klikom", "Obavijest za svaki novi upit", "Do 4 jezika po vašem izboru", "2 mjeseca podrške gratis"] },
         { name: "Premium", for: "20+ vozila, više lokacija", tag: "Više poslovnica, jedan sistem.", time: "4 do 6 sedmica", base: "Sve iz Pro paketa, plus:",
           items: ["Više poslovnica u jednom panelu", "Flota i preuzimanje po poslovnici", "Različito mjesto preuzimanja i vraćanja", "Pristup za osoblje po poslovnici", "Prioritetna podrška"] },
       ]),
@@ -88,12 +88,12 @@ const COPY: Record<L, Copy> = {
     eyebrow: "Pricing", h: "Build your package and see the price right away.",
     sub: "No waiting for a quote. The price you see is the price you pay, and we simply confirm it on a call.",
     s1: "What do you need?", s2: "What scope do you need?", s2rc: "How many vehicles do you have?", s3: "When does it pay for itself?", calc: "payback calculator",
-    valueLabel: (u) => `An average ${u} brings you`, extraLabel: "Extra inquiries per month",
+    valueLabel: (u) => `One ${u} brings`, extraLabel: "New inquiries a month",
     pkg: "package", more: "More per month", back: "Pays back in", day: "day", days: "days",
-    yearA: "In the first year you keep about", yearB: "more, with no fee per booking. This is an estimate and depends on your business.",
+    yearA: "Extra in the first year", yearB: "No fee per booking. An estimate that depends on your business.",
     your: "Your package", introPrice: "launch price", startPrice: "starting price", once: "one time", start: "Upfront", end: "On delivery",
     daily: "a day in the first year", ready: "ready in", gets: "What you get",
-    roiA: "By your numbers the package pays back in", roiB: "", popular: "Most chosen", cta: "Lock in this price",
+    roiA: "By your numbers the package pays back in", roiB: "", popular: "Most chosen", cta: "Book a free call", ctaInq: "Request an offer for this package",
     foot: "€0 per month. Support only if you want it, €50/mo.",
     howT: "How it works",
     how: [
@@ -112,15 +112,15 @@ const COPY: Record<L, Copy> = {
         { name: "Card", for: "For trades and small firms", tag: "One page that sells.", time: "7 to 10 days",
           items: ["One page with everything that matters", "Inquiry form straight to your email", "Call and WhatsApp buttons", "Google map and opening hours", "Built for phones", "Domain and SSL set up"] },
         { name: "Website", for: "For growing firms", tag: "A proper company site with all services.", time: "2 to 3 weeks", base: "Everything in Card, plus:",
-          items: ["Up to 6 pages (services, about, gallery, contact)", "Two languages, BS and EN", "You edit text and photos yourself", "Google Business profile and basic SEO", "90+ speed on Google's test", "1 month of free support"] },
+          items: ["Up to 6 pages (services, about, gallery, contact)", "Two languages of your choice", "You edit text and photos yourself", "Google Business profile and basic SEO", "90+ speed on Google's test", "1 month of free support"] },
         { name: "Website Plus", for: "For firms with a catalogue", tag: "A site with a catalogue and a blog.", time: "3 to 4 weeks", base: "Everything in Website, plus:",
-          items: ["Unlimited pages", "Catalogue or menu with prices", "Blog for better Google ranking", "Visitor analytics", "2 months of free support"] },
+          items: ["Unlimited pages", "Three languages of your choice", "Catalogue or menu with prices", "Blog for better Google ranking", "Visitor analytics", "2 months of free support"] },
       ]),
       app: withPrices("app", [
         { name: "Starter", for: "Records, catalogue, inquiries", tag: "One tool that solves one problem.", time: "2 to 3 weeks",
           items: ["One main feature (catalogue, records or inquiries)", "Password login for you and your team", "Panel to add and edit data", "Form for client inquiries", "Works on phone and desktop"] },
         { name: "Business", for: "Anything rented or booked", tag: "Bookings and slots without phone calls.", time: "3 to 5 weeks", base: "Everything in Starter, plus:",
-          items: ["Availability calendar, no double slots", "Guest picks a slot, you confirm in one click", "Admin panel with owner and staff roles", "Email and WhatsApp alert for each booking", "Two languages, BS and EN", "SEO and Google visibility", "2 months of free support"] },
+          items: ["Availability calendar, no double slots", "Guest picks a slot, you confirm in one click", "Admin panel with owner and staff roles", "Email and WhatsApp alert for each booking", "Up to 4 languages of your choice", "SEO and Google visibility", "2 months of free support"] },
         { name: "Premium", for: "Online payments and automation", tag: "An app built exactly around your process.", time: "5 to 8 weeks", base: "Everything in Business, plus:",
           items: ["Online payment and deposit", "Google Calendar and other tool integrations", "Automation of routine work", "Detailed permissions per team member", "Priority support"] },
       ]),
@@ -128,7 +128,7 @@ const COPY: Record<L, Copy> = {
         { name: "Start", for: "3 to 9 vehicles", tag: "Vehicle catalogue and booking form.", time: "2 to 3 weeks",
           items: ["Site with vehicle catalogue and prices", "Booking form, inquiries go to your email", "Call and WhatsApp buttons", "Built for phones", "We make vehicle and price changes, billed hourly"] },
         { name: "Pro", for: "10 to 20 vehicles", tag: "The full system, like Maximum's.", time: "3 to 4 weeks", base: "Everything in Start, plus:",
-          items: ["Admin panel: edit vehicles, prices and photos yourself", "Availability calendar per vehicle", "Guests see only free vehicles, no double bookings", "Confirm a booking in one click", "Alert for every new inquiry", "Two languages, BS and EN", "2 months of free support"] },
+          items: ["Admin panel: edit vehicles, prices and photos yourself", "Availability calendar per vehicle", "Guests see only free vehicles, no double bookings", "Confirm a booking in one click", "Alert for every new inquiry", "Up to 4 languages of your choice", "2 months of free support"] },
         { name: "Premium", for: "20+ vehicles, several locations", tag: "Several branches, one system.", time: "4 to 6 weeks", base: "Everything in Pro, plus:",
           items: ["Several branches in one panel", "Fleet and pickup per branch", "Different pickup and return locations", "Staff access per branch", "Priority support"] },
       ]),
@@ -155,15 +155,15 @@ const Ticker = memo(function Ticker({ value, lang, unit, className }: { value: n
   return <motion.span className={className}>{text}</motion.span>;
 });
 
-function Slider({ label, value, min, max, step, onChange, shown }: { label: string; value: number; min: number; max: number; step: number; onChange: (v: number) => void; shown: string }) {
+function Slider({ label, value, min, max, step, onChange, shown, lo, hi }: { label: string; value: number; min: number; max: number; step: number; onChange: (v: number) => void; shown: string; lo: string; hi: string }) {
   const pct = ((value - min) / (max - min)) * 100;
   return (
-    <label className="block">
-      <span className="flex items-baseline justify-between gap-4 text-[13.5px]">
-        <span className="text-[#475569]">{label}</span>
-        <span className="shrink-0 whitespace-nowrap rounded-lg bg-[#F1F5F9] px-2 py-0.5 font-semibold tabular-nums text-[#0F172A]">{shown}</span>
+    <label className="block rounded-2xl border border-[#EEF2F6] bg-[#F8FAFC] px-4 pb-3 pt-4">
+      <span className="flex items-center justify-between gap-3">
+        <span className="truncate text-[13px] text-[#475569]">{label}</span>
+        <span className="shrink-0 whitespace-nowrap text-[17px] font-semibold tabular-nums text-[#0F172A]">{shown}</span>
       </span>
-      <span className="group relative mt-3 block h-7 touch-none">
+      <span className="group relative mt-3 block h-6 touch-none">
         <span className="absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[#E2E8F0]" />
         <span className="absolute left-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[#0F172A]" style={{ width: `${pct}%` }} />
         <span className="pointer-events-none absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#0F172A] bg-white shadow-[0_2px_6px_rgba(15,23,42,0.2)] transition-transform duration-150 group-active:scale-110 group-has-[:focus-visible]:ring-4 group-has-[:focus-visible]:ring-[#0F172A]/15"
@@ -171,6 +171,7 @@ function Slider({ label, value, min, max, step, onChange, shown }: { label: stri
         <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(+e.target.value)} aria-label={label}
                className="absolute inset-0 h-full w-full cursor-pointer opacity-0" />
       </span>
+      <span className="mt-1 flex justify-between text-[11px] tabular-nums text-[#94A3B8]"><span>{lo}</span><span>{hi}</span></span>
     </label>
   );
 }
@@ -277,25 +278,32 @@ export function PricingBuilder({ fixed, cta = "#zakazi", id = "cjenovnik", headi
             <motion.div {...reveal(3)}>
               <Step n={fixed ? "02" : "03"} title={d.s3}
                     right={<span className="hidden items-center gap-1.5 text-[12px] font-medium text-[#16A34A] sm:flex"><TrendingUp size={14} />{d.calc}</span>}>
-                <div className="mt-5 grid gap-5 sm:grid-cols-2 sm:gap-6">
-                  <Slider label={d.valueLabel(d.kinds[kind].unit)} value={value} min={20} max={r.vmax} step={10} onChange={setValue} shown={money(value, lang)} />
-                  <Slider label={d.extraLabel} value={extra} min={1} max={r.max} step={1} onChange={setExtra} shown={String(extra)} />
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <Slider label={d.valueLabel(d.kinds[kind].unit)} value={value} min={20} max={r.vmax} step={10} onChange={setValue}
+                          shown={money(value, lang)} lo={money(20, lang)} hi={money(r.vmax, lang)} />
+                  <Slider label={d.extraLabel} value={extra} min={1} max={r.max} step={1} onChange={setExtra}
+                          shown={String(extra)} lo="1" hi={String(r.max)} />
                 </div>
-                <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
-                  <div className="rounded-2xl bg-[#F8FAFC] p-3 sm:p-4">
-                    <p className="truncate text-[11px] text-[#64748B] sm:text-[11.5px]">{t.name} {d.pkg}</p>
-                    <Ticker value={t.price} lang={lang} className="mt-1 block whitespace-nowrap text-[14px] font-semibold tabular-nums text-[#0F172A] sm:text-[18px]" />
-                  </div>
-                  <div className="rounded-2xl bg-[#F8FAFC] p-3 sm:p-4">
-                    <p className="truncate text-[11px] text-[#64748B] sm:text-[11.5px]">{d.more}</p>
-                    <Ticker value={monthly} lang={lang} className="mt-1 block whitespace-nowrap text-[14px] font-semibold tabular-nums text-[#0F172A] sm:text-[18px]" />
-                  </div>
-                  <div className="rounded-2xl bg-[#16A34A] p-3 text-white sm:p-4">
-                    <p className="truncate text-[11px] text-white/80 sm:text-[11.5px]">{d.back}</p>
-                    <Ticker value={days} lang={lang} unit={dayWord} className="mt-1 block whitespace-nowrap text-[14px] font-semibold tabular-nums sm:text-[18px]" />
-                  </div>
+                <div className="mt-3 grid grid-cols-3 gap-2 sm:gap-3">
+                  {[
+                    { l: `${t.name} ${d.pkg}`, v: <Ticker value={t.price} lang={lang} />, g: false },
+                    { l: d.more, v: <Ticker value={monthly} lang={lang} />, g: false },
+                    { l: d.back, v: <Ticker value={days} lang={lang} unit={dayWord} />, g: true },
+                  ].map((x) => (
+                    <div key={x.l} className={`flex h-[84px] flex-col justify-between rounded-2xl p-3 sm:h-[92px] sm:p-4 ${x.g ? "bg-[#16A34A] text-white" : "border border-[#EEF2F6] bg-[#F8FAFC] text-[#0F172A]"}`}>
+                      <p className={`truncate text-[11px] sm:text-[12px] ${x.g ? "text-white/80" : "text-[#64748B]"}`}>{x.l}</p>
+                      <span className="block whitespace-nowrap text-[15px] font-semibold tabular-nums sm:text-[19px]">{x.v}</span>
+                    </div>
+                  ))}
                 </div>
-                <p className="mt-4 text-[13px] leading-relaxed text-[#475569]">{d.yearA} <span className="font-semibold text-[#0F172A]">{money(year, lang)}</span> {d.yearB}</p>
+                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-[#BBF7D0] bg-[#F0FDF4] px-4 py-3.5 sm:flex-nowrap sm:px-5">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#16A34A] text-white"><TrendingUp size={18} /></span>
+                  <span className="min-w-0 flex-1 basis-[calc(100%-56px)] sm:basis-auto">
+                    <span className="block text-[13.5px] font-semibold text-[#0F172A]">{d.yearA}</span>
+                    <span className="block text-[12px] leading-snug text-[#475569]">{d.yearB}</span>
+                  </span>
+                  <Ticker value={year} lang={lang} className="w-full shrink-0 whitespace-nowrap pl-14 text-[22px] font-semibold tabular-nums text-[#15803D] sm:w-auto sm:pl-0 sm:text-[24px]" />
+                </div>
               </Step>
             </motion.div>
             {fixed && (
@@ -369,7 +377,7 @@ export function PricingBuilder({ fixed, cta = "#zakazi", id = "cjenovnik", headi
                 </div>
               </div>
               <a href={cta} className="group flex items-center justify-center gap-2 bg-[#DC2626] px-6 py-4 text-[15px] font-semibold transition-colors hover:bg-[#B91C1C]">
-                {d.cta} <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" />
+                {fixed ? d.ctaInq : d.cta} <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" />
               </a>
             </div>
             <p className="mt-4 text-center text-[12.5px] text-[#64748B]">{d.foot}</p>

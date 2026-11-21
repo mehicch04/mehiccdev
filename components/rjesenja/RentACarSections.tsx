@@ -7,7 +7,6 @@ import { COPY, type RcCopy } from "@/components/rjesenja/rentACarCopy";
 import { RcForm } from "@/components/rjesenja/RcForm";
 import { RcCompare } from "@/components/rjesenja/RcCompare";
 import { SystemDemo } from "@/components/sections/SystemDemo";
-import { Value } from "@/components/sections/Value";
 import { Booking } from "@/components/sections/Booking";
 import { Backdrop, Head, Fade, BrowserFrame, SOFT } from "@/components/ui/kit";
 import { PricingBuilder } from "@/components/sections/PricingBuilder";
@@ -250,7 +249,6 @@ export function RentACarSections() {
       <SystemDemo onPage />
       <CaseStudy c={c} />
       <Packages c={c} />
-      <Value rentACar />
       <Ownership c={c} />
       <RcForm c={c} />
       <Faq c={c} />

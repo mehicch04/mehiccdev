@@ -6,7 +6,6 @@ import { useLanguage } from "@/components/ui/LanguageProvider";
 import { PageHero } from "@/components/ui/PageHero";
 import { Pricing } from "@/components/sections/Pricing";
 import { PricingBuilder } from "@/components/sections/PricingBuilder";
-import { Savings } from "@/components/sections/Savings";
 import { Faq } from "@/components/sections/Faq";
 import { Booking } from "@/components/sections/Booking";
 
@@ -76,10 +75,9 @@ export function PricingPage() {
   return (
     <main className="relative bg-white">
       <PageHero eyebrow={d.eyebrow} h1={d.h1} h1b={d.h1b} sub={d.sub}
-        primary={{ label: d.primary, href: "#zakazi" }} secondary={{ label: d.secondary, href: "#vrijednost" }} aside={<Picker />} />
+        primary={{ label: d.primary, href: "#zakazi" }} secondary={{ label: d.secondary, href: "#cjenovnik" }} aside={<Picker />} />
       <PricingBuilder />
       <Pricing extras />
-      <Savings />
       <Faq />
       <Booking />
     </main>
