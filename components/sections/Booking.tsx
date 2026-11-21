@@ -99,8 +99,6 @@ const T = {
 
 const OPEN = [1, 3, 5, 6];
 const SLOTS = ["11:00", "12:00", "13:00", "14:00"];
-const RANGE: [number, number][] = [[0.62, 0.9], [0.4, 0.65], [0.2, 0.4], [0.05, 0.2]];
-const WEEK = 604800000;
 
 const day0 = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -151,34 +149,16 @@ export function Booking({ id = "zakazi" }: { id?: string }) {
   }, [today]);
   const base = first ? monday(first).getTime() : 0;
 
-  const weeks = useMemo(() => new Map<number, Record<string, string[]>>(), [today]);
-  const week = (m: Date) => {
-    const t = m.getTime();
-    const hit = weeks.get(t);
-    if (hit) return hit;
-    const w = Math.max(0, Math.round((t - base) / WEEK));
-    const [lo, hi] = RANGE[w] ?? [0, 0];
-    const f = lo + rand(hash(`w${key(m)}`)) * (hi - lo);
-    const out: Record<string, string[]> = {};
-    const days: string[] = [];
-    for (let i = 0; i < 7; i++) {
-      const x = new Date(m); x.setDate(x.getDate() + i);
-      if (!OPEN.includes(x.getDay())) continue;
-      const k = key(x);
-      let busy = SLOTS.filter((_, j) => rand(hash(`${k}|${j}`)) < f);
-      if (!busy.length && w <= 1) busy = [SLOTS[Math.floor(rand(hash(`${k}|min`)) * SLOTS.length)]];
-      out[k] = busy;
-      if (today && x > today) days.push(k);
-    }
-    let free = days.reduce((a, k) => a + SLOTS.length - out[k].length, 0);
-    for (let i = days.length - 1; i >= 0 && free < 2; i--) {
-      while (out[days[i]].length > 1 && free < 2) { out[days[i]] = out[days[i]].slice(1); free++; }
-    }
-    weeks.set(t, out);
-    return out;
+  const fake = (x: Date) => {
+    if (!today) return SLOTS;
+    const n = Math.round((day0(x).getTime() - today.getTime()) / 86400000);
+    const k = key(x);
+    const r = rand(hash(`n${k}`));
+    const count = n <= 3 ? 2 + (r < 0.4 ? 1 : 0) : n <= 7 ? 1 + (r < 0.45 ? 1 : 0) : n <= 10 ? (r < 0.7 ? 1 : 0) : n <= 15 ? (r < 0.35 ? 1 : 0) : 0;
+    return SLOTS.map((t, j) => [t, rand(hash(`${k}|${j}`))] as const).sort((p, q) => p[1] - q[1]).slice(0, count).map(([t]) => t).sort();
   };
   const busy = (x: Date) => {
-    const base0 = week(monday(x))[key(x)] ?? SLOTS;
+    const base0 = fake(x);
     const r = real[key(x)];
     return r ? SLOTS.filter((t) => base0.includes(t) || r.includes(t)) : base0;
   };
