@@ -3,11 +3,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, LayoutGroup, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
-import { ArrowRight, ArrowUpRight, Check, Gauge } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Car, Check, BarChart3, FileText, Gauge, Globe, Home, Image as ImageIcon, Layers, LayoutDashboard, MessageCircle, Search, ShieldCheck, Smartphone, Sparkles, CalendarCheck, CreditCard, Trophy, Users, type LucideIcon } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import { Booking } from "@/components/sections/Booking";
 import { Backdrop, BrowserFrame, Fade, Lightbox, PhoneMockup, type ZoomState } from "@/components/ui/kit";
-import { Actions, CATS, PROJECTS, Shot, StatusPill, T, name, type Cat, type L } from "./data";
+import { Actions, CATS, PROJECTS, Shot, StatusPill, T, name, type Cat, type DIcon, type L } from "./data";
+
+const DI: Record<DIcon, LucideIcon> = { cal: CalendarCheck, panel: LayoutDashboard, doc: FileText, car: Car, globe: Globe, shield: ShieldCheck, users: Users, card: CreditCard, image: ImageIcon, search: Search, phone: Smartphone, layers: Layers, trophy: Trophy, home: Home, chat: MessageCircle, chart: BarChart3 };
+const DT = {
+  bs: { pkg: "Paket", since: "Uživo od", got: "Šta je isporučeno", stack: "Tehnologije" },
+  en: { pkg: "Package", since: "Live since", got: "What was delivered", stack: "Built with" },
+};
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -242,28 +248,40 @@ export function PortfolioPage() {
                     {on && (
                       <motion.div id={`pf-${p.id}`} key="body" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
                                   transition={{ duration: reduce ? 0 : 0.5, ease: EASE }} className="relative overflow-hidden">
-                        <div className="grid gap-8 pb-10 sm:pl-14 lg:grid-cols-[1.2fr_1fr] lg:gap-10 lg:pl-[80px]">
+                        <div className="grid gap-8 pb-10 sm:pl-14 lg:grid-cols-[1.4fr_1fr] lg:gap-10 lg:pl-[80px]">
                           <motion.div initial={{ opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: reduce ? 0 : 0.6, delay: reduce ? 0 : 0.1, ease: EASE }}
-                                      className="rounded-[22px] px-5 pb-12 pt-6 sm:px-8 sm:pt-7" style={{ background: `linear-gradient(150deg, ${p.accent}, #0F172A)` }}>
+                                      className="flex flex-col justify-center rounded-[22px] px-5 pb-12 pt-6 sm:px-8 sm:pt-7" style={{ background: `linear-gradient(150deg, ${p.accent}, #0F172A)` }}>
                             <Shot p={p} d={d} onZoom={setZoom} sizes="(max-width:1024px) 90vw, 560px" />
                           </motion.div>
                           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : 0.2, ease: EASE }} className="flex flex-col">
-                            <p className="text-[15.5px] leading-relaxed text-[#334155]">{p.desc[lang]}</p>
-                            {p.stats && (
-                              <dl className="mt-6 grid grid-cols-3 gap-2.5 sm:gap-3">
-                                {p.stats.map((s, k) => (
-                                  <motion.div key={s.v} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduce ? 0 : 0.4, delay: reduce ? 0 : 0.3 + k * 0.08, ease: EASE }}
-                                              className="rounded-2xl bg-white p-3 ring-1 ring-[#E5E7EB] sm:p-3.5">
-                                    <dd className="text-[18px] font-semibold tabular-nums text-[#0F172A] sm:text-[19px]">{s.v}</dd>
-                                    <dt className="mt-0.5 text-[11px] leading-snug text-[#64748B] sm:text-[11.5px]">{s.l[lang]}</dt>
-                                  </motion.div>
-                                ))}
-                              </dl>
-                            )}
-                            <ul className="mt-5 flex flex-wrap gap-1.5">
-                              {p.scope[lang].map((s) => <li key={s} className="rounded-full bg-[#EEF3F8] px-2.5 py-1 text-[11.5px] font-medium text-[#0F3554]">{s}</li>)}
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#0F172A] px-3 py-1 text-[12px] font-semibold text-white">
+                                <Sparkles size={12} />{p.pkg ? `${DT[lang].pkg} ${p.pkg[lang]}` : p.type[lang]}
+                              </span>
+                              {p.since && <span className="text-[12.5px] text-[#64748B]">{DT[lang].since} {p.since}</span>}
+                            </div>
+                            <p className="mt-4 text-[15px] leading-relaxed text-[#334155]">{p.desc[lang]}</p>
+                            <p className="mt-5 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#64748B]">{DT[lang].got}</p>
+                            <ul className="mt-3 grid gap-x-4 gap-y-2 sm:grid-cols-2">
+                              {p.deliver.map((x, k) => {
+                                const I = DI[x.i];
+                                return (
+                                  <motion.li key={x.t.bs} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+                                             transition={{ duration: reduce ? 0 : 0.35, delay: reduce ? 0 : 0.25 + k * 0.05, ease: EASE }}
+                                             className="flex items-center gap-2.5 text-[13px] text-[#334155]">
+                                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-white text-[#0F3554] ring-1 ring-[#E5E7EB]"><I size={14} /></span>{x.t[lang]}
+                                  </motion.li>
+                                );
+                              })}
                             </ul>
-                            <div className="mt-auto pt-7"><Actions p={p} d={d} /></div>
+                            {p.stack && (
+                              <div className="mt-4 flex flex-wrap items-center gap-1">
+                                <span className="sr-only">{DT[lang].stack}</span>
+                                {p.stack.map((t) => <span key={t} className="rounded-md border border-[#E5E7EB] bg-white px-2 py-0.5 text-[11.5px] font-medium text-[#475569]">{t}</span>)}
+                              </div>
+                            )}
+                            {p.perf && <p className="mt-3 flex items-center gap-1.5 text-[12px] text-[#64748B]"><Gauge size={13} className="text-[#16A34A]" />{p.perf[lang]}</p>}
+                            <div className="mt-auto pt-5"><Actions p={p} d={d} /></div>
                           </motion.div>
                         </div>
                       </motion.div>

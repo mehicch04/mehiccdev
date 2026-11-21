@@ -64,7 +64,7 @@ export const COPY = {
       stats: [
         { v: "100", l: "Google ocjena performansi" },
         { v: "3,2s", l: "učitavanje na telefonu, prije 21,6s" },
-        { v: "2", l: "jezika, HR i EN" },
+        { v: "4", l: "jezika, HR, EN, DE i ES" },
       ],
       note: "Brojke su Google PageSpeed mjerenja i možete ih ponoviti sami.",
       cta: "Otvorite sajt",
@@ -245,7 +245,7 @@ export const COPY = {
       stats: [
         { v: "100", l: "Google performance score" },
         { v: "3.2s", l: "mobile load time, was 21.6s" },
-        { v: "2", l: "languages, HR and EN" },
+        { v: "4", l: "languages, HR, EN, DE and ES" },
       ],
       note: "These are Google PageSpeed measurements and you can run them yourself.",
       cta: "Open the site",

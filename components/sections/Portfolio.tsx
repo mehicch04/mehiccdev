@@ -29,7 +29,7 @@ const T: Record<"bs" | "en", Content> = {
     stats: [
       { v: "3,2 s", l: "učitavanje, ranije 21,6 s" },
       { v: "100", l: "Google ocjena performansi" },
-      { v: "2", l: "jezika, HR i EN" },
+      { v: "4", l: "jezika, HR, EN, DE i ES" },
       { v: "24/7", l: "prima upite i dok vlasnik spava" },
     ],
     ctaCase: "Pogledajte detaljnije",
@@ -56,7 +56,7 @@ const T: Record<"bs" | "en", Content> = {
     stats: [
       { v: "3.2 s", l: "load time, was 21.6 s" },
       { v: "100", l: "Google performance score" },
-      { v: "2", l: "languages, HR and EN" },
+      { v: "4", l: "languages, HR, EN, DE and ES" },
       { v: "24/7", l: "takes inquiries while the owner sleeps" },
     ],
     ctaCase: "See the case study",

@@ -27,8 +27,15 @@ export type Project = {
   desc: Record<L, string>;
   scope: Record<L, string[]>;
   stats?: { v: string; l: Record<L, string> }[];
+  pkg?: Record<L, string>;
+  since?: string;
+  stack?: string[];
+  deliver: { i: DIcon; t: Record<L, string> }[];
+  perf?: Record<L, string>;
   accent: string;
 };
+
+export type DIcon = "cal" | "panel" | "doc" | "car" | "globe" | "shield" | "users" | "card" | "image" | "search" | "phone" | "layers" | "trophy" | "home" | "chat" | "chart";
 
 export const PROJECTS: Project[] = [
   {
@@ -42,6 +49,17 @@ export const PROJECTS: Project[] = [
       bs: "Kompletan sistem za iznajmljivanje vozila. Gost bira auto i datume, sistem sprječava dupla rezervisanja, a vlasnik sve potvrđuje u dva klika iz svog panela.",
       en: "A complete car rental system. Guests pick a car and dates, the system prevents double bookings, and the owner confirms everything in two clicks from a private panel.",
     },
+    pkg: { bs: "Rent a car Premium", en: "Car rental Premium" }, since: "2026",
+    stack: ["Next.js", "TypeScript", "Tailwind", "Supabase", "Vercel"],
+    perf: { bs: "Google PageSpeed 100 · 3,2 s na telefonu, ranije 21,6 s", en: "Google PageSpeed 100 · 3.2 s on mobile, was 21.6 s" },
+    deliver: [
+      { i: "cal", t: { bs: "Online rezervacije", en: "Online bookings" } },
+      { i: "panel", t: { bs: "Admin panel po mjeri", en: "Custom admin panel" } },
+      { i: "doc", t: { bs: "Automatski ugovori", en: "Automatic contracts" } },
+      { i: "car", t: { bs: "Preuzimanje i povrat", en: "Pickup and return" } },
+      { i: "globe", t: { bs: "4 jezika: HR, EN, DE, ES", en: "4 languages: HR, EN, DE, ES" } },
+      { i: "shield", t: { bs: "Provjere na serveru", en: "Server side checks" } },
+    ],
     scope: { bs: ["Dizajn", "Razvoj", "Admin panel", "SEO i brzina"], en: ["Design", "Development", "Admin panel", "SEO and speed"] },
     stats: [
       { v: "3,2s", l: { bs: "učitavanje na telefonu, prije 21,6s", en: "mobile load, was 21.6s" } },
@@ -60,6 +78,15 @@ export const PROJECTS: Project[] = [
       bs: "Platforma za IFBB Pro trenera i višestrukog prvaka BiH, s prijavama klijenata i admin panelom za vođenje saradnji.",
       en: "A platform for an IFBB Pro coach and multiple national champion, with client sign ups and an admin panel to manage coaching.",
     },
+    stack: ["Next.js", "TypeScript", "Tailwind"],
+    deliver: [
+      { i: "card", t: { bs: "Paketi i cijene coachinga", en: "Coaching plans and prices" } },
+      { i: "users", t: { bs: "Prijave novih klijenata", en: "New client sign ups" } },
+      { i: "panel", t: { bs: "Admin panel za saradnje", en: "Admin panel for coaching" } },
+      { i: "image", t: { bs: "Galerija transformacija", en: "Transformation gallery" } },
+      { i: "trophy", t: { bs: "Rezultati i takmičenja", en: "Results and competitions" } },
+      { i: "phone", t: { bs: "Prilagođeno telefonu", en: "Built for phones" } },
+    ],
     scope: { bs: ["Dizajn", "Razvoj", "Admin panel"], en: ["Design", "Development", "Admin panel"] },
   },
   {
@@ -73,6 +100,12 @@ export const PROJECTS: Project[] = [
       bs: "Dizajn sistema nagrada za gaming platformu, s nivoima i napretkom koji igrača vodi naprijed.",
       en: "Rewards system design for a gaming platform, with tiers and progression that pull players forward.",
     },
+    deliver: [
+      { i: "trophy", t: { bs: "Sistem nivoa nagrada", en: "Reward tier system" } },
+      { i: "chart", t: { bs: "Prikaz napretka igrača", en: "Player progress display" } },
+      { i: "layers", t: { bs: "Komponente dizajn sistema", en: "Design system components" } },
+      { i: "phone", t: { bs: "Desktop i mobilni prikaz", en: "Desktop and mobile layouts" } },
+    ],
     scope: { bs: ["UI/UX dizajn", "Sistem nivoa"], en: ["UI/UX design", "Tier system"] },
   },
   {
@@ -85,6 +118,13 @@ export const PROJECTS: Project[] = [
       bs: "Medicinski sajt koji dovodi pacijente iz Google pretrage, jasan i brz na svakom telefonu.",
       en: "A medical site that brings patients in from Google search, clear and fast on every phone.",
     },
+    stack: ["Next.js", "TypeScript", "Tailwind"],
+    deliver: [
+      { i: "layers", t: { bs: "Stranice tretmana i usluga", en: "Treatment and service pages" } },
+      { i: "chat", t: { bs: "Upit za termin", en: "Appointment inquiry" } },
+      { i: "search", t: { bs: "Lokalni SEO za Google", en: "Local SEO for Google" } },
+      { i: "phone", t: { bs: "Brz na svakom telefonu", en: "Fast on every phone" } },
+    ],
     scope: { bs: ["Dizajn", "Razvoj", "SEO"], en: ["Design", "Development", "SEO"] },
   },
   {
@@ -97,6 +137,13 @@ export const PROJECTS: Project[] = [
       bs: "Naš vlastiti proizvod. Kreće s rezervacijom vikendica u Mostaru, a raste u platformu za prodaju i najam nekretnina.",
       en: "Our own product. It starts with cottage bookings in Mostar and grows into a platform for selling and renting property.",
     },
+    stack: ["Next.js", "TypeScript", "Supabase"],
+    deliver: [
+      { i: "home", t: { bs: "Rezervacija vikendica", en: "Cottage bookings" } },
+      { i: "cal", t: { bs: "Kalendar dostupnosti", en: "Availability calendar" } },
+      { i: "panel", t: { bs: "Panel za vlasnike", en: "Owner panel" } },
+      { i: "chart", t: { bs: "Kasnije: prodaja i najam", en: "Next: sales and rentals" } },
+    ],
     scope: { bs: ["Proizvod", "Dizajn", "Razvoj"], en: ["Product", "Design", "Development"] },
   },
 ];
