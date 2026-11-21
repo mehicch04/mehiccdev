@@ -51,7 +51,7 @@ export const PROJECTS: Project[] = [
   },
   {
     accent: "#111111", id: "gosto", cat: "app", status: "build",
-    desk: "/portfolio/gosto-coaching.webp", mob: "/portfolio/gosto-mob.webp", mobBar: "dark", mobBarColor: "#0A0A0A",
+    desk: "/portfolio/gosto-hero.webp", mob: "/portfolio/gosto-hero-mob.webp", mobBar: "dark", mobBarColor: "#0A0A0A",
     url: "adnangosto.com",
     title: "Adnan Gosto · IFBB Pro",
     industry: { bs: "Fitness", en: "Fitness" },
