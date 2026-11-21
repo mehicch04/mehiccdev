@@ -1,21 +1,19 @@
 export type V3 = [number, number, number];
 export type Frame = { pos: V3; target: V3; fov: number };
-export type Layout = { aspect: number; water: number; top: number; half: number; compact: boolean };
+export type Layout = { aspect: number; water: number; top: number; half: number; compact: boolean; extent?: number };
 
-export const SPAN = 28.7;
-export const SPRING = 7.4;
-export const RISE = 12.4;
-export const RING = 0.82;
-export const CROWN = 21;
-export const DECK_END = 17.2;
-export const DECK_X = 20.5;
-export const TOWER_TOP = 31.5;
-export const EXTENT = 30.5;
+export const CROWN = 20.25;
+export const CROWN_X = 0.5;
+export const DECK_X = 11.4;
+export const DECK_Z = 1.9;
+export const TOWER_TOP = 37;
+export const EXTENT = 36;
+export const WATER: V3 = [0, 1.7, 14];
 
 export function deckY(x: number) {
-  const a = Math.abs(x);
+  const a = Math.abs(x - CROWN_X);
   const r = 2.4;
-  const slope = (CROWN - DECK_END) / DECK_X;
+  const slope = 0.23;
   if (a < r) return CROWN - (slope * a * a) / (2 * r);
   return CROWN - slope * (a - r / 2);
 }
@@ -25,7 +23,7 @@ export const PATH3D: V3[] = (() => {
   const n = 40;
   for (let i = 0; i <= n; i++) {
     const x = -DECK_X + (2 * DECK_X * i) / n;
-    out.push([x, deckY(x) + 1.9, 2.4]);
+    out.push([x, deckY(x) + 1.5, DECK_Z]);
   }
   return out;
 })();
@@ -71,48 +69,43 @@ export function project(f: Frame, aspect: number, p: V3): [number, number] {
   return [dot(d, rt) / (z * t * aspect), dot(d, up) / (z * t)];
 }
 
-const CAM_Y = 3.2;
+const CAM_Y = 7;
 
 export function frameFor(l: Layout): Frame {
-  const fov = l.compact ? 36 : l.aspect < 1.35 ? 34 : 30;
+  const fov = l.compact ? 40 : l.aspect < 1.35 ? 36 : 32;
   const toPx = (ndc: number) => (1 - ndc) / 2;
-  let dist = 160;
+  let dist = 120;
   let ty = 18;
   const build = (): Frame => ({ pos: [0, CAM_Y, dist], target: [0, ty, 0], fov });
+  const fitY = () => {
+    let a = -60;
+    let b = 90;
+    for (let k = 0; k < 40; k++) {
+      ty = (a + b) / 2;
+      const y = toPx(project(build(), l.aspect, WATER)[1]);
+      if (y > l.water) b = ty;
+      else a = ty;
+    }
+  };
   for (let iter = 0; iter < 6; iter++) {
     let lo = 40;
-    let hi = 900;
+    let hi = 700;
     for (let k = 0; k < 40; k++) {
       dist = (lo + hi) / 2;
       const f = build();
-      const span = toPx(project(f, l.aspect, [0, 0, 6])[1]) - toPx(project(f, l.aspect, [0, TOWER_TOP, 0])[1]);
+      const span = toPx(project(f, l.aspect, WATER)[1]) - toPx(project(f, l.aspect, [0, TOWER_TOP, 0])[1]);
       if (span > l.water - l.top) lo = dist;
       else hi = dist;
     }
-    let a = -80;
-    let b = 120;
-    for (let k = 0; k < 40; k++) {
-      ty = (a + b) / 2;
-      const y = toPx(project(build(), l.aspect, [0, 0, 6])[1]);
-      if (y > l.water) b = ty;
-      else a = ty;
-    }
+    fitY();
   }
-  const f = build();
-  const w = project(f, l.aspect, [EXTENT, 12, 0])[0];
+  const w = project(build(), l.aspect, [l.extent ?? EXTENT, 20, 0])[0];
   if (w > l.half) {
-    const s = w / l.half;
-    dist *= s;
-    let a = -80;
-    let b = 120;
-    for (let k = 0; k < 40; k++) {
-      ty = (a + b) / 2;
-      const y = toPx(project(build(), l.aspect, [0, 0, 6])[1]);
-      if (y > l.water) b = ty;
-      else a = ty;
-    }
+    dist *= w / l.half;
+    fitY();
   }
   return build();
 }
 
 export const POSTER = { w: 1600, h: 1000 };
+export const POSTER_LAYOUT: Layout = { aspect: POSTER.w / POSTER.h, water: 0.9, top: 0.4, half: 0.9, compact: false };

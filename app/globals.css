@@ -399,7 +399,7 @@ html[data-intro] .intro-root.out { pointer-events: none; }
   pointer-events: none;
   background:
     linear-gradient(180deg, #070D1F 0%, color-mix(in srgb, #070D1F 0%, transparent) 16%),
-    linear-gradient(0deg, #070D1F 0%, color-mix(in srgb, #070D1F 0%, transparent) 12%);
+    linear-gradient(0deg, #070D1F 0%, color-mix(in srgb, #070D1F 0%, transparent) 6%);
 }
 @media (min-width: 640px) {
   .most-box { aspect-ratio: 16 / 10; }
@@ -409,14 +409,14 @@ html[data-intro] .intro-root.out { pointer-events: none; }
   .most-shade {
     background:
       linear-gradient(180deg, color-mix(in srgb, #070D1F 70%, transparent) 0%, color-mix(in srgb, #070D1F 0%, transparent) 38%),
-      linear-gradient(0deg, #070D1F 0%, color-mix(in srgb, #070D1F 0%, transparent) 12%);
+      linear-gradient(0deg, #070D1F 0%, color-mix(in srgb, #070D1F 0%, transparent) 6%);
   }
 }
 @media (min-width: 1280px) {
   .most-shade {
     background:
       linear-gradient(180deg, color-mix(in srgb, #070D1F 70%, transparent) 0%, color-mix(in srgb, #070D1F 0%, transparent) 38%),
-      linear-gradient(0deg, #070D1F 0%, color-mix(in srgb, #070D1F 0%, transparent) 12%),
+      linear-gradient(0deg, #070D1F 0%, color-mix(in srgb, #070D1F 0%, transparent) 6%),
       linear-gradient(90deg, color-mix(in srgb, #070D1F 62%, transparent) 0%, color-mix(in srgb, #070D1F 0%, transparent) 24%, color-mix(in srgb, #070D1F 0%, transparent) 76%, color-mix(in srgb, #070D1F 62%, transparent) 100%);
   }
 }

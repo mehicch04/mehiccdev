@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Check, Globe, Instagram, Mail, MessageCircle, Mouse, Reply, Send, type LucideIcon } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
 import type { Projector, SceneApi } from "@/components/hero3d/Scene";
-import { POSTER, frameFor, pathAt, project, type Frame } from "@/components/hero3d/frame";
+import { POSTER, POSTER_LAYOUT, frameFor, pathAt, project, type Frame } from "@/components/hero3d/frame";
 
 const Scene = dynamic(() => import("@/components/hero3d/Scene"), { ssr: false });
 
@@ -106,7 +106,7 @@ const MIN = 60000;
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const FLIGHT = "mehiccdev-flight";
-const POSTER_FRAME: Frame = frameFor({ aspect: POSTER.w / POSTER.h, water: 0.775, top: 0.5, half: 0.62, compact: false });
+const POSTER_FRAME: Frame = frameFor(POSTER_LAYOUT);
 
 function webgl() {
   try {
@@ -303,6 +303,7 @@ export function Hero() {
     setReady(true);
   }, []);
   const onShown = useCallback(() => setShown(true), []);
+  const onFail = useCallback(() => setGl(false), []);
 
   useEffect(() => {
     const html = document.documentElement;
@@ -324,8 +325,12 @@ export function Hero() {
       return;
     }
     if (shown) return;
-    const id = window.setTimeout(() => setGl(false), 2500);
-    return () => window.clearTimeout(id);
+    const a = window.setTimeout(reveal, 2500);
+    const b = window.setTimeout(() => setGl(false), 20000);
+    return () => {
+      window.clearTimeout(a);
+      window.clearTimeout(b);
+    };
   }, [start, gl, shown, reveal]);
 
   useEffect(() => {
@@ -600,7 +605,7 @@ export function Hero() {
         {gl && (
           <div className={`most-canvas${shown ? " on" : ""}`} aria-hidden>
             <Scene api={api} start={start} fly={fly} reduce={reduce} compact={compact} active={active}
-                   onShown={onShown} onReveal={reveal} onLand={land} />
+                   onShown={onShown} onReveal={reveal} onLand={land} onFail={onFail} />
           </div>
         )}
         <span aria-hidden className="most-shade" />
