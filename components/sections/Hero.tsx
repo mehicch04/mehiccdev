@@ -5,7 +5,8 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Check, Globe, Instagram, Mail, MessageCircle, Mouse, Reply, Send, type LucideIcon } from "lucide-react";
 import { useLanguage } from "@/components/ui/LanguageProvider";
-import { GLINTS, SIL, STARS, TRAIL } from "@/components/sections/heroScene";
+import { DRAW_A, DRAW_D, DRAW_T, GLINTS, SIL, STARS, TRAIL } from "@/components/sections/heroScene";
+import { Logo } from "@/components/ui/Logo";
 
 type Lang = "bs" | "en";
 type Src = "wa" | "ig" | "web" | "viber" | "mail";
@@ -276,35 +277,18 @@ export function Hero() {
       setLit(true);
       return;
     }
-    let raf = 0;
-    let id = 0;
-    let started = false;
-    const go = () => {
-      if (started) return;
-      started = true;
-      raf = requestAnimationFrame(() => {
-        id = window.setTimeout(() => {
-          html.removeAttribute("data-most");
-          setLit(true);
-        }, 90);
-      });
-    };
-    const check = () => {
-      if (!html.hasAttribute("data-most")) {
-        mo.disconnect();
-        setLit(true);
-      } else if (!html.hasAttribute("data-intro")) {
-        mo.disconnect();
-        go();
-      }
-    };
-    const mo = new MutationObserver(check);
-    mo.observe(html, { attributes: true, attributeFilter: ["data-intro", "data-most"] });
-    check();
+    const id = window.setTimeout(() => {
+      try { sessionStorage.setItem("mehiccdev-intro", "1"); } catch {}
+      html.removeAttribute("data-most");
+      setLit(true);
+    }, 1750);
+    const mo = new MutationObserver(() => {
+      if (!html.hasAttribute("data-most")) setLit(true);
+    });
+    mo.observe(html, { attributes: true, attributeFilter: ["data-most"] });
     return () => {
-      mo.disconnect();
-      cancelAnimationFrame(raf);
       window.clearTimeout(id);
+      mo.disconnect();
     };
   }, []);
 
@@ -514,6 +498,10 @@ export function Hero() {
   return (
     <section ref={section} data-hero aria-labelledby="hero-title"
              className="most-hero hero-light relative isolate flex flex-col overflow-hidden bg-[#0B1733] text-white lg:block lg:h-[100svh] lg:min-h-[680px] lg:max-h-[1180px]">
+      <div aria-hidden className="most-brand absolute inset-x-0 top-[22%] z-20 flex flex-col items-center gap-3 lg:top-[26%]">
+        <Logo variant="dark" mark className="h-[30px] w-auto sm:h-[36px]" markClassName="h-[40px] w-auto sm:h-[48px]" />
+        <span className="text-[11px] uppercase tracking-[0.32em] text-[#94A3B8]">Mostar · 1566.</span>
+      </div>
       <div className="pointer-events-none absolute inset-x-0 top-[92px] z-10 hidden lg:block">
         <div className="most-in mx-auto max-w-7xl px-8 text-right text-[11px] uppercase leading-[1.9] tracking-[0.16em] text-[#64748B]" style={{ "--d": "0.5s" } as CSSProperties}>
           {d.meta} · <b className="font-semibold tracking-[0.08em] text-[#CBD5E1]">{d.year}</b>
@@ -579,6 +567,13 @@ export function Hero() {
             <path key={`${x}${y}`} className="most-gl" d={`M${x} ${y}h${w}`} stroke="#F2BD73" strokeWidth={1.6} strokeLinecap="round"
                   vectorEffect="non-scaling-stroke" style={{ animationDelay: `${dl}s` }} />
           ))}
+          {DRAW_T.map((p, i) => (
+            <path key={p} className="most-draw" d={p} pathLength={1} fill="none" stroke="#F4C27E" strokeWidth={1.4}
+                  vectorEffect="non-scaling-stroke" style={{ "--d": `${0.55 + i * 0.12}s` } as CSSProperties} />
+          ))}
+          <path className="most-draw" d={DRAW_A} pathLength={1} fill="none" stroke="#FFD39A" strokeWidth={2.2} vectorEffect="non-scaling-stroke" />
+          <path className="most-draw" d={DRAW_D} pathLength={1} fill="none" stroke="#FFD39A" strokeWidth={1.8} vectorEffect="non-scaling-stroke"
+                style={{ "--d": "0.4s" } as CSSProperties} />
           <path className="most-trail" d={TRAIL} fill="none" stroke="#4ADE80" strokeWidth={1.6} strokeDasharray="1 6" strokeLinecap="round"
                 vectorEffect="non-scaling-stroke" opacity={0.75} />
         </svg>
